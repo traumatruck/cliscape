@@ -1,0 +1,7 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/CliScape.Cli/CliScape.Cli.csproj" />
+    <Project Path="src/CliScape.Game/CliScape.Game.csproj" />
+  </Folder>
+
+</Solution>
