@@ -1,7 +1,12 @@
 <Solution>
   <Folder Name="/src/">
     <Project Path="src/CliScape.Cli/CliScape.Cli.csproj" />
+    <Project Path="src/CliScape.Content/CliScape.Content.csproj" />
     <Project Path="src/CliScape.Game/CliScape.Game.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/CliScape.Content.Tests/CliScape.Content.Tests.csproj" />
+    <Project Path="tests/CliScape.Game.Tests/CliScape.Game.Tests.csproj" />
   </Folder>
 
 </Solution>
