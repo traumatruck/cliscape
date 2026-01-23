@@ -1,3 +1,3 @@
-namespace CliScape.Game.World;
+namespace CliScape.Core.World;
 
 public record LocationName(string Name);

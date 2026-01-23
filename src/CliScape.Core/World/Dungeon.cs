@@ -1,4 +1,4 @@
-namespace CliScape.Game.World;
+namespace CliScape.Core.World;
 
 public interface IDungeon : ILocation
 {

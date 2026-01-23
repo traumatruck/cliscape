@@ -1,6 +1,6 @@
 using System.Reflection;
 
-namespace CliScape.Game.World;
+namespace CliScape.Core.World;
 
 public interface ILocation
 {

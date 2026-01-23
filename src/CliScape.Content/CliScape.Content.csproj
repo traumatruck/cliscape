@@ -7,7 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\CliScape.Game\CliScape.Game.csproj" />
+      <ProjectReference Include="..\CliScape.Core\CliScape.Core.csproj" />
     </ItemGroup>
 
 </Project>

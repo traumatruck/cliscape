@@ -1,5 +1,5 @@
 using CliScape.Content.Locations.Dungeons;
-using CliScape.Game.World;
+using CliScape.Core.World;
 
 namespace CliScape.Content.Locations.Towns;
 

@@ -1,6 +1,6 @@
 using CliScape.Content.Locations.Dungeons;
 using CliScape.Content.Locations.Towns;
-using CliScape.Game.World;
+using CliScape.Core.World;
 
 namespace CliScape.Content.Locations.DangerousAreas;
 

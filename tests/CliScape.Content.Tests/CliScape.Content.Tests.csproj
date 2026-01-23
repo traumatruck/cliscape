@@ -20,7 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\CliScape.Content\CliScape.Content.csproj" />
-    <ProjectReference Include="..\..\src\CliScape.Game\CliScape.Game.csproj" />
+    <ProjectReference Include="..\..\src\CliScape.Core\CliScape.Core.csproj" />
   </ItemGroup>
 
 </Project>

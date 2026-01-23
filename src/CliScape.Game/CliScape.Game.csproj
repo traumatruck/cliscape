@@ -7,7 +7,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="OneOf" Version="3.0.271" />
+      <ProjectReference Include="..\CliScape.Content\CliScape.Content.csproj" />
+      <ProjectReference Include="..\CliScape.Core\CliScape.Core.csproj" />
     </ItemGroup>
 
 </Project>
