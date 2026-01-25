@@ -29,7 +29,7 @@ public class MapIntegrityTests
                 if (neighbor == null)
                 {
                     Assert.Fail(
-                        $"Location '{name.Name}' references unknown neighbor '{neighborName.Name}' to the {direction}.");
+                        $"Location '{name.Value}' references unknown neighbor '{neighborName.Value}' to the {direction}.");
                 }
 
                 // Assert reciprocal
@@ -38,13 +38,13 @@ public class MapIntegrityTests
                 if (!neighbor.AdjacentLocations.TryGetValue(oppositeDir, out var neighborTargetName))
                 {
                     Assert.Fail(
-                        $"Location '{name.Name}' has neighbor '{neighborName.Name}' to {direction}, but '{neighborName.Name}' has no neighbor to {oppositeDir}.");
+                        $"Location '{name.Value}' has neighbor '{neighborName.Value}' to {direction}, but '{neighborName.Value}' has no neighbor to {oppositeDir}.");
                 }
 
                 if (name != neighborTargetName)
                 {
                     Assert.Fail(
-                        $"Location '{name.Name}' has neighbor '{neighborName.Name}' to {direction}, but '{neighborName.Name}' points '{oppositeDir}' to '{neighborTargetName.Name}' instead of '{name.Name}'.");
+                        $"Location '{name.Value}' has neighbor '{neighborName.Value}' to {direction}, but '{neighborName.Value}' points '{oppositeDir}' to '{neighborTargetName.Value}' instead of '{name.Value}'.");
                 }
             }
         }

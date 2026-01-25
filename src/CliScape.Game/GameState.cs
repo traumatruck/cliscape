@@ -1,16 +1,20 @@
 using CliScape.Content.Locations.Towns;
 using CliScape.Core.Players;
 using CliScape.Core.World;
+using CliScape.Game.Persistence;
 
 namespace CliScape.Game;
 
 public class GameState
 {
-    public static GameState Instance = new();
+    public static readonly GameState Instance = new();
+
+    private readonly IGameStateStore _store;
 
     private GameState()
     {
         LocationLibrary.LoadFrom(typeof(Lumbridge).Assembly);
+        _store = new BinaryGameStateStore(GetSaveFilePath());
     }
 
     private LocationLibrary LocationLibrary { get; } = new();
@@ -22,12 +26,42 @@ public class GameState
     /// </summary>
     public void Load()
     {
+        var snapshot = _store.LoadPlayer();
+
+        if (snapshot == null)
+        {
+            Player = CreateDefaultPlayer();
+            Save();
+            return;
+        }
+
         Player = new Player
         {
-            Id = 0,
-            Name = "Trauma Truck",
-            CurrentLocation = GetCurrentLocation()
+            Id = snapshot.Value.Id,
+            Name = snapshot.Value.Name,
+            CurrentLocation = GetLocation(snapshot.Value.LocationName),
+            Health = new PlayerHealth(snapshot.Value.CurrentHealth, snapshot.Value.MaxHealth)
         };
+    }
+
+    public void Save()
+    {
+        var player = GetPlayer();
+
+        var snapshot = new PlayerSnapshot(
+            player.Id,
+            player.Name,
+            player.CurrentLocation.Name.Value,
+            player.Health.CurrentHealth,
+            player.Health.MaxHealth);
+
+        _store.SavePlayer(snapshot);
+    }
+
+    public ILocation GetLocation(string name)
+    {
+        return LocationLibrary.GetLocation(new LocationName(name)) ??
+               throw new InvalidOperationException($"Location {name} not found.");
     }
 
     public Player GetPlayer()
@@ -37,7 +71,26 @@ public class GameState
 
     private ILocation GetCurrentLocation()
     {
-        return LocationLibrary.GetLocation(Lumbridge.Name) ??
-               throw new InvalidOperationException("Location not found.");
+        return GetLocation(Lumbridge.Name.Value);
+    }
+
+    private Player CreateDefaultPlayer()
+    {
+        return new Player
+        {
+            Id = 0,
+            Name = "Trauma Truck",
+            CurrentLocation = GetCurrentLocation()
+        };
+    }
+
+    private static string GetSaveFilePath()
+    {
+        var root = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "CliScape");
+
+        Directory.CreateDirectory(root);
+        return Path.Combine(root, "save.bin");
     }
 }
