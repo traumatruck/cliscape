@@ -1,3 +1,3 @@
 #!/bin/bash
 cd "$(dirname "$0")/src/CliScape.Cli"
-dotnet run -- "$@"
+dotnet run --verbosity quiet -- "$@"

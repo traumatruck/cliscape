@@ -1,5 +1,6 @@
 using CliScape.Content.Locations.Towns;
 using CliScape.Core.Players;
+using CliScape.Core.Players.Skills;
 using CliScape.Core.World;
 using CliScape.Game.Persistence;
 
@@ -35,12 +36,30 @@ public class GameState
             return;
         }
 
+        var skills = new PlayerSkillCollection();
+
+        // Restore skill experience from the snapshot
+        foreach (var skillSnapshot in snapshot.Value.Skills)
+        {
+            var skill = skills.All.FirstOrDefault(s => s.Name.Name == skillSnapshot.Name);
+            skill?.Level = PlayerSkillLevel.FromExperience(skillSnapshot.Experience);
+        }
+
         Player = new Player
         {
             Id = snapshot.Value.Id,
             Name = snapshot.Value.Name,
-            CurrentLocation = GetLocation(snapshot.Value.LocationName),
-            Health = new PlayerHealth(snapshot.Value.CurrentHealth, snapshot.Value.MaxHealth)
+
+            CurrentLocation = GetLocation(snapshot.Value.LocationName) ??
+                              throw new InvalidOperationException("Location not found."),
+
+            Health = new PlayerHealth
+            {
+                CurrentHealth = snapshot.Value.CurrentHealth,
+                MaximumHealth = snapshot.Value.MaximumHealth
+            },
+
+            Skills = skills
         };
     }
 
@@ -48,12 +67,17 @@ public class GameState
     {
         var player = GetPlayer();
 
+        var skillSnapshots = player.Skills.All
+            .Select(skill => new SkillSnapshot(skill.Name.Name, skill.Level.Experience))
+            .ToArray();
+
         var snapshot = new PlayerSnapshot(
             player.Id,
             player.Name,
             player.CurrentLocation.Name.Value,
-            player.Health.CurrentHealth,
-            player.Health.MaxHealth);
+            player.CurrentHealth,
+            player.MaximumHealth,
+            skillSnapshots);
 
         _store.SavePlayer(snapshot);
     }
@@ -70,7 +94,7 @@ public class GameState
 
     private ILocation GetCurrentLocation()
     {
-        return GetLocation(Lumbridge.Name.Value);
+        return GetLocation(Lumbridge.Name.Value) ?? throw new InvalidOperationException("Location not found.");
     }
 
     private Player CreateDefaultPlayer()

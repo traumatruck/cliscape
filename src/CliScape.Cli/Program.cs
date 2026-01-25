@@ -13,7 +13,9 @@ app.Configure(configuration =>
     configuration.AddBranch("status", status =>
     {
         status.AddCommand<StatusOverviewCommand>(StatusOverviewCommand.CommandName);
-        status.AddCommand<StatusStatsCommand>(StatusStatsCommand.CommandName);
+        status.AddCommand<StatusSkillsCommand>(StatusSkillsCommand.CommandName);
+        
+        status.SetDefaultCommand<StatusOverviewCommand>();
     });
     
     configuration.AddCommand<WalkCommand>(WalkCommand.CommandName);

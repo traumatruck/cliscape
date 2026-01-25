@@ -8,7 +8,7 @@ public interface ILocation
     {
         get
         {
-            var prop = GetType().GetProperty(nameof(LocationName.Value),
+            var prop = GetType().GetProperty(nameof(Name),
                 BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
             
             return prop?.GetValue(null) as LocationName ??

@@ -14,8 +14,8 @@ public class StatusOverviewCommand : Command, ICommand
 
         var table = new Table()
             .AddColumn($"{player.Name}")
-            .AddColumn($"Combat Level: 126 | Total Level: 986")
-            .AddRow("HP", $"{player.Health.CurrentHealth}/{player.Health.MaxHealth}")
+            .AddColumn($"Combat Level: {player.CombatLevel} | Total Level: {player.TotalLevel}")
+            .AddRow("HP", $"{player.CurrentHealth}/{player.MaximumHealth}")
             .AddRow("Location", $"{player.CurrentLocation.Name}");
         
         AnsiConsole.Write(table);

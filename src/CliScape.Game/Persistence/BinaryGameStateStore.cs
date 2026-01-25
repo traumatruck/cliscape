@@ -46,7 +46,18 @@ public sealed class BinaryGameStateStore(string path) : IGameStateStore
         var currentHealth = reader.ReadInt32();
         var maxHealth = reader.ReadInt32();
         
-        return new PlayerSnapshot(id, name, locationName, currentHealth, maxHealth);
+        // Deserialize skills
+        var skillCount = reader.ReadInt32();
+        var skills = new SkillSnapshot[skillCount];
+        
+        for (var i = 0; i < skillCount; i++)
+        {
+            var skillName = ReadString(reader);
+            var experience = reader.ReadInt32();
+            skills[i] = new SkillSnapshot(skillName, experience);
+        }
+        
+        return new PlayerSnapshot(id, name, locationName, currentHealth, maxHealth, skills);
     }
 
     /// <summary>
@@ -63,7 +74,17 @@ public sealed class BinaryGameStateStore(string path) : IGameStateStore
         WriteString(writer, snapshot.Name);
         WriteString(writer, snapshot.LocationName);
         writer.Write(snapshot.CurrentHealth);
-        writer.Write(snapshot.MaxHealth);
+        writer.Write(snapshot.MaximumHealth);
+        
+        // Serialize skills
+        writer.Write(snapshot.Skills.Length);
+        
+        foreach (var skill in snapshot.Skills)
+        {
+            WriteString(writer, skill.Name);
+            writer.Write(skill.Experience);
+        }
+        
         writer.Flush();
         
         // Write the serialized data to the save file
