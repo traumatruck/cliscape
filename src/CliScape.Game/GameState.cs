@@ -58,10 +58,9 @@ public class GameState
         _store.SavePlayer(snapshot);
     }
 
-    public ILocation GetLocation(string name)
+    public ILocation? GetLocation(string name)
     {
-        return LocationLibrary.GetLocation(new LocationName(name)) ??
-               throw new InvalidOperationException($"Location {name} not found.");
+        return LocationLibrary.GetLocation(new LocationName(name));
     }
 
     public Player GetPlayer()

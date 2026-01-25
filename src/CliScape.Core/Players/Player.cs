@@ -14,11 +14,6 @@ public sealed class Player
 
     public void Move(ILocation location)
     {
-        if (!location.AdjacentLocations.Values.Contains(CurrentLocation.Name))
-        {
-            throw new ArgumentException($"Location {CurrentLocation.Name} isn't adjacent to location {location.Name}.");
-        }
-
         CurrentLocation = location;
     }
 }
