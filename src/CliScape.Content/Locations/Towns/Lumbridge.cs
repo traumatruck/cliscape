@@ -1,4 +1,6 @@
+using CliScape.Core.Npcs;
 using CliScape.Core.World;
+using CliScape.Content.Npcs;
 
 namespace CliScape.Content.Locations.Towns;
 
@@ -9,4 +11,11 @@ public class Lumbridge : ILocation
     public Shop? Shop { get; }
 
     public Bank? Bank { get; }
+    
+    public IReadOnlyList<INpc> AvailableNpcs { get; } = new INpc[]
+    {
+        Cow.Variant1,
+        Cow.Variant2,
+        Cow.Variant3
+    };
 }

@@ -59,7 +59,7 @@ public class GameState
                 MaximumHealth = snapshot.Value.MaximumHealth
             },
 
-            Skills = skills
+            SkillCollection = skills
         };
     }
 
@@ -67,7 +67,7 @@ public class GameState
     {
         var player = GetPlayer();
 
-        var skillSnapshots = player.Skills.All
+        var skillSnapshots = player.Skills
             .Select(skill => new SkillSnapshot(skill.Name.Name, skill.Level.Experience))
             .ToArray();
 

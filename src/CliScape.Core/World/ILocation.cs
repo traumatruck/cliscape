@@ -1,4 +1,5 @@
 using System.Reflection;
+using CliScape.Core.Npcs;
 
 namespace CliScape.Core.World;
 
@@ -15,4 +16,6 @@ public interface ILocation
                    throw new InvalidOperationException($"Location {GetType().Name} is missing static Name.");
         }
     }
+    
+    IReadOnlyList<INpc> AvailableNpcs { get; }
 }

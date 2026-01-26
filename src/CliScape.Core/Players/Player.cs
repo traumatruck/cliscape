@@ -7,31 +7,37 @@ public sealed class Player
 {
     public required int Id { get; init; }
 
-    public required string Name { get; set; }
+    public required string Name { get; init; }
 
     public required ILocation CurrentLocation { get; set; }
+
+    public PlayerHealth Health { private get; init; } = new();
+
+    public PlayerSkillCollection SkillCollection { private get; init; } = new();
 
     public int CurrentHealth => Health.CurrentHealth;
 
     public int MaximumHealth => Health.MaximumHealth;
 
-    public int CombatLevel => Skills.CombatLevel;
+    public int CombatLevel => SkillCollection.CombatLevel;
 
-    public int TotalLevel => Skills.TotalLevel;
+    public int TotalLevel => SkillCollection.TotalLevel;
 
-    public PlayerHealth Health { private get; init; } = new();
-
-    public PlayerSkillCollection Skills { get; init; } = new();
+    public IPlayerSkill[] Skills => SkillCollection.All;
 
     public void Move(ILocation location)
     {
         CurrentLocation = location;
     }
 
-    public PlayerSkillLevel GetSkillLevel(SkillName skillName)
+    /// <summary>
+    ///     Adds experience to this skill.
+    /// </summary>
+    /// <param name="playerSkill">The player skill to be modified.</param>
+    /// <param name="experienceGained">The amount of experience to add.</param>
+    public static void AddExperience(IPlayerSkill playerSkill, int experienceGained)
     {
-        return Skills.All.FirstOrDefault(skill => skill.Name == skillName)?.Level ??
-               throw new InvalidOperationException($"Skill {skillName} not found");
+        playerSkill.Level.AddExperience(experienceGained);
     }
 
     public void TakeDamage(int damage)
