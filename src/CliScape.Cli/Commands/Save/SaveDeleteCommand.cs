@@ -1,3 +1,4 @@
+using CliScape.Game;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
@@ -25,7 +26,7 @@ public class SaveDeleteCommand : Command<SaveDeleteCommandSettings>, ICommand
             }
         }
 
-        var saveFilePath = GetSaveFilePath();
+        var saveFilePath = GameState.Instance.SaveFilePath;
 
         if (File.Exists(saveFilePath))
         {
@@ -38,14 +39,5 @@ public class SaveDeleteCommand : Command<SaveDeleteCommandSettings>, ICommand
         }
 
         return (int)ExitCode.Success;
-    }
-
-    private static string GetSaveFilePath()
-    {
-        var root = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "CliScape");
-        
-        return Path.Combine(root, "save.bin");
     }
 }

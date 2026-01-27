@@ -3,6 +3,7 @@
     <Project Path="src/CliScape.Cli/CliScape.Cli.csproj" />
     <Project Path="src/CliScape.Content/CliScape.Content.csproj" />
     <Project Path="src/CliScape.Game/CliScape.Game.csproj" />
+    <Project Path="src/CliScape.Infrastructure/CliScape.Infrastructure.csproj" />
     <Project Path="src\CliScape.Core\CliScape.Core.csproj" />
   </Folder>
   <Folder Name="/tests/">

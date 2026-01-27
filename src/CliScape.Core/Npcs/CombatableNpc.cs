@@ -1,12 +1,11 @@
 namespace CliScape.Core.Npcs;
 
 /// <summary>
-/// Base implementation of ICombatableNpc with support for variants
+/// Base implementation of ICombatableNpc
 /// </summary>
 public abstract class CombatableNpc : ICombatableNpc
 {
     public required NpcName Name { get; init; }
-    public required NpcVariant Variant { get; init; }
     
     // Basic Combat Info
     public required int CombatLevel { get; init; }

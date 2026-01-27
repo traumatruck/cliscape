@@ -30,12 +30,11 @@
 - **Location**: All NPC implementations go in `src/CliScape.Content/Npcs/`.
 - **Base Class**: Combatable NPCs inherit from `CombatableNpc` (in `CliScape.Core.Npcs`).
 - **One Type Per File**: Each NPC type (e.g., Goblin, Cow) gets its own file.
-- **Variants**: NPCs with multiple variants use static readonly instances (see `Goblin.cs`).
-  - Each variant gets a descriptive property name (e.g., `Level2`, `Level5Spear`, `Level13`).
-  - Use `NpcVariant` record to specify variant name and combat level.
-  - Provide an `AllVariants` static property returning `IReadOnlyList<T>` for enumeration.
+- **Single Instance**: Each NPC class defines one static `Instance` property with the NPC's stats.
+  - Use private constructor to prevent external instantiation.
+  - Example: `public static readonly Goblin Instance = new() { ... };`
 - **Required Properties**: Must set all required properties from `ICombatableNpc`:
-  - Basic info: `Name`, `Variant`, `CombatLevel`, `Hitpoints`, `AttackSpeed`, `IsAggressive`, `IsPoisonous`
+  - Basic info: `Name`, `CombatLevel`, `Hitpoints`, `AttackSpeed`, `IsAggressive`, `IsPoisonous`
   - Stats: `AttackLevel`, `StrengthLevel`, `DefenceLevel`, `RangedLevel`, `MagicLevel`
   - Offensive bonuses: Stab/Slash/Crush/Ranged/Magic attack bonuses
   - Defensive bonuses: Stab/Slash/Crush/Ranged/Magic defence bonuses
@@ -47,7 +46,7 @@
   - Single-attack NPCs: Create array with one `NpcAttack`.
   - Multi-attack NPCs (like bosses): Create multiple `NpcAttack` entries with different styles/max hits.
 - **Data Source**: Reference OSRS Wiki for accurate stats, bonuses, and combat mechanics.
-- **Example**: See `src/CliScape.Content/Npcs/Goblin.cs` for a complete multi-variant implementation.
+- **Example**: See `src/CliScape.Content/Npcs/Cow.cs` for a complete implementation.
 
 ## Commit & Pull Request Guidelines
 - Commit messages in history are short, imperative statements (e.g., "Add content", "Travel rework").

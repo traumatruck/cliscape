@@ -14,8 +14,6 @@ public class Lumbridge : ILocation
     
     public IReadOnlyList<INpc> AvailableNpcs { get; } = new INpc[]
     {
-        Cow.Variant1,
-        Cow.Variant2,
-        Cow.Variant3
+        Cow.Instance
     };
 }

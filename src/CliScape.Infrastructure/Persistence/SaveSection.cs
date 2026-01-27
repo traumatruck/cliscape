@@ -1,4 +1,4 @@
-namespace CliScape.Game.Persistence;
+namespace CliScape.Infrastructure.Persistence;
 
 /// <summary>
 /// Defines the different sections within a save file.

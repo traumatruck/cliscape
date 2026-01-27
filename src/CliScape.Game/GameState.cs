@@ -1,4 +1,6 @@
 using CliScape.Content.Locations.Towns;
+using CliScape.Core.Combat;
+using CliScape.Core.Npcs;
 using CliScape.Core.Players;
 using CliScape.Core.Players.Skills;
 using CliScape.Core.World;
@@ -10,12 +12,12 @@ public class GameState
 {
     public static readonly GameState Instance = new();
 
-    private readonly IGameStateStore _store;
+    private IGameStateStore? _store;
+    private string? _saveFilePath;
 
     private GameState()
     {
         LocationLibrary.LoadFrom(typeof(Lumbridge).Assembly);
-        _store = new BinaryGameStateStore(GetSaveFilePath());
     }
 
     private LocationLibrary LocationLibrary { get; } = new();
@@ -23,11 +25,57 @@ public class GameState
     private Player? Player { get; set; }
 
     /// <summary>
+    ///     The current active combat session, if any.
+    /// </summary>
+    public CombatSession? CurrentCombat { get; private set; }
+
+    /// <summary>
+    ///     Whether the player is currently in combat.
+    /// </summary>
+    public bool IsInCombat => CurrentCombat is { IsComplete: false };
+
+    /// <summary>
+    ///     Gets the path to the save file. Must be configured before use.
+    /// </summary>
+    public string SaveFilePath => _saveFilePath 
+        ?? throw new InvalidOperationException("GameState has not been configured. Call Configure() first.");
+
+    /// <summary>
+    ///     Configures the game state with the required dependencies.
+    /// </summary>
+    /// <param name="store">The game state store implementation.</param>
+    /// <param name="saveFilePath">The path to the save file.</param>
+    public void Configure(IGameStateStore store, string saveFilePath)
+    {
+        _store = store;
+        _saveFilePath = saveFilePath;
+    }
+
+    /// <summary>
+    ///     Start a combat session with the specified NPC.
+    /// </summary>
+    public CombatSession StartCombat(ICombatableNpc npc)
+    {
+        var player = GetPlayer();
+        CurrentCombat = new CombatSession(player, npc);
+        return CurrentCombat;
+    }
+
+    /// <summary>
+    ///     End the current combat session.
+    /// </summary>
+    public void EndCombat()
+    {
+        CurrentCombat = null;
+    }
+
+    /// <summary>
     ///     Loads the saved data.
     /// </summary>
     public void Load()
     {
-        var snapshot = _store.LoadPlayer();
+        var store = GetStore();
+        var snapshot = store.LoadPlayer();
 
         if (snapshot == null)
         {
@@ -65,6 +113,7 @@ public class GameState
 
     public void Save()
     {
+        var store = GetStore();
         var player = GetPlayer();
 
         var skillSnapshots = player.Skills
@@ -79,7 +128,7 @@ public class GameState
             player.MaximumHealth,
             skillSnapshots);
 
-        _store.SavePlayer(snapshot);
+        store.SavePlayer(snapshot);
     }
 
     public ILocation? GetLocation(string name)
@@ -107,13 +156,8 @@ public class GameState
         };
     }
 
-    private static string GetSaveFilePath()
+    private IGameStateStore GetStore()
     {
-        var root = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "CliScape");
-
-        Directory.CreateDirectory(root);
-        return Path.Combine(root, "save.bin");
+        return _store ?? throw new InvalidOperationException("GameState has not been configured. Call Configure() first.");
     }
 }

@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace CliScape.Game.Persistence;
+namespace CliScape.Infrastructure.Persistence;
 
 /// <summary>
 ///     Manages a binary save file with a custom format consisting of a header and multiple sections.

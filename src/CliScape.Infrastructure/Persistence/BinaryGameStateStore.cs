@@ -1,13 +1,14 @@
 using System.Text;
+using CliScape.Game.Persistence;
+using CliScape.Infrastructure.Configuration;
 
-namespace CliScape.Game.Persistence;
+namespace CliScape.Infrastructure.Persistence;
 
 /// <summary>
 /// Implements game state persistence using a binary file format.
 /// This store handles serialization and deserialization of game data.
 /// </summary>
-/// <param name="path">The file path where the save file will be stored.</param>
-public sealed class BinaryGameStateStore(string path) : IGameStateStore
+public sealed class BinaryGameStateStore : IGameStateStore
 {
     /// <summary>
     /// UTF-8 encoding without BOM that throws on invalid bytes.
@@ -18,7 +19,17 @@ public sealed class BinaryGameStateStore(string path) : IGameStateStore
     /// <summary>
     /// The underlying binary file handler for reading and writing save data.
     /// </summary>
-    private readonly BinarySaveFile _file = new(path);
+    private readonly BinarySaveFile _file;
+
+    /// <summary>
+    /// Creates a new instance of the binary game state store.
+    /// </summary>
+    /// <param name="settings">The persistence settings containing the save file path.</param>
+    public BinaryGameStateStore(PersistenceSettings settings)
+    {
+        Directory.CreateDirectory(settings.SaveDirectory);
+        _file = new BinarySaveFile(settings.SaveFilePath);
+    }
 
     /// <summary>
     /// Loads the player's saved state from the binary save file.

@@ -16,6 +16,11 @@ public class CommandInterceptor : ICommandInterceptor
 
     public void InterceptResult(CommandContext context, CommandSettings settings, ref int result)
     {
+        if (!IsPersistenceEnabled(settings))
+        {
+            return;
+        }
+
         var gameState = GameState.Instance;
         var player = gameState.GetPlayer();
 
@@ -26,15 +31,12 @@ public class CommandInterceptor : ICommandInterceptor
             //TODO Death stuff (tele to Lumbridge, lose inventory, etc.)
         }
 
-        if (IsPersistenceEnabled(settings))
-        {
-            AnsiConsole.Status().Start("Saving player...", _ => { GameState.Instance.Save(); });
-        }
+        AnsiConsole.Status().Start("Saving player...", _ => { GameState.Instance.Save(); });
     }
 
     private static bool IsPersistenceEnabled(CommandSettings settings)
     {
-        string[] persistenceDisabledCommands = ["Save"];
+        string[] persistenceDisabledCommands = ["SaveDeleteCommandSettings"];
 
         return !persistenceDisabledCommands.Contains(settings.GetType().Name);
     }
