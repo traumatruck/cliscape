@@ -15,6 +15,10 @@ public class CombatAttackCommand : Command<CombatAttackCommandSettings>, IComman
     private readonly GameState _gameState = GameState.Instance;
     
     public static string CommandName => "attack";
+    
+    private string _lastPlayerAction = "";
+    private string _lastNpcAction = "";
+    private int _displayStartRow = -1;
 
     public override int Execute(CommandContext context, CombatAttackCommandSettings settings, CancellationToken cancellationToken)
     {
@@ -42,10 +46,7 @@ public class CombatAttackCommand : Command<CombatAttackCommandSettings>, IComman
         
         // Start combat
         var combat = _gameState.StartCombat(npc);
-        
-        AnsiConsole.MarkupLine($"[bold red]A wild {npc.Name} appears![/]");
-        AnsiConsole.WriteLine();
-        
+                
         // Run the combat loop
         RunCombatLoop(combat, player);
         
@@ -60,10 +61,13 @@ public class CombatAttackCommand : Command<CombatAttackCommandSettings>, IComman
     private void RunCombatLoop(CombatSession combat, Player player)
     {
         var combatStyle = CombatStyle.Accurate; // Default style
+        _displayStartRow = Console.CursorTop;
         
         while (!combat.IsComplete)
         {
-            // Display combat status
+            // Move cursor back to starting position and clear from there
+            ClearCombatDisplay();
+            
             DisplayCombatStatus(combat);
             
             // Show menu and get player action
@@ -71,17 +75,19 @@ public class CombatAttackCommand : Command<CombatAttackCommandSettings>, IComman
             
             switch (action)
             {
-                case CombatAction.Fight:
+                case CombatAction.Attack:
                     combatStyle = ChooseCombatStyle();
                     ExecutePlayerAttack(combat, combatStyle);
                     break;
                     
-                case CombatAction.Bag:
-                    ShowBagMenu();
+                case CombatAction.Inventory:
+                    _lastPlayerAction = "[yellow]Your inventory is empty.[/]";
+                    _lastNpcAction = "";
                     continue; // Don't advance turn for bag viewing
                     
                 case CombatAction.Magic:
-                    ShowMagicMenu();
+                    _lastPlayerAction = "[blue]You don't know any spells yet.[/]";
+                    _lastNpcAction = "";
                     continue; // Magic not implemented yet
                     
                 case CombatAction.Run:
@@ -100,6 +106,25 @@ public class CombatAttackCommand : Command<CombatAttackCommandSettings>, IComman
             
             combat.NextTurn();
         }
+        
+        // Show final combat state (overwrite previous)
+        ClearCombatDisplay();
+        DisplayCombatStatus(combat);
+    }
+    
+    private void ClearCombatDisplay()
+    {
+        var currentRow = Console.CursorTop;
+        if (currentRow > _displayStartRow)
+        {
+            // Move to start row and clear everything from there
+            Console.SetCursorPosition(0, _displayStartRow);
+            for (var i = _displayStartRow; i < currentRow; i++)
+            {
+                AnsiConsole.Write("\u001b[2K\n"); // Clear line and move down
+            }
+            Console.SetCursorPosition(0, _displayStartRow);
+        }
     }
     
     private void DisplayCombatStatus(CombatSession combat)
@@ -110,11 +135,9 @@ public class CombatAttackCommand : Command<CombatAttackCommandSettings>, IComman
         var npcHpPercent = (double)combat.NpcCurrentHitpoints / npc.Hitpoints;
         var playerHpPercent = (double)player.CurrentHealth / player.MaximumHealth;
         
-        AnsiConsole.WriteLine();
-        
         // NPC status (top-left style like Pokemon)
         var npcPanel = new Panel(
-            new Markup($"[bold]{npc.Name}[/] Lv{npc.CombatLevel}\n" +
+            new Markup($"[bold]{npc.Name}[/] [dim](level-{npc.CombatLevel})[/]\n" +
                       $"HP: {CreateHealthBar(npcHpPercent)} {combat.NpcCurrentHitpoints}/{npc.Hitpoints}"))
         {
             Border = BoxBorder.Rounded,
@@ -124,13 +147,22 @@ public class CombatAttackCommand : Command<CombatAttackCommandSettings>, IComman
         
         // Player status (bottom-right style)
         var playerPanel = new Panel(
-            new Markup($"[bold green]{player.Name}[/] Lv{player.CombatLevel}\n" +
+            new Markup($"[bold green]{player.Name}[/] [dim](level-{player.CombatLevel})[/]\n" +
                       $"HP: {CreateHealthBar(playerHpPercent)} {player.CurrentHealth}/{player.MaximumHealth}"))
         {
             Border = BoxBorder.Rounded,
             Padding = new Padding(1, 0)
         };
         AnsiConsole.Write(playerPanel);
+        
+        AnsiConsole.WriteLine();
+        
+        // Display last combat actions (always output 2 lines for consistent spacing)
+        var playerActionText = string.IsNullOrEmpty(_lastPlayerAction) ? " " : _lastPlayerAction;
+        var npcActionText = string.IsNullOrEmpty(_lastNpcAction) ? " " : _lastNpcAction;
+        
+        AnsiConsole.MarkupLine(playerActionText);
+        AnsiConsole.MarkupLine(npcActionText);
         
         AnsiConsole.WriteLine();
     }
@@ -141,14 +173,8 @@ public class CombatAttackCommand : Command<CombatAttackCommandSettings>, IComman
         var filled = (int)(percent * barLength);
         var empty = barLength - filled;
         
-        var color = percent switch
-        {
-            > 0.5 => "green",
-            > 0.2 => "yellow",
-            _ => "red"
-        };
-        
-        return $"[{color}]{new string('█', filled)}[/][dim]{new string('░', empty)}[/]";
+        // OSRS style: green for remaining HP, red for missing HP
+        return $"[green]{new string('█', filled)}[/][red]{new string('█', empty)}[/]";
     }
     
     private static CombatAction ShowCombatMenu()
@@ -157,16 +183,16 @@ public class CombatAttackCommand : Command<CombatAttackCommandSettings>, IComman
         
         var choice = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
-                .AddChoices("FIGHT", "BAG", "MAGIC", "RUN")
+                .AddChoices("ATTACK", "INVENTORY", "MAGIC", "RUN")
                 .HighlightStyle(Style.Parse("bold yellow")));
         
         return choice switch
         {
-            "FIGHT" => CombatAction.Fight,
-            "BAG" => CombatAction.Bag,
+            "ATTACK" => CombatAction.Attack,
+            "INVENTORY" => CombatAction.Inventory,
             "MAGIC" => CombatAction.Magic,
             "RUN" => CombatAction.Run,
-            _ => CombatAction.Fight
+            _ => CombatAction.Attack
         };
     }
     
@@ -189,7 +215,7 @@ public class CombatAttackCommand : Command<CombatAttackCommandSettings>, IComman
         };
     }
     
-    private static void ExecutePlayerAttack(CombatSession combat, CombatStyle style)
+    private void ExecutePlayerAttack(CombatSession combat, CombatStyle style)
     {
         var player = combat.Player;
         var npc = combat.Npc;
@@ -206,7 +232,7 @@ public class CombatAttackCommand : Command<CombatAttackCommandSettings>, IComman
             
             if (damage > 0)
             {
-                AnsiConsole.MarkupLine($"[green]You hit the {npc.Name} for {damage} damage![/]");
+                _lastPlayerAction = $"[green]You hit the {npc.Name} for {damage} damage![/]";
                 
                 // Award experience
                 var xp = CombatCalculator.CalculateExperience(damage, style);
@@ -214,12 +240,12 @@ public class CombatAttackCommand : Command<CombatAttackCommandSettings>, IComman
             }
             else
             {
-                AnsiConsole.MarkupLine($"[dim]You hit the {npc.Name} but deal no damage.[/]");
+                _lastPlayerAction = $"[dim]You hit the {npc.Name} but deal no damage.[/]";
             }
         }
         else
         {
-            AnsiConsole.MarkupLine($"[dim]Your attack misses the {npc.Name}.[/]");
+            _lastPlayerAction = $"[dim]Your attack misses the {npc.Name}.[/]";
         }
     }
     
@@ -247,13 +273,17 @@ public class CombatAttackCommand : Command<CombatAttackCommandSettings>, IComman
         }
     }
     
-    private static void ExecuteNpcAttack(CombatSession combat)
+    private void ExecuteNpcAttack(CombatSession combat)
     {
         var player = combat.Player;
         var npc = combat.Npc;
         var attack = npc.Attacks.FirstOrDefault();
         
-        if (attack == null) return;
+        if (attack == null)
+        {
+            _lastNpcAction = "";
+            return;
+        }
         
         var attackRoll = CombatCalculator.CalculateNpcAttackRoll(npc);
         var defenceRoll = CombatCalculator.CalculatePlayerDefenceRoll(player);
@@ -266,44 +296,30 @@ public class CombatAttackCommand : Command<CombatAttackCommandSettings>, IComman
             
             if (damage > 0)
             {
-                AnsiConsole.MarkupLine($"[red]The {npc.Name} hits you for {damage} damage![/]");
+                _lastNpcAction = $"[red]The {npc.Name} hits you for {damage} damage![/]";
             }
             else
             {
-                AnsiConsole.MarkupLine($"[dim]The {npc.Name} hits you but deals no damage.[/]");
+                _lastNpcAction = $"[dim]The {npc.Name} hits you but deals no damage.[/]";
             }
         }
         else
         {
-            AnsiConsole.MarkupLine($"[dim]The {npc.Name}'s attack misses you.[/]");
+            _lastNpcAction = $"[dim]The {npc.Name}'s attack misses you.[/]";
         }
     }
     
-    private static void ShowBagMenu()
+    private bool AttemptFlee(CombatSession combat)
     {
-        AnsiConsole.MarkupLine("[yellow]Your bag is empty.[/]");
-        AnsiConsole.MarkupLine("[dim]Inventory system coming soon![/]");
-        AnsiConsole.WriteLine();
-    }
-    
-    private static void ShowMagicMenu()
-    {
-        AnsiConsole.MarkupLine("[blue]You don't know any spells yet.[/]");
-        AnsiConsole.MarkupLine("[dim]Magic system coming soon![/]");
-        AnsiConsole.WriteLine();
-    }
-    
-    private static bool AttemptFlee(CombatSession combat)
-    {
-        AnsiConsole.MarkupLine("[yellow]You attempt to flee...[/]");
-        
         if (combat.AttemptFlee())
         {
-            AnsiConsole.MarkupLine("[green]Got away safely![/]");
+            _lastPlayerAction = "[green]Got away safely![/]";
+            _lastNpcAction = "";
             return true;
         }
         
-        AnsiConsole.MarkupLine("[red]Can't escape![/]");
+        _lastPlayerAction = "[red]Can't escape![/]";
+        _lastNpcAction = "";
         return false;
     }
     
@@ -339,8 +355,8 @@ public class CombatAttackCommand : Command<CombatAttackCommandSettings>, IComman
 
 internal enum CombatAction
 {
-    Fight,
-    Bag,
+    Attack,
+    Inventory,
     Magic,
     Run
 }

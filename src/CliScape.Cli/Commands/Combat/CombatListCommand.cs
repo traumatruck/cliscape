@@ -41,7 +41,7 @@ public class CombatListCommand : Command, ICommand
         {
             var aggroMarker = npc.IsAggressive ? "[red]*[/]" : "";
             
-            AnsiConsole.MarkupLine($"  {aggroMarker}[green]{npc.Name.Value}[/] [dim](Combat Lvl {npc.CombatLevel})[/]");
+            AnsiConsole.MarkupLine($"  {aggroMarker}[green]{npc.Name.Value}[/] [dim](level-{npc.CombatLevel})[/]");
         }
         
         AnsiConsole.WriteLine();
