@@ -1,3 +1,4 @@
+using System.Reflection;
 using CliScape.Content.Items.Equippables;
 using CliScape.Core.Items;
 
@@ -22,25 +23,34 @@ public static class ItemRegistry
             return;
         }
 
-        // Register all item categories
-        RegisterItems(BronzeEquipment.All);
-        RegisterItems(IronEquipment.All);
-        RegisterItems(SteelEquipment.All);
-        RegisterItems(LeatherEquipment.All);
-        RegisterItems(MiscEquipment.All);
-        RegisterItems(Food.All);
-        RegisterItems(Materials.All);
+        // Auto-discover all items using reflection
+        var itemTypes = new[]
+        {
+            typeof(BronzeEquipment),
+            typeof(IronEquipment),
+            typeof(SteelEquipment),
+            typeof(LeatherEquipment),
+            typeof(MiscEquipment),
+            typeof(Food),
+            typeof(Materials),
+            typeof(Tools),
+            typeof(Ammunition)
+        };
+
+        foreach (var type in itemTypes)
+        {
+            var fields = type.GetFields(BindingFlags.Public | BindingFlags.Static);
+            foreach (var field in fields)
+            {
+                if (field.GetValue(null) is IItem item)
+                {
+                    ItemsById[item.Id] = item;
+                    ItemsByName[item.Name.Value] = item;
+                }
+            }
+        }
 
         _initialized = true;
-    }
-
-    private static void RegisterItems(IEnumerable<IItem> items)
-    {
-        foreach (var item in items)
-        {
-            ItemsById[item.Id] = item;
-            ItemsByName[item.Name.Value] = item;
-        }
     }
 
     /// <summary>

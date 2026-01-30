@@ -76,6 +76,23 @@ public static class BronzeEquipment
         }
     };
 
+    public static readonly IEquippable Hatchet = new EquippableItem
+    {
+        Id = ItemIds.BronzeHatchet,
+        Name = new ItemName("Bronze hatchet"),
+        ExamineText = "A hatchet for cutting trees.",
+        BaseValue = 16,
+        Slot = EquipmentSlot.Weapon,
+        Stats = new EquipmentStats
+        {
+            StabAttackBonus = -2,
+            SlashAttackBonus = 4,
+            CrushAttackBonus = 2,
+            MeleeStrengthBonus = 4,
+            AttackSpeed = 5
+        }
+    };
+
     public static readonly IEquippable Mace = new EquippableItem
     {
         Id = ItemIds.BronzeMace,

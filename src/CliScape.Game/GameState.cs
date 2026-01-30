@@ -192,11 +192,26 @@ public class GameState
 
     private Player CreateDefaultPlayer()
     {
+        var inventory = new Inventory();
+        
+        // Add starter items like OSRS
+        inventory.TryAdd(ItemRegistry.GetById(ItemIds.Coins)!, 500);
+        inventory.TryAdd(ItemRegistry.GetById(ItemIds.BronzeSword)!, 1);
+        inventory.TryAdd(ItemRegistry.GetById(ItemIds.WoodenShield)!, 1);
+        inventory.TryAdd(ItemRegistry.GetById(ItemIds.Shortbow)!, 1);
+        inventory.TryAdd(ItemRegistry.GetById(ItemIds.BronzeArrow)!, 50);
+        inventory.TryAdd(ItemRegistry.GetById(ItemIds.BronzeHatchet)!, 1);
+        inventory.TryAdd(ItemRegistry.GetById(ItemIds.BronzePickaxe)!, 1);
+        inventory.TryAdd(ItemRegistry.GetById(ItemIds.Tinderbox)!, 1);
+        inventory.TryAdd(ItemRegistry.GetById(ItemIds.SmallFishingNet)!, 1);
+        inventory.TryAdd(ItemRegistry.GetById(ItemIds.Hammer)!, 1);
+
         var player = new Player
         {
             Id = 0,
             Name = "Trauma Truck",
-            CurrentLocation = GetCurrentLocation()
+            CurrentLocation = GetCurrentLocation(),
+            Inventory = inventory
         };
 
         return player;

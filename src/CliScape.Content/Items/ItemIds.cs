@@ -17,6 +17,7 @@ public static class ItemIds
     public static readonly ItemId BronzeScimitar = new(102);
     public static readonly ItemId BronzeAxe = new(103);
     public static readonly ItemId BronzeMace = new(104);
+    public static readonly ItemId BronzeHatchet = new(105);
     public static readonly ItemId BronzeFullHelm = new(110);
     public static readonly ItemId BronzeMedHelm = new(111);
     public static readonly ItemId BronzePlatebody = new(120);
@@ -67,6 +68,16 @@ public static class ItemIds
 
     // Wooden Equipment: 600-699
     public static readonly ItemId WoodenShield = new(600);
+    public static readonly ItemId Shortbow = new(601);
+
+    // Tools: 700-799
+    public static readonly ItemId Tinderbox = new(700);
+    public static readonly ItemId BronzePickaxe = new(701);
+    public static readonly ItemId SmallFishingNet = new(702);
+    public static readonly ItemId Hammer = new(703);
+
+    // Ammunition: 800-899
+    public static readonly ItemId BronzeArrow = new(800);
 
     // Food: 1000-1099
     public static readonly ItemId Bread = new(1000);
