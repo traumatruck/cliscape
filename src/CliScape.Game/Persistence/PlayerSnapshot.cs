@@ -10,10 +10,14 @@ namespace CliScape.Game.Persistence;
 /// <param name="CurrentHealth">The player's current health points.</param>
 /// <param name="MaximumHealth">The player's maximum health points.</param>
 /// <param name="Skills">The player's skill experience values.</param>
+/// <param name="InventorySlots">The player's inventory slots.</param>
+/// <param name="EquippedItems">The player's equipped items.</param>
 public readonly record struct PlayerSnapshot(
     int Id,
     string Name,
     string LocationName,
     int CurrentHealth,
     int MaximumHealth,
-    SkillSnapshot[] Skills);
+    SkillSnapshot[] Skills,
+    InventorySlotSnapshot[]? InventorySlots = null,
+    EquippedItemSnapshot[]? EquippedItems = null);

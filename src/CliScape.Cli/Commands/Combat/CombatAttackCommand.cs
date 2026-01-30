@@ -286,7 +286,7 @@ public class CombatAttackCommand : Command<CombatAttackCommandSettings>, IComman
         }
         
         var attackRoll = CombatCalculator.CalculateNpcAttackRoll(npc);
-        var defenceRoll = CombatCalculator.CalculatePlayerDefenceRoll(player);
+        var defenceRoll = CombatCalculator.CalculatePlayerDefenceRoll(player, npc);
         
         if (CombatCalculator.DoesAttackHit(attackRoll, defenceRoll))
         {

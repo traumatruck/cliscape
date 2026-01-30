@@ -9,9 +9,18 @@ namespace CliScape.Core.Combat;
 public static class CombatCalculator
 {
     /// <summary>
+    ///     Calculate player's max hit with melee, automatically using equipment bonuses
+    /// </summary>
+    public static int CalculatePlayerMaxHit(Player player)
+    {
+        var strengthBonus = player.Equipment.TotalMeleeStrengthBonus;
+        return CalculatePlayerMaxHit(player, strengthBonus);
+    }
+
+    /// <summary>
     ///     Calculate player's max hit with melee
     /// </summary>
-    public static int CalculatePlayerMaxHit(Player player, int strengthBonus = 0)
+    public static int CalculatePlayerMaxHit(Player player, int strengthBonus)
     {
         var strengthSkill = player.Skills.FirstOrDefault(s => s.Name.Name == "Strength");
         var strengthLevel = strengthSkill?.Level.Value ?? 1;
@@ -24,9 +33,24 @@ public static class CombatCalculator
     }
 
     /// <summary>
+    ///     Calculate player's attack roll accuracy, automatically using equipment bonuses.
+    ///     Uses the highest offensive bonus from equipped gear.
+    /// </summary>
+    public static int CalculatePlayerAttackRoll(Player player)
+    {
+        // Use the best attack bonus from equipment
+        var equipment = player.Equipment;
+        var attackBonus = Math.Max(
+            Math.Max(equipment.TotalStabAttackBonus, equipment.TotalSlashAttackBonus),
+            equipment.TotalCrushAttackBonus);
+
+        return CalculatePlayerAttackRoll(player, attackBonus);
+    }
+
+    /// <summary>
     ///     Calculate player's attack roll accuracy
     /// </summary>
-    public static int CalculatePlayerAttackRoll(Player player, int attackBonus = 0)
+    public static int CalculatePlayerAttackRoll(Player player, int attackBonus)
     {
         var attackSkill = player.Skills.FirstOrDefault(s => s.Name.Name == "Attack");
         var attackLevel = attackSkill?.Level.Value ?? 1;
@@ -66,9 +90,31 @@ public static class CombatCalculator
     }
 
     /// <summary>
+    ///     Calculate player's defence roll against NPC attack, automatically using equipment bonuses.
+    ///     Uses the appropriate defence bonus based on the NPC's attack style.
+    /// </summary>
+    public static int CalculatePlayerDefenceRoll(Player player, ICombatableNpc npc)
+    {
+        var attack = npc.Attacks.FirstOrDefault();
+        var equipment = player.Equipment;
+
+        var defenceBonus = attack?.Style switch
+        {
+            NpcAttackStyle.Stab => equipment.TotalStabDefenceBonus,
+            NpcAttackStyle.Slash => equipment.TotalSlashDefenceBonus,
+            NpcAttackStyle.Crush => equipment.TotalCrushDefenceBonus,
+            NpcAttackStyle.Ranged => equipment.TotalRangedDefenceBonus,
+            NpcAttackStyle.Magic => equipment.TotalMagicDefenceBonus,
+            _ => equipment.TotalCrushDefenceBonus
+        };
+
+        return CalculatePlayerDefenceRoll(player, defenceBonus);
+    }
+
+    /// <summary>
     ///     Calculate player's defence roll against NPC attack
     /// </summary>
-    public static int CalculatePlayerDefenceRoll(Player player, int defenceBonus = 0)
+    public static int CalculatePlayerDefenceRoll(Player player, int defenceBonus)
     {
         var defenceSkill = player.Skills.FirstOrDefault(s => s.Name.Name == "Defence");
         var defenceLevel = defenceSkill?.Level.Value ?? 1;

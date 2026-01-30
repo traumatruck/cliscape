@@ -1,5 +1,7 @@
+using CliScape.Content.Items;
 using CliScape.Content.Locations.Towns;
 using CliScape.Core.Combat;
+using CliScape.Core.Items;
 using CliScape.Core.Npcs;
 using CliScape.Core.Players;
 using CliScape.Core.Players.Skills;
@@ -11,9 +13,8 @@ namespace CliScape.Game;
 public class GameState
 {
     public static readonly GameState Instance = new();
-
-    private IGameStateStore? _store;
     private string? _saveFilePath;
+    private IGameStateStore? _store;
 
     private GameState()
     {
@@ -37,8 +38,9 @@ public class GameState
     /// <summary>
     ///     Gets the path to the save file. Must be configured before use.
     /// </summary>
-    public string SaveFilePath => _saveFilePath 
-        ?? throw new InvalidOperationException("GameState has not been configured. Call Configure() first.");
+    public string SaveFilePath => _saveFilePath
+                                  ?? throw new InvalidOperationException(
+                                      "GameState has not been configured. Call Configure() first.");
 
     /// <summary>
     ///     Configures the game state with the required dependencies.
@@ -93,6 +95,34 @@ public class GameState
             skill?.Level = PlayerSkillLevel.FromExperience(skillSnapshot.Experience);
         }
 
+        // Restore inventory
+        var inventory = new Inventory();
+        if (snapshot.Value.InventorySlots is not null)
+        {
+            foreach (var slotSnapshot in snapshot.Value.InventorySlots)
+            {
+                var item = ItemRegistry.GetById(new ItemId(slotSnapshot.ItemId));
+                if (item is not null)
+                {
+                    inventory.TryAdd(item, slotSnapshot.Quantity);
+                }
+            }
+        }
+
+        // Restore equipment
+        var equipment = new Equipment();
+        if (snapshot.Value.EquippedItems is not null)
+        {
+            foreach (var equippedSnapshot in snapshot.Value.EquippedItems)
+            {
+                var item = ItemRegistry.GetById(new ItemId(equippedSnapshot.ItemId));
+                if (item is IEquippable equippable)
+                {
+                    equipment.Equip(equippable);
+                }
+            }
+        }
+
         Player = new Player
         {
             Id = snapshot.Value.Id,
@@ -107,7 +137,9 @@ public class GameState
                 MaximumHealth = snapshot.Value.MaximumHealth
             },
 
-            SkillCollection = skills
+            SkillCollection = skills,
+            Inventory = inventory,
+            Equipment = equipment
         };
     }
 
@@ -120,13 +152,25 @@ public class GameState
             .Select(skill => new SkillSnapshot(skill.Name.Name, skill.Level.Experience))
             .ToArray();
 
+        // Create inventory snapshots
+        var inventorySnapshots = player.Inventory.GetItems()
+            .Select(i => new InventorySlotSnapshot(i.Item.Id.Value, i.Quantity))
+            .ToArray();
+
+        // Create equipment snapshots
+        var equipmentSnapshots = player.Equipment.GetAllEquippedWithSlots()
+            .Select(e => new EquippedItemSnapshot((int)e.Slot, e.Item.Id.Value))
+            .ToArray();
+
         var snapshot = new PlayerSnapshot(
             player.Id,
             player.Name,
             player.CurrentLocation.Name.Value,
             player.CurrentHealth,
             player.MaximumHealth,
-            skillSnapshots);
+            skillSnapshots,
+            inventorySnapshots,
+            equipmentSnapshots);
 
         store.SavePlayer(snapshot);
     }
@@ -148,16 +192,19 @@ public class GameState
 
     private Player CreateDefaultPlayer()
     {
-        return new Player
+        var player = new Player
         {
             Id = 0,
             Name = "Trauma Truck",
             CurrentLocation = GetCurrentLocation()
         };
+
+        return player;
     }
 
     private IGameStateStore GetStore()
     {
-        return _store ?? throw new InvalidOperationException("GameState has not been configured. Call Configure() first.");
+        return _store ??
+               throw new InvalidOperationException("GameState has not been configured. Call Configure() first.");
     }
 }

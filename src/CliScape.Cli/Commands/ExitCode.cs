@@ -10,5 +10,10 @@ public enum ExitCode
     /// <summary>
     ///     The command parameters failed validation.
     /// </summary>
-    BadRequest = 1
+    BadRequest = 1,
+
+    /// <summary>
+    ///     The command failed to execute.
+    /// </summary>
+    Failure = 1
 }

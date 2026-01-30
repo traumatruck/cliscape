@@ -1,3 +1,4 @@
+using CliScape.Core.Items;
 using CliScape.Core.Players.Skills;
 using CliScape.Core.World;
 
@@ -14,6 +15,10 @@ public sealed class Player
     public PlayerHealth Health { private get; init; } = new();
 
     public PlayerSkillCollection SkillCollection { private get; init; } = new();
+
+    public Inventory Inventory { get; init; } = new();
+
+    public Equipment Equipment { get; init; } = new();
 
     public int CurrentHealth => Health.CurrentHealth;
 
