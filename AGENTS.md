@@ -44,6 +44,8 @@ dotnet test tests/CliScape.Content.Tests  # Run tests
 - **Indentation**: 4 spaces
 - **Naming**: PascalCase for types/methods/properties; camelCase for locals/parameters
 - **Files**: One public type per file; filename matches type name
+  - **Never nest multiple classes** within a single file. Each class must be in its own file.
+  - For command settings classes, create a separate file (e.g., `EquipCommandSettings.cs` for `EquipCommand.Settings`)
 - **Nullability**: Nullable reference types enabled; avoid `null`, use `Option` or sensible defaults
 - **IDE**: `.sln.DotSettings` provides Rider/ReSharper hints
 
@@ -109,12 +111,56 @@ Commands use Spectre.Console.Cli framework.
 - **Data Source**: OSRS Wiki for accurate stats
 - **Example**: See `src/CliScape.Content/Npcs/Cow.cs`
 
+## Item Implementation
+
+- **Location**: `src/CliScape.Content/Items/`
+- **Registry**: `ItemIds.cs` defines all item IDs; `ItemRegistry.cs` provides lookup by ID or name
+- **Base Classes**: `Item` for non-equippable items, `EquippableItem` for equipment
+- **Categories**: Equipment organized by tier (BronzeEquipment, IronEquipment, etc.)
+- **Required Properties** (from `IItem`):
+  - `Id` — Use `ItemId` wrapper record
+  - `Name` — Use `ItemName` wrapper record
+  - `ExamineText` — Classic OSRS-style examine description
+  - `BaseValue` — Base value in gold pieces for shop pricing
+  - `IsStackable` — Whether item stacks (coins, runes, arrows)
+  - `IsTradeable` — Whether item can be sold to shops
+- **Equipment Properties** (from `IEquippable`):
+  - `Slot` — `EquipmentSlot` enum (Head, Body, Weapon, etc.)
+  - `Stats` — `EquipmentStats` with attack/defence/strength bonuses
+  - `RequiredAttackLevel`, `RequiredDefenceLevel`, etc.
+- **Data Source**: OSRS Wiki for accurate stats
+
+## Shop Implementation
+
+- **Location**: `src/CliScape.Content/Shops/`
+- **Pattern**: Static class per location (e.g., `LumbridgeShops`, `VarrockShops`)
+- **Shop Properties**:
+  - `Name` — Use `ShopName` wrapper record
+  - `IsGeneralStore` — General stores buy any tradeable item
+  - `SellPriceMultiplier` — Price multiplier when selling to players
+  - `BuyPriceMultiplier` — Price multiplier when buying from players
+- **Stock**: Use `shop.AddStock(item, quantity)` to populate inventory
+- **Pricing**: OSRS-style dynamic pricing based on stock levels
+- **Location Integration**: Locations have `IReadOnlyList<Shop> Shops` property
+- **Example**: See `src/CliScape.Content/Shops/LumbridgeShops.cs`
+
+## Inventory & Equipment
+
+- **Inventory**: 28 slots matching OSRS, supports stackable items
+- **Equipment**: 11 slots (Head, Cape, Neck, Ammo, Weapon, Body, Shield, Legs, Hands, Feet, Ring)
+- **Player Properties**: `player.Inventory`, `player.Equipment`
+- **Gold**: Gold is stored as Coins item in the inventory, not as a separate property
+- **Combat Integration**: Equipment bonuses automatically applied via `CombatCalculator`
+
 ## Wrapper Records
 
 The codebase uses wrapper records for type safety:
 - `NpcName` — Wraps NPC display names
 - `LocationName` — Wraps location identifiers
 - `SkillName` — Wraps skill identifiers
+- `ItemId` — Wraps item type identifiers
+- `ItemName` — Wraps item display names
+- `ShopName` — Wraps shop display names
 
 Always use the appropriate wrapper rather than raw strings.
 
