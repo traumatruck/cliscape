@@ -3,8 +3,8 @@ using CliScape.Core.Items;
 namespace CliScape.Content.Items;
 
 /// <summary>
-/// Static registry of all item IDs in the game.
-/// IDs are organized by category to avoid conflicts.
+///     Static registry of all item IDs in the game.
+///     IDs are organized by category to avoid conflicts.
 /// </summary>
 public static class ItemIds
 {

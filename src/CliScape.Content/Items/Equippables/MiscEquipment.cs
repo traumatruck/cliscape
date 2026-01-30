@@ -1,9 +1,9 @@
 using CliScape.Core.Items;
 
-namespace CliScape.Content.Items;
+namespace CliScape.Content.Items.Equippables;
 
 /// <summary>
-/// Miscellaneous equipment items.
+///     Miscellaneous equipment items.
 /// </summary>
 public static class MiscEquipment
 {
@@ -23,9 +23,4 @@ public static class MiscEquipment
             MagicDefenceBonus = 0
         }
     };
-
-    public static readonly IItem[] All =
-    [
-        WoodenShield
-    ];
 }

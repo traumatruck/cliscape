@@ -52,6 +52,7 @@ app.Configure(configuration =>
         inventory.AddCommand<InventoryListCommand>(InventoryListCommand.CommandName);
         inventory.AddCommand<InventoryDropCommand>(InventoryDropCommand.CommandName);
         inventory.AddCommand<InventoryExamineCommand>(InventoryExamineCommand.CommandName);
+        inventory.AddCommand<InventoryInteractCommand>(InventoryInteractCommand.CommandName);
 
         inventory.SetDefaultCommand<InventoryListCommand>();
     });

@@ -1,9 +1,10 @@
+using CliScape.Content.Items.Equippables;
 using CliScape.Core.Items;
 
 namespace CliScape.Content.Items;
 
 /// <summary>
-/// Central registry for looking up items by ID or name.
+///     Central registry for looking up items by ID or name.
 /// </summary>
 public static class ItemRegistry
 {
@@ -12,11 +13,14 @@ public static class ItemRegistry
     private static bool _initialized;
 
     /// <summary>
-    /// Ensures all items are registered.
+    ///     Ensures all items are registered.
     /// </summary>
     public static void Initialize()
     {
-        if (_initialized) return;
+        if (_initialized)
+        {
+            return;
+        }
 
         // Register all item categories
         RegisterItems(BronzeEquipment.All);
@@ -40,7 +44,7 @@ public static class ItemRegistry
     }
 
     /// <summary>
-    /// Gets an item by its ID.
+    ///     Gets an item by its ID.
     /// </summary>
     public static IItem? GetById(ItemId id)
     {
@@ -49,7 +53,7 @@ public static class ItemRegistry
     }
 
     /// <summary>
-    /// Gets an item by its name (case-insensitive).
+    ///     Gets an item by its name (case-insensitive).
     /// </summary>
     public static IItem? GetByName(string name)
     {
@@ -58,7 +62,7 @@ public static class ItemRegistry
     }
 
     /// <summary>
-    /// Gets all registered items.
+    ///     Gets all registered items.
     /// </summary>
     public static IEnumerable<IItem> GetAll()
     {

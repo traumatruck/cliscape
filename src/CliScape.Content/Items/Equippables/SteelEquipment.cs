@@ -1,10 +1,10 @@
 using CliScape.Core.Items;
 
-namespace CliScape.Content.Items;
+namespace CliScape.Content.Items.Equippables;
 
 /// <summary>
-/// Steel tier equipment - requires level 5 Attack/Defence.
-/// Stats sourced from OSRS Wiki.
+///     Steel tier equipment - requires level 5 Attack/Defence.
+///     Stats sourced from OSRS Wiki.
 /// </summary>
 public static class SteelEquipment
 {
@@ -169,13 +169,4 @@ public static class SteelEquipment
             MagicDefenceBonus = -3
         }
     };
-
-    public static readonly IItem[] All =
-    [
-        Dagger, Sword, Scimitar, Axe,
-        FullHelm,
-        Platebody, Chainbody,
-        Platelegs,
-        Kiteshield
-    ];
 }

@@ -1,10 +1,10 @@
 using CliScape.Core.Items;
 
-namespace CliScape.Content.Items;
+namespace CliScape.Content.Items.Equippables;
 
 /// <summary>
-/// Leather armor - low requirements, good for ranged.
-/// Stats sourced from OSRS Wiki.
+///     Leather armor - low requirements, good for ranged.
+///     Stats sourced from OSRS Wiki.
 /// </summary>
 public static class LeatherEquipment
 {
@@ -128,9 +128,4 @@ public static class LeatherEquipment
             RangedAttackBonus = 3
         }
     };
-
-    public static readonly IItem[] All =
-    [
-        Body, Chaps, Gloves, Boots, Cowl, Vambraces, HardleatherBody
-    ];
 }

@@ -1,10 +1,10 @@
 using CliScape.Core.Items;
 
-namespace CliScape.Content.Items;
+namespace CliScape.Content.Items.Equippables;
 
 /// <summary>
-/// Bronze tier equipment - no requirements, lowest stats.
-/// Stats sourced from OSRS Wiki.
+///     Bronze tier equipment - no requirements, lowest stats.
+///     Stats sourced from OSRS Wiki.
 /// </summary>
 public static class BronzeEquipment
 {
@@ -97,7 +97,7 @@ public static class BronzeEquipment
     public static readonly IEquippable FullHelm = new EquippableItem
     {
         Id = ItemIds.BronzeFullHelm,
-     Name = new ItemName("Bronze full helm"),
+        Name = new ItemName("Bronze full helm"),
         ExamineText = "A full bronze helmet.",
         BaseValue = 44,
         Slot = EquipmentSlot.Head,
@@ -229,13 +229,4 @@ public static class BronzeEquipment
             MagicDefenceBonus = -1
         }
     };
-
-    public static readonly IItem[] All =
-    [
-        Dagger, Sword, Scimitar, Axe, Mace,
-        FullHelm, MedHelm,
-        Platebody, Chainbody,
-        Platelegs, Plateskirt,
-        Kiteshield, SqShield
-    ];
 }

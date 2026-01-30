@@ -116,7 +116,7 @@ Commands use Spectre.Console.Cli framework.
 - **Location**: `src/CliScape.Content/Items/`
 - **Registry**: `ItemIds.cs` defines all item IDs; `ItemRegistry.cs` provides lookup by ID or name
 - **Base Classes**: `Item` for non-equippable items, `EquippableItem` for equipment
-- **Categories**: Equipment organized by tier (BronzeEquipment, IronEquipment, etc.)
+- **Categories**: Equipment organized by tier (BronzeEquipment, IronEquipment, etc.) in `Items/Equippables/`
 - **Required Properties** (from `IItem`):
   - `Id` — Use `ItemId` wrapper record
   - `Name` — Use `ItemName` wrapper record
@@ -128,7 +128,24 @@ Commands use Spectre.Console.Cli framework.
   - `Slot` — `EquipmentSlot` enum (Head, Body, Weapon, etc.)
   - `Stats` — `EquipmentStats` with attack/defence/strength bonuses
   - `RequiredAttackLevel`, `RequiredDefenceLevel`, etc.
+- **Item Registration**: Each item class must have an `All` array property for `ItemRegistry` auto-registration
 - **Data Source**: OSRS Wiki for accurate stats
+
+## Item Actions
+
+Items can have actions associated with them via the `IActionableItem` interface.
+
+- **Actions Enum**: `ItemAction` in `CliScape.Core.Items` (Use, Eat, Bury, Drink, Read)
+- **Actionable Interface**: `IActionableItem` extends `IItem` with `AvailableActions` and `SupportsAction()`
+- **Specialized Interfaces**:
+  - `IEdible` — For food items, provides `HealAmount` and `Eat(player)` method
+  - `IBuryable` — For bones, provides `PrayerExperience` and `Bury(player)` method
+- **Specialized Classes**:
+  - `EdibleItem` — Food that heals the player when eaten
+  - `BuryableItem` — Items that grant prayer XP when buried
+- **CLI Usage**: `inventory interact <item> --eat|--bury|--use|--drink|--read`
+- **Food Healing**: Food restores hitpoints up to max health, consumed on use
+- **Example**: See `src/CliScape.Content/Items/Food.cs` for edible items
 
 ## Shop Implementation
 

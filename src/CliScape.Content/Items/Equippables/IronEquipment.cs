@@ -1,10 +1,10 @@
 using CliScape.Core.Items;
 
-namespace CliScape.Content.Items;
+namespace CliScape.Content.Items.Equippables;
 
 /// <summary>
-/// Iron tier equipment - requires level 1 Attack/Defence.
-/// Stats sourced from OSRS Wiki.
+///     Iron tier equipment - requires level 1 Attack/Defence.
+///     Stats sourced from OSRS Wiki.
 /// </summary>
 public static class IronEquipment
 {
@@ -151,13 +151,4 @@ public static class IronEquipment
             MagicDefenceBonus = -3
         }
     };
-
-    public static readonly IItem[] All =
-    [
-        Dagger, Sword, Scimitar,
-        FullHelm,
-        Platebody, Chainbody,
-        Platelegs,
-        Kiteshield
-    ];
 }

@@ -1,4 +1,5 @@
 using CliScape.Content.Items;
+using CliScape.Content.Items.Equippables;
 using CliScape.Core.World;
 
 namespace CliScape.Content.Shops;
