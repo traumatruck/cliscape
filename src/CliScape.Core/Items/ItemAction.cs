@@ -28,5 +28,15 @@ public enum ItemAction
     /// <summary>
     ///     Read the item (books, scrolls).
     /// </summary>
-    Read
+    Read,
+
+    /// <summary>
+    ///     Equip the item (weapons, armor, accessories).
+    /// </summary>
+    Equip,
+
+    /// <summary>
+    ///     Wield the item (alias for Equip, typically used for weapons).
+    /// </summary>
+    Wield
 }

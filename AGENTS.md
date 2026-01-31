@@ -133,18 +133,26 @@ Commands use Spectre.Console.Cli framework.
 
 ## Item Actions
 
-Items can have actions associated with them via the `IActionableItem` interface.
+Items support a composable action system via `IItemAction` interface.
 
-- **Actions Enum**: `ItemAction` in `CliScape.Core.Items` (Use, Eat, Bury, Drink, Read)
-- **Actionable Interface**: `IActionableItem` extends `IItem` with `AvailableActions` and `SupportsAction()`
-- **Specialized Interfaces**:
-  - `IEdible` — For food items, provides `HealAmount` and `Eat(player)` method
-  - `IBuryable` — For bones, provides `PrayerExperience` and `Bury(player)` method
-- **Specialized Classes**:
-  - `EdibleItem` — Food that heals the player when eaten
-  - `BuryableItem` — Items that grant prayer XP when buried
+- **Action Interface**: `IItemAction` in `CliScape.Core.Items` represents an executable action
+  - `ActionType` — The `ItemAction` enum value (Use, Eat, Bury, Drink, Read, Equip, Wield)
+  - `Description` — Human-readable description of the action
+  - `ConsumesItem` — Whether executing the action removes the item from inventory
+  - `Execute(item, player)` — Performs the action and returns a result message
+- **Built-in Actions** (in `CliScape.Core.Items.Actions`):
+  - `EatAction` — Heals the player, consumes the item
+  - `BuryAction` — Grants prayer XP, consumes the item
+  - `UseAction` — Generic use with custom logic
+  - `DrinkAction` — For potions with custom effects
+  - `ReadAction` — Displays text content
+- **Actionable Items**:
+  - `IActionableItem` — Interface with `Actions`, `AvailableActions`, `SupportsAction()`, `GetAction()`
+  - `ActionableItem` — Base class with `WithAction()` and `WithActions()` methods for composition
+  - `EdibleItem` — Extends `ActionableItem`, auto-adds `EatAction` based on `HealAmount`
+  - `BuryableItem` — Extends `ActionableItem`, auto-adds `BuryAction` based on `PrayerExperience`
+- **Adding Multiple Actions**: Use `WithAction()` or `WithActions()` to add actions to any `ActionableItem`
 - **CLI Usage**: `inventory interact <item> --eat|--bury|--use|--drink|--read`
-- **Food Healing**: Food restores hitpoints up to max health, consumed on use
 - **Example**: See `src/CliScape.Content/Items/Food.cs` for edible items
 
 ## Shop Implementation

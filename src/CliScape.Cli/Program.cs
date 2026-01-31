@@ -71,7 +71,6 @@ app.Configure(configuration =>
     configuration.AddBranch("equipment", equipment =>
     {
         equipment.AddCommand<EquipmentViewCommand>(EquipmentViewCommand.CommandName);
-        equipment.AddCommand<EquipCommand>(EquipCommand.CommandName);
         equipment.AddCommand<UnequipCommand>(UnequipCommand.CommandName);
 
         equipment.SetDefaultCommand<EquipmentViewCommand>();

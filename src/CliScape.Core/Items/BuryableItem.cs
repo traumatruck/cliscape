@@ -1,29 +1,22 @@
-using CliScape.Core.Players;
-using CliScape.Core.Players.Skills;
+using CliScape.Core.Items.Actions;
 
 namespace CliScape.Core.Items;
 
 /// <summary>
 ///     An item that can be buried for prayer experience.
 /// </summary>
-public class BuryableItem : Item, IBuryable
+public class BuryableItem : ActionableItem
 {
-    private static readonly IReadOnlyList<ItemAction> BuryableActions = [ItemAction.Bury];
-
-    /// <inheritdoc />
-    public required int PrayerExperience { get; init; }
-
-    /// <inheritdoc />
-    public IReadOnlyList<ItemAction> AvailableActions => BuryableActions;
-
-    /// <inheritdoc />
-    public bool SupportsAction(ItemAction action) => action == ItemAction.Bury;
-
-    /// <inheritdoc />
-    public string Bury(Player player)
+    /// <summary>
+    ///     The amount of prayer experience gained when burying this item.
+    /// </summary>
+    public required int PrayerExperience
     {
-        var prayerSkill = player.GetSkill(SkillConstants.PrayerSkillName);
-        Player.AddExperience(prayerSkill, PrayerExperience);
-        return $"You bury the {Name}. You gain {PrayerExperience} prayer experience.";
+        get;
+        init
+        {
+            field = value;
+            WithAction(new BuryAction(value));
+        }
     }
 }

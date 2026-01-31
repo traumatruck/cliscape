@@ -7,7 +7,7 @@ namespace CliScape.Content.Items;
 /// </summary>
 public static class Food
 {
-    public static readonly IEdible Bread = new EdibleItem
+    public static readonly EdibleItem Bread = new()
     {
         Id = ItemIds.Bread,
         Name = new ItemName("Bread"),
@@ -16,7 +16,7 @@ public static class Food
         HealAmount = 5
     };
 
-    public static readonly IEdible Cake = new EdibleItem
+    public static readonly EdibleItem Cake = new()
     {
         Id = ItemIds.Cake,
         Name = new ItemName("Cake"),
@@ -25,7 +25,7 @@ public static class Food
         HealAmount = 4 // Each slice heals 4, this is the full cake
     };
 
-    public static readonly IEdible Shrimp = new EdibleItem
+    public static readonly EdibleItem Shrimp = new()
     {
         Id = ItemIds.Shrimp,
         Name = new ItemName("Shrimps"),
@@ -34,7 +34,7 @@ public static class Food
         HealAmount = 3
     };
 
-    public static readonly IEdible Trout = new EdibleItem
+    public static readonly EdibleItem Trout = new()
     {
         Id = ItemIds.Trout,
         Name = new ItemName("Trout"),
@@ -43,7 +43,7 @@ public static class Food
         HealAmount = 7
     };
 
-    public static readonly IEdible Salmon = new EdibleItem
+    public static readonly EdibleItem Salmon = new()
     {
         Id = ItemIds.Salmon,
         Name = new ItemName("Salmon"),
@@ -52,7 +52,7 @@ public static class Food
         HealAmount = 9
     };
 
-    public static readonly IEdible Lobster = new EdibleItem
+    public static readonly EdibleItem Lobster = new()
     {
         Id = ItemIds.Lobster,
         Name = new ItemName("Lobster"),

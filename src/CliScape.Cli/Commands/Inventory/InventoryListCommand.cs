@@ -1,3 +1,4 @@
+using CliScape.Core.Items;
 using CliScape.Game;
 using Spectre.Console;
 using Spectre.Console.Cli;
@@ -32,23 +33,44 @@ public class InventoryListCommand : Command, ICommand
             .AddColumn("#")
             .AddColumn("Item")
             .AddColumn("Qty")
-            .AddColumn("Value");
+            .AddColumn("Value")
+            .AddColumn("Actions");
 
         var slotNum = 1;
         foreach (var (item, quantity, _) in inventory.GetItems())
         {
             var totalValue = item.BaseValue * quantity;
             
+            // Get available actions for the item
+            var actionsText = GetAvailableActionsText(item);
+            
             table.AddRow(
                 slotNum.ToString(),
                 item.Name.Value,
                 quantity.ToString(),
-                $"{totalValue:N0} gp"
+                $"{totalValue:N0} gp",
+                actionsText
             );
             slotNum++;
         }
 
         AnsiConsole.Write(table);
         return (int)ExitCode.Success;
+    }
+
+    /// <summary>
+    ///     Gets a formatted string of available actions for an item.
+    /// </summary>
+    private static string GetAvailableActionsText(IItem item)
+    {
+        if (item is IActionableItem actionable && actionable.Actions.Count > 0)
+        {
+            var actions = actionable.Actions
+                .Select(action => action.ActionType.ToString().ToLowerInvariant())
+                .ToList();
+            return string.Join(", ", actions);
+        }
+
+        return "[dim]None[/]";
     }
 }

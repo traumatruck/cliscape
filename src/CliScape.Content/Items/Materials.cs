@@ -17,7 +17,7 @@ public static class Materials
         IsTradeable = false
     };
 
-    public static readonly IBuryable Bones = new BuryableItem
+    public static readonly BuryableItem Bones = new()
     {
         Id = ItemIds.Bones,
         Name = new ItemName("Bones"),
