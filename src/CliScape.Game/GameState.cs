@@ -36,6 +36,11 @@ public class GameState
     public bool IsInCombat => CurrentCombat is { IsComplete: false };
 
     /// <summary>
+    ///     Loot available from the most recent combat.
+    /// </summary>
+    public PendingLoot PendingLoot { get; } = new();
+
+    /// <summary>
     ///     Gets the path to the save file. Must be configured before use.
     /// </summary>
     public string SaveFilePath => _saveFilePath
@@ -104,7 +109,7 @@ public class GameState
                 var item = ItemRegistry.GetById(new ItemId(slotSnapshot.ItemId));
                 if (item is not null)
                 {
-                    inventory.TryAdd(item, slotSnapshot.Quantity);
+                    inventory.TrySetSlot(slotSnapshot.SlotIndex, item, slotSnapshot.Quantity);
                 }
             }
         }
@@ -123,6 +128,20 @@ public class GameState
             }
         }
 
+        // Restore slayer task
+        SlayerTask? slayerTask = null;
+        if (snapshot.Value.SlayerTask is not null)
+        {
+            var taskSnapshot = snapshot.Value.SlayerTask.Value;
+            slayerTask = new SlayerTask
+            {
+                Category = taskSnapshot.Category,
+                RemainingKills = taskSnapshot.RemainingKills,
+                TotalKills = taskSnapshot.TotalKills,
+                SlayerMaster = taskSnapshot.SlayerMaster
+            };
+        }
+
         Player = new Player
         {
             Id = snapshot.Value.Id,
@@ -139,7 +158,8 @@ public class GameState
 
             SkillCollection = skills,
             Inventory = inventory,
-            Equipment = equipment
+            Equipment = equipment,
+            SlayerTask = slayerTask
         };
     }
 
@@ -154,13 +174,24 @@ public class GameState
 
         // Create inventory snapshots
         var inventorySnapshots = player.Inventory.GetItems()
-            .Select(i => new InventorySlotSnapshot(i.Item.Id.Value, i.Quantity))
+            .Select(i => new InventorySlotSnapshot(i.SlotIndex, i.Item.Id.Value, i.Quantity))
             .ToArray();
 
         // Create equipment snapshots
         var equipmentSnapshots = player.Equipment.GetAllEquippedWithSlots()
             .Select(e => new EquippedItemSnapshot((int)e.Slot, e.Item.Id.Value))
             .ToArray();
+
+        // Create slayer task snapshot
+        SlayerTaskSnapshot? slayerTaskSnapshot = null;
+        if (player.SlayerTask != null)
+        {
+            slayerTaskSnapshot = new SlayerTaskSnapshot(
+                player.SlayerTask.Category,
+                player.SlayerTask.RemainingKills,
+                player.SlayerTask.TotalKills,
+                player.SlayerTask.SlayerMaster);
+        }
 
         var snapshot = new PlayerSnapshot(
             player.Id,
@@ -170,7 +201,8 @@ public class GameState
             player.MaximumHealth,
             skillSnapshots,
             inventorySnapshots,
-            equipmentSnapshots);
+            equipmentSnapshots,
+            slayerTaskSnapshot);
 
         store.SavePlayer(snapshot);
     }

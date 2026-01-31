@@ -54,4 +54,7 @@ public abstract class CombatableNpc : ICombatableNpc
     public required int SlayerLevel { get; init; }
     public required int SlayerXp { get; init; }
     public string? SlayerCategory { get; init; }
+
+    // Drop Table
+    public DropTable DropTable { get; init; } = DropTable.Empty;
 }

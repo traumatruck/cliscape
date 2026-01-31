@@ -20,6 +20,11 @@ public sealed class Player
 
     public Equipment Equipment { get; init; } = new();
 
+    /// <summary>
+    ///     The player's current slayer task, if any.
+    /// </summary>
+    public SlayerTask? SlayerTask { get; set; }
+
     public int CurrentHealth => Health.CurrentHealth;
 
     public int MaximumHealth => Health.MaximumHealth;
@@ -42,7 +47,7 @@ public sealed class Player
     /// <param name="experienceGained">The amount of experience to add.</param>
     public static void AddExperience(IPlayerSkill playerSkill, int experienceGained)
     {
-        playerSkill.Level.AddExperience(experienceGained);
+        playerSkill.Level = playerSkill.Level.AddExperience(experienceGained);
     }
 
     public void TakeDamage(int damage)

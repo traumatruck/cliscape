@@ -5,6 +5,7 @@ using CliScape.Cli.Commands.Inventory;
 using CliScape.Cli.Commands.Item;
 using CliScape.Cli.Commands.Save;
 using CliScape.Cli.Commands.Shop;
+using CliScape.Cli.Commands.Slayer;
 using CliScape.Cli.Commands.Status;
 using CliScape.Cli.Commands.Walk;
 using CliScape.Game;
@@ -45,6 +46,7 @@ app.Configure(configuration =>
     {
         combat.AddCommand<CombatListCommand>(CombatListCommand.CommandName);
         combat.AddCommand<CombatAttackCommand>(CombatAttackCommand.CommandName);
+        combat.AddCommand<CombatLootCommand>(CombatLootCommand.CommandName);
         
         combat.SetDefaultCommand<CombatListCommand>();
     });
@@ -78,6 +80,8 @@ app.Configure(configuration =>
 
         equipment.SetDefaultCommand<EquipmentViewCommand>();
     });
+
+    configuration.AddCommand<SlayerCommand>(SlayerCommand.CommandName);
 });
 
 app.Run(args);

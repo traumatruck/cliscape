@@ -55,8 +55,8 @@ public static class CombatCalculator
         var attackSkill = player.Skills.FirstOrDefault(s => s.Name.Name == "Attack");
         var attackLevel = attackSkill?.Level.Value ?? 1;
 
-        // Simplified: effectiveAttack * (attackBonus + 64)
-        var effectiveAttack = attackLevel;
+        // OSRS formula: (effectiveAttack + 9) * (attackBonus + 64)
+        var effectiveAttack = attackLevel + 9;
         return effectiveAttack * (attackBonus + 64);
     }
 
@@ -119,7 +119,9 @@ public static class CombatCalculator
         var defenceSkill = player.Skills.FirstOrDefault(s => s.Name.Name == "Defence");
         var defenceLevel = defenceSkill?.Level.Value ?? 1;
 
-        return (defenceLevel + 9) * (defenceBonus + 64);
+        // OSRS formula: (effectiveDefence + 9) * (defenceBonus + 64)
+        var effectiveDefence = defenceLevel + 9;
+        return effectiveDefence * (defenceBonus + 64);
     }
 
     /// <summary>

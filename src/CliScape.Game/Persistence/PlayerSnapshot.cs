@@ -12,6 +12,7 @@ namespace CliScape.Game.Persistence;
 /// <param name="Skills">The player's skill experience values.</param>
 /// <param name="InventorySlots">The player's inventory slots.</param>
 /// <param name="EquippedItems">The player's equipped items.</param>
+/// <param name="SlayerTask">The player's current slayer task, if any.</param>
 public readonly record struct PlayerSnapshot(
     int Id,
     string Name,
@@ -20,4 +21,5 @@ public readonly record struct PlayerSnapshot(
     int MaximumHealth,
     SkillSnapshot[] Skills,
     InventorySlotSnapshot[]? InventorySlots = null,
-    EquippedItemSnapshot[]? EquippedItems = null);
+    EquippedItemSnapshot[]? EquippedItems = null,
+    SlayerTaskSnapshot? SlayerTask = null);

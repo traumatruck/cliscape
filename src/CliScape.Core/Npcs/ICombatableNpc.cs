@@ -49,4 +49,7 @@ public interface ICombatableNpc : INpc
     int SlayerLevel { get; } // Required slayer level to damage
     int SlayerXp { get; } // XP awarded on kill
     string? SlayerCategory { get; } // e.g., "Goblins", "Demons", etc.
+
+    // Drop Table
+    DropTable DropTable { get; }
 }

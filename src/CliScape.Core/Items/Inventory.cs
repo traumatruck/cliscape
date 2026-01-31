@@ -328,6 +328,21 @@ public sealed class Inventory
         _slots[toIndex].Set(tempItem, tempQuantity);
     }
 
+    /// <summary>
+    ///     Sets an item at a specific slot index.
+    ///     Returns true if successful, false if the index is invalid.
+    /// </summary>
+    public bool TrySetSlot(int index, IItem item, int quantity = 1)
+    {
+        if (index < 0 || index >= MaxSlots)
+        {
+            return false;
+        }
+
+        _slots[index].Set(item, quantity);
+        return true;
+    }
+
     private InventorySlot? FindSlotWithItem(IItem item)
     {
         return _slots.FirstOrDefault(s => !s.IsEmpty && s.Item?.Id == item.Id);

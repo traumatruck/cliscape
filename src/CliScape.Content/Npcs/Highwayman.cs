@@ -1,3 +1,4 @@
+using CliScape.Content.Items;
 using CliScape.Core.Npcs;
 
 namespace CliScape.Content.Npcs;
@@ -57,6 +58,14 @@ public class Highwayman : CombatableNpc
         // Slayer
         SlayerLevel = 0,
         SlayerXp = 0,
-        SlayerCategory = null
+        SlayerCategory = null,
+
+        // Drops
+        DropTable = new DropTable(
+            new NpcDrop { ItemId = ItemIds.Bones, Rarity = DropRarity.Always },
+            new NpcDrop { ItemId = ItemIds.Coins, MinQuantity = 5, MaxQuantity = 20, Rarity = DropRarity.Common },
+            new NpcDrop { ItemId = ItemIds.BronzeDagger, Rarity = DropRarity.Uncommon },
+            new NpcDrop { ItemId = ItemIds.Bread, Rarity = DropRarity.Uncommon }
+        )
     };
 }

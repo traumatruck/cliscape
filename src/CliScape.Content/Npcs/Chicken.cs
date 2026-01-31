@@ -1,3 +1,4 @@
+using CliScape.Content.Items;
 using CliScape.Core.Npcs;
 
 namespace CliScape.Content.Npcs;
@@ -60,6 +61,13 @@ public class Chicken : CombatableNpc
         // Slayer
         SlayerLevel = 0,
         SlayerXp = 1,
-        SlayerCategory = "Birds"
+        SlayerCategory = "Birds",
+
+        // Drops
+        DropTable = new DropTable(
+            new NpcDrop { ItemId = ItemIds.Bones, Rarity = DropRarity.Always },
+            new NpcDrop { ItemId = ItemIds.RawChicken, Rarity = DropRarity.Always },
+            new NpcDrop { ItemId = ItemIds.Feather, MinQuantity = 5, MaxQuantity = 15, Rarity = DropRarity.Always }
+        )
     };
 }

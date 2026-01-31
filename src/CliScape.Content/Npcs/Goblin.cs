@@ -1,3 +1,4 @@
+using CliScape.Content.Items;
 using CliScape.Core.Npcs;
 
 namespace CliScape.Content.Npcs;
@@ -57,6 +58,15 @@ public class Goblin : CombatableNpc
         // Slayer
         SlayerLevel = 0,
         SlayerXp = 5,
-        SlayerCategory = "Goblins"
+        SlayerCategory = "Goblins",
+
+        // Drops
+        DropTable = new DropTable(
+            new NpcDrop { ItemId = ItemIds.Bones, Rarity = DropRarity.Always },
+            new NpcDrop { ItemId = ItemIds.Coins, MinQuantity = 1, MaxQuantity = 5, Rarity = DropRarity.Common },
+            new NpcDrop { ItemId = ItemIds.BronzeHatchet, Rarity = DropRarity.Uncommon },
+            new NpcDrop { ItemId = ItemIds.BronzeDagger, Rarity = DropRarity.Uncommon },
+            new NpcDrop { ItemId = ItemIds.BronzeSqShield, Rarity = DropRarity.Uncommon }
+        )
     };
 }

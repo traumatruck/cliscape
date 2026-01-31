@@ -17,6 +17,7 @@ public class CombatSession
         TurnCount = 0;
         IsComplete = false;
         PlayerFled = false;
+        Rewards = new CombatRewards();
     }
 
     public Player Player { get; }
@@ -25,6 +26,11 @@ public class CombatSession
     public int TurnCount { get; private set; }
     public bool IsComplete { get; private set; }
     public bool PlayerFled { get; private set; }
+
+    /// <summary>
+    ///     Tracks experience and level-ups earned during combat.
+    /// </summary>
+    public CombatRewards Rewards { get; }
     
     /// <summary>
     /// Whether the player won (NPC died)

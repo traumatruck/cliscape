@@ -71,6 +71,7 @@ public sealed class BinaryGameStateStore : IGameStateStore
         // Deserialize inventory and equipment
         InventorySlotSnapshot[]? inventorySlots = null;
         EquippedItemSnapshot[]? equippedItems = null;
+        SlayerTaskSnapshot? slayerTask = null;
 
         if (stream.Position < stream.Length)
         {
@@ -80,9 +81,10 @@ public sealed class BinaryGameStateStore : IGameStateStore
             
             for (var i = 0; i < inventoryCount; i++)
             {
+                var slotIndex = reader.ReadInt32();
                 var itemId = reader.ReadInt32();
                 var quantity = reader.ReadInt32();
-                inventorySlots[i] = new InventorySlotSnapshot(itemId, quantity);
+                inventorySlots[i] = new InventorySlotSnapshot(slotIndex, itemId, quantity);
             }
 
             // Deserialize equipment
@@ -95,10 +97,24 @@ public sealed class BinaryGameStateStore : IGameStateStore
                 var itemId = reader.ReadInt32();
                 equippedItems[i] = new EquippedItemSnapshot(slot, itemId);
             }
+
+            // Deserialize slayer task (if present)
+            if (stream.Position < stream.Length)
+            {
+                var hasSlayerTask = reader.ReadBoolean();
+                if (hasSlayerTask)
+                {
+                    var category = ReadString(reader);
+                    var remainingKills = reader.ReadInt32();
+                    var totalKills = reader.ReadInt32();
+                    var slayerMaster = ReadString(reader);
+                    slayerTask = new SlayerTaskSnapshot(category, remainingKills, totalKills, slayerMaster);
+                }
+            }
         }
 
         return new PlayerSnapshot(id, name, locationName, currentHealth, maxHealth, skills, inventorySlots,
-            equippedItems);
+            equippedItems, slayerTask);
     }
 
     /// <summary>
@@ -132,6 +148,7 @@ public sealed class BinaryGameStateStore : IGameStateStore
         
         foreach (var slot in inventorySlots)
         {
+            writer.Write(slot.SlotIndex);
             writer.Write(slot.ItemId);
             writer.Write(slot.Quantity);
         }
@@ -144,6 +161,18 @@ public sealed class BinaryGameStateStore : IGameStateStore
         {
             writer.Write(equipped.Slot);
             writer.Write(equipped.ItemId);
+        }
+
+        // Serialize slayer task
+        var hasSlayerTask = snapshot.SlayerTask.HasValue;
+        writer.Write(hasSlayerTask);
+        if (hasSlayerTask)
+        {
+            var task = snapshot.SlayerTask!.Value;
+            WriteString(writer, task.Category);
+            writer.Write(task.RemainingKills);
+            writer.Write(task.TotalKills);
+            WriteString(writer, task.SlayerMaster);
         }
 
         writer.Flush();

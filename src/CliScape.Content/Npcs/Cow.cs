@@ -1,3 +1,4 @@
+using CliScape.Content.Items;
 using CliScape.Core.Npcs;
 
 namespace CliScape.Content.Npcs;
@@ -60,6 +61,13 @@ public class Cow : CombatableNpc
         // Slayer
         SlayerLevel = 0,
         SlayerXp = 1,
-        SlayerCategory = "Cows"
+        SlayerCategory = "Cows",
+
+        // Drops
+        DropTable = new DropTable(
+            new NpcDrop { ItemId = ItemIds.Bones, Rarity = DropRarity.Always },
+            new NpcDrop { ItemId = ItemIds.RawBeef, Rarity = DropRarity.Always },
+            new NpcDrop { ItemId = ItemIds.Cowhide, Rarity = DropRarity.Always }
+        )
     };
 }
