@@ -26,9 +26,6 @@ public class InventoryListCommand : Command, ICommand
             return (int)ExitCode.Success;
         }
 
-        AnsiConsole.MarkupLine($"[bold]Inventory ({inventory.UsedSlots}/{Core.Items.Inventory.MaxSlots})[/]");
-        AnsiConsole.WriteLine();
-
         var table = new Table()
             .AddColumn("#")
             .AddColumn("Item")
@@ -37,13 +34,14 @@ public class InventoryListCommand : Command, ICommand
             .AddColumn("Actions");
 
         var slotNum = 1;
+
         foreach (var (item, quantity, _) in inventory.GetItems())
         {
             var totalValue = item.BaseValue * quantity;
-            
+
             // Get available actions for the item
             var actionsText = GetAvailableActionsText(item);
-            
+
             table.AddRow(
                 slotNum.ToString(),
                 item.Name.Value,
@@ -51,6 +49,7 @@ public class InventoryListCommand : Command, ICommand
                 $"{totalValue:N0} gp",
                 actionsText
             );
+
             slotNum++;
         }
 
@@ -63,14 +62,28 @@ public class InventoryListCommand : Command, ICommand
     /// </summary>
     private static string GetAvailableActionsText(IItem item)
     {
-        if (item is IActionableItem actionable && actionable.Actions.Count > 0)
+        var actions = new List<string>();
+
+        // All items can be examined and used (even if use does nothing interesting)
+        actions.Add("examine");
+        actions.Add("use");
+
+        // Check for IActionableItem actions (excluding examine and use since we already added them)
+        if (item is IActionableItem { Actions.Count: > 0 } actionable)
         {
-            var actions = actionable.Actions
-                .Select(action => action.ActionType.ToString().ToLowerInvariant())
-                .ToList();
-            return string.Join(", ", actions);
+            actions.AddRange(actionable.Actions
+                .Where(action => action.ActionType != ItemAction.Examine && action.ActionType != ItemAction.Use)
+                .Select(action => action.ActionType.ToString().ToLowerInvariant()));
         }
 
-        return "[dim]None[/]";
+        // Check if item is equippable
+        if (item is IEquippable equippable)
+        {
+            // Use "Wield" for weapons, "Equip" for other equipment
+            var equipAction = equippable.Slot == EquipmentSlot.Weapon ? "wield" : "equip";
+            actions.Add(equipAction);
+        }
+
+        return string.Join(", ", actions);
     }
 }

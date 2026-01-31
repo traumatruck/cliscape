@@ -2,6 +2,7 @@
 using CliScape.Cli.Commands.Combat;
 using CliScape.Cli.Commands.Equipment;
 using CliScape.Cli.Commands.Inventory;
+using CliScape.Cli.Commands.Item;
 using CliScape.Cli.Commands.Save;
 using CliScape.Cli.Commands.Shop;
 using CliScape.Cli.Commands.Status;
@@ -37,6 +38,7 @@ app.Configure(configuration =>
     configuration.AddBranch("save", save =>
     {
         save.AddCommand<SaveDeleteCommand>(SaveDeleteCommand.CommandName);
+        save.SetDescription("Manage your save");
     });
     
     configuration.AddBranch("combat", combat =>
@@ -51,11 +53,12 @@ app.Configure(configuration =>
     {
         inventory.AddCommand<InventoryListCommand>(InventoryListCommand.CommandName);
         inventory.AddCommand<InventoryDropCommand>(InventoryDropCommand.CommandName);
-        inventory.AddCommand<InventoryExamineCommand>(InventoryExamineCommand.CommandName);
-        inventory.AddCommand<InventoryInteractCommand>(InventoryInteractCommand.CommandName);
+        inventory.AddCommand<InventorySortCommand>(InventorySortCommand.CommandName);
 
         inventory.SetDefaultCommand<InventoryListCommand>();
     });
+
+    configuration.AddCommand<ItemCommand>(ItemCommand.CommandName);
 
     configuration.AddBranch("shop", shop =>
     {

@@ -1,13 +1,21 @@
 using System.ComponentModel;
 using Spectre.Console.Cli;
 
-namespace CliScape.Cli.Commands.Inventory;
+namespace CliScape.Cli.Commands.Item;
 
-public sealed class InventoryInteractCommandSettings : CommandSettings
+public sealed class ItemCommandSettings : CommandSettings
 {
-    [CommandArgument(0, "<item>")]
+    [CommandOption("-n|--name <name>")]
     [Description("The name of the item to interact with")]
-    public required string ItemName { get; init; }
+    public string? ItemName { get; init; }
+
+    [CommandOption("-i|--index <index>")]
+    [Description("The inventory slot index of the item (1-28)")]
+    public int? ItemIndex { get; init; }
+
+    [CommandOption("-x|--examine")]
+    [Description("Examine the item to see its description and stats")]
+    public bool Examine { get; init; }
 
     [CommandOption("-e|--eat")]
     [Description("Eat the item to restore hitpoints")]

@@ -136,23 +136,24 @@ Commands use Spectre.Console.Cli framework.
 Items support a composable action system via `IItemAction` interface.
 
 - **Action Interface**: `IItemAction` in `CliScape.Core.Items` represents an executable action
-  - `ActionType` — The `ItemAction` enum value (Use, Eat, Bury, Drink, Read, Equip, Wield)
+  - `ActionType` — The `ItemAction` enum value (Examine, Use, Eat, Bury, Drink, Read, Equip, Wield)
   - `Description` — Human-readable description of the action
   - `ConsumesItem` — Whether executing the action removes the item from inventory
   - `Execute(item, player)` — Performs the action and returns a result message
 - **Built-in Actions** (in `CliScape.Core.Items.Actions`):
+  - `ExamineAction` — Shows the item's examine text (singleton, included by default)
+  - `UseAction` — Generic use with custom logic (default returns "Nothing interesting happens")
   - `EatAction` — Heals the player, consumes the item
   - `BuryAction` — Grants prayer XP, consumes the item
-  - `UseAction` — Generic use with custom logic
   - `DrinkAction` — For potions with custom effects
   - `ReadAction` — Displays text content
 - **Actionable Items**:
   - `IActionableItem` — Interface with `Actions`, `AvailableActions`, `SupportsAction()`, `GetAction()`
-  - `ActionableItem` — Base class with `WithAction()` and `WithActions()` methods for composition
-  - `EdibleItem` — Extends `ActionableItem`, auto-adds `EatAction` based on `HealAmount`
-  - `BuryableItem` — Extends `ActionableItem`, auto-adds `BuryAction` based on `PrayerExperience`
+  - `ActionableItem` — Base class, auto-includes `ExamineAction`; use `WithAction()` for composition
+  - `EdibleItem` — Extends `ActionableItem`, auto-adds `EatAction` and `UseAction`
+  - `BuryableItem` — Extends `ActionableItem`, auto-adds `BuryAction` and `UseAction`
 - **Adding Multiple Actions**: Use `WithAction()` or `WithActions()` to add actions to any `ActionableItem`
-- **CLI Usage**: `inventory interact <item> --eat|--bury|--use|--drink|--read`
+- **CLI Usage**: `item <name> --examine|--use|--eat|--bury|--drink|--read|--equip|--wield`
 - **Example**: See `src/CliScape.Content/Items/Food.cs` for edible items
 
 ## Shop Implementation

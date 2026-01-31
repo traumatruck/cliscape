@@ -8,7 +8,8 @@ public class SaveDeleteCommand : Command<SaveDeleteCommandSettings>, ICommand
 {
     public static string CommandName => "delete";
 
-    public override int Execute(CommandContext context, SaveDeleteCommandSettings settings, CancellationToken cancellationToken)
+    public override int Execute(CommandContext context, SaveDeleteCommandSettings settings,
+        CancellationToken cancellationToken)
     {
         if (!settings.Force)
         {

@@ -1,3 +1,5 @@
+using CliScape.Core.Items.Actions;
+
 namespace CliScape.Core.Items;
 
 /// <summary>
@@ -5,7 +7,7 @@ namespace CliScape.Core.Items;
 /// </summary>
 public class ActionableItem : Item, IActionableItem
 {
-    private readonly List<IItemAction> _actions = [];
+    private readonly List<IItemAction> _actions = [ExamineAction.Instance];
     private IReadOnlyList<ItemAction>? _availableActions;
 
     /// <inheritdoc />

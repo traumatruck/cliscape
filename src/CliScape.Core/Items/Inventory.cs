@@ -218,6 +218,116 @@ public sealed class Inventory
         }
     }
 
+    /// <summary>
+    ///     Swaps the contents of two inventory slots.
+    /// </summary>
+    public void SwapSlots(int fromIndex, int toIndex)
+    {
+        if (fromIndex < 0 || fromIndex >= MaxSlots)
+        {
+            throw new ArgumentOutOfRangeException(nameof(fromIndex));
+        }
+
+        if (toIndex < 0 || toIndex >= MaxSlots)
+        {
+            throw new ArgumentOutOfRangeException(nameof(toIndex));
+        }
+
+        var fromSlot = _slots[fromIndex];
+        var toSlot = _slots[toIndex];
+
+        var tempItem = fromSlot.Item;
+        var tempQuantity = fromSlot.Quantity;
+
+        if (toSlot.IsEmpty)
+        {
+            fromSlot.Clear();
+        }
+        else
+        {
+            fromSlot.Set(toSlot.Item!, toSlot.Quantity);
+        }
+
+        if (tempItem is null)
+        {
+            toSlot.Clear();
+        }
+        else
+        {
+            toSlot.Set(tempItem, tempQuantity);
+        }
+    }
+
+    /// <summary>
+    ///     Moves an item from one slot to another, shifting other items as needed.
+    /// </summary>
+    public void MoveSlot(int fromIndex, int toIndex)
+    {
+        if (fromIndex < 0 || fromIndex >= MaxSlots)
+        {
+            throw new ArgumentOutOfRangeException(nameof(fromIndex));
+        }
+
+        if (toIndex < 0 || toIndex >= MaxSlots)
+        {
+            throw new ArgumentOutOfRangeException(nameof(toIndex));
+        }
+
+        if (fromIndex == toIndex)
+        {
+            return;
+        }
+
+        var fromSlot = _slots[fromIndex];
+        if (fromSlot.IsEmpty)
+        {
+            return;
+        }
+
+        var tempItem = fromSlot.Item!;
+        var tempQuantity = fromSlot.Quantity;
+
+        // Remove the item from its current position
+        fromSlot.Clear();
+
+        // Shift items to make room at the target position
+        if (fromIndex < toIndex)
+        {
+            // Moving down: shift items up
+            for (var i = fromIndex; i < toIndex; i++)
+            {
+                var nextSlot = _slots[i + 1];
+                if (nextSlot.IsEmpty)
+                {
+                    _slots[i].Clear();
+                }
+                else
+                {
+                    _slots[i].Set(nextSlot.Item!, nextSlot.Quantity);
+                }
+            }
+        }
+        else
+        {
+            // Moving up: shift items down
+            for (var i = fromIndex; i > toIndex; i--)
+            {
+                var prevSlot = _slots[i - 1];
+                if (prevSlot.IsEmpty)
+                {
+                    _slots[i].Clear();
+                }
+                else
+                {
+                    _slots[i].Set(prevSlot.Item!, prevSlot.Quantity);
+                }
+            }
+        }
+
+        // Place the item at the target position
+        _slots[toIndex].Set(tempItem, tempQuantity);
+    }
+
     private InventorySlot? FindSlotWithItem(IItem item)
     {
         return _slots.FirstOrDefault(s => !s.IsEmpty && s.Item?.Id == item.Id);

@@ -6,6 +6,11 @@ namespace CliScape.Core.Items;
 public enum ItemAction
 {
     /// <summary>
+    ///     Examine the item to see its description.
+    /// </summary>
+    Examine,
+
+    /// <summary>
     ///     Generic use action for items with custom behavior.
     /// </summary>
     Use,

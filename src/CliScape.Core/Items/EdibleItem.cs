@@ -17,6 +17,7 @@ public class EdibleItem : ActionableItem
         {
             field = value;
             WithAction(new EatAction(value));
+            WithAction(UseAction.Default);
         }
     }
 }

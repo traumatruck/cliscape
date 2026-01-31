@@ -1,9 +1,11 @@
+using System.ComponentModel;
 using CliScape.Game;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
 namespace CliScape.Cli.Commands.Walk;
 
+[Description("Travel to a new location")]
 public class WalkCommand : Command<WalkCommandSettings>, ICommand
 {
     private readonly GameState _gameState = GameState.Instance;

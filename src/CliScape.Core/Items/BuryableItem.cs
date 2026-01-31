@@ -17,6 +17,7 @@ public class BuryableItem : ActionableItem
         {
             field = value;
             WithAction(new BuryAction(value));
+            WithAction(UseAction.Default);
         }
     }
 }
