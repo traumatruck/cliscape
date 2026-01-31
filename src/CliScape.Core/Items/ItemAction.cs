@@ -38,10 +38,5 @@ public enum ItemAction
     /// <summary>
     ///     Equip the item (weapons, armor, accessories).
     /// </summary>
-    Equip,
-
-    /// <summary>
-    ///     Wield the item (alias for Equip, typically used for weapons).
-    /// </summary>
-    Wield
+    Equip
 }

@@ -19,9 +19,6 @@ public class ShopListCommand : Command, ICommand
         var location = player.CurrentLocation;
         var shops = location.Shops;
 
-        AnsiConsole.MarkupLine($"[bold]Shops in {location.Name}[/]");
-        AnsiConsole.WriteLine();
-
         if (shops.Count == 0)
         {
             AnsiConsole.MarkupLine("[dim]There are no shops at this location.[/]");
@@ -41,8 +38,6 @@ public class ShopListCommand : Command, ICommand
         }
 
         AnsiConsole.Write(table);
-        AnsiConsole.WriteLine();
-        AnsiConsole.MarkupLine("[dim]Use 'shop view <name>' to see a shop's inventory.[/]");
 
         return (int)ExitCode.Success;
     }

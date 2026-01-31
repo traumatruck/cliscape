@@ -20,16 +20,16 @@ public class ItemCommand : Command<ItemCommandSettings>, ICommand
     public override int Execute(CommandContext context, ItemCommandSettings settings,
         CancellationToken cancellationToken)
     {
-        // Validate that exactly one of name or index is provided
-        if (settings.ItemName is null && settings.ItemIndex is null)
+        // Validate that exactly one of name or slot is provided
+        if (settings.ItemName is null && settings.ItemSlot is null)
         {
-            AnsiConsole.MarkupLine("[red]You must specify either --name or --index to identify the item.[/]");
+            AnsiConsole.MarkupLine("[red]You must specify either --name or --slot to identify the item.[/]");
             return (int)ExitCode.Failure;
         }
 
-        if (settings.ItemName is not null && settings.ItemIndex is not null)
+        if (settings.ItemName is not null && settings.ItemSlot is not null)
         {
-            AnsiConsole.MarkupLine("[red]You cannot specify both --name and --index. Choose one.[/]");
+            AnsiConsole.MarkupLine("[red]You cannot specify both --name and --slot. Choose one.[/]");
             return (int)ExitCode.Failure;
         }
 
@@ -43,14 +43,14 @@ public class ItemCommand : Command<ItemCommandSettings>, ICommand
         {
             item = FindItemByName(inventory, settings.ItemName);
         }
-        else if (settings.ItemIndex is not null)
+        else if (settings.ItemSlot is not null)
         {
-            item = FindItemByIndex(inventory, settings.ItemIndex.Value);
+            item = FindItemBySlot(inventory, settings.ItemSlot.Value);
         }
 
         if (item is null)
         {
-            var identifier = settings.ItemName ?? $"slot #{settings.ItemIndex}";
+            var identifier = settings.ItemName ?? $"slot #{settings.ItemSlot}";
             AnsiConsole.MarkupLine($"[red]You don't have any '{identifier}' in your inventory.[/]");
             return (int)ExitCode.Failure;
         }
@@ -80,25 +80,20 @@ public class ItemCommand : Command<ItemCommandSettings>, ICommand
         return itemEntry == default ? null : itemEntry.Item;
     }
 
-    private static IItem? FindItemByIndex(Core.Items.Inventory inventory, int index)
+    private static IItem? FindItemBySlot(Core.Items.Inventory inventory, int slotNumber)
     {
-        // Convert from 1-based user index to 0-based internal index
-        var targetIndex = index - 1;
+        // Convert from 1-based user slot number to 0-based internal index
+        var slotIndex = slotNumber - 1;
 
-        if (targetIndex < 0)
+        if (slotIndex < 0 || slotIndex >= Core.Items.Inventory.MaxSlots)
         {
             return null;
         }
 
-        // Get all items and find the one at the specified position
-        var items = inventory.GetItems().OrderBy(i => i.SlotIndex).ToList();
+        // Get the item directly from the specified slot
+        var slot = inventory.GetSlot(slotIndex);
 
-        if (targetIndex >= items.Count)
-        {
-            return null;
-        }
-
-        return items[targetIndex].Item;
+        return slot.IsEmpty ? null : slot.Item;
     }
 
     private static ItemAction? DetermineAction(ItemCommandSettings settings)
@@ -133,11 +128,6 @@ public class ItemCommand : Command<ItemCommandSettings>, ICommand
             return ItemAction.Equip;
         }
 
-        if (settings.Wield)
-        {
-            return ItemAction.Wield;
-        }
-
         return null;
     }
 
@@ -162,8 +152,8 @@ public class ItemCommand : Command<ItemCommandSettings>, ICommand
 
     private int ExecuteAction(IItem item, ItemAction actionType, Player player, Core.Items.Inventory inventory)
     {
-        // Special handling for equip/wield (not part of the IItemAction system)
-        if (actionType is ItemAction.Equip or ItemAction.Wield)
+        // Special handling for equip (not part of the IItemAction system)
+        if (actionType is ItemAction.Equip)
         {
             return HandleEquip(item, player, inventory);
         }
@@ -294,7 +284,6 @@ public class ItemCommand : Command<ItemCommandSettings>, ICommand
             ItemAction.Drink => "drink",
             ItemAction.Read => "read",
             ItemAction.Equip => "equip",
-            ItemAction.Wield => "wield",
             _ => action.ToString().ToLower()
         };
     }

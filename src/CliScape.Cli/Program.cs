@@ -56,7 +56,7 @@ app.Configure(configuration =>
         inventory.AddCommand<InventorySortCommand>(InventorySortCommand.CommandName);
 
         inventory.SetDefaultCommand<InventoryListCommand>();
-    });
+    }).WithAlias("inv");
 
     configuration.AddCommand<ItemCommand>(ItemCommand.CommandName);
 

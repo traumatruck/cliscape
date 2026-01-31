@@ -9,9 +9,9 @@ public sealed class ItemCommandSettings : CommandSettings
     [Description("The name of the item to interact with")]
     public string? ItemName { get; init; }
 
-    [CommandOption("-i|--index <index>")]
-    [Description("The inventory slot index of the item (1-28)")]
-    public int? ItemIndex { get; init; }
+    [CommandOption("-s|--slot <slot>")]
+    [Description("The inventory slot number of the item (1-28)")]
+    public int? ItemSlot { get; init; }
 
     [CommandOption("-x|--examine")]
     [Description("Examine the item to see its description and stats")]
@@ -38,10 +38,6 @@ public sealed class ItemCommandSettings : CommandSettings
     public bool Read { get; init; }
 
     [CommandOption("-q|--equip")]
-    [Description("Equip the item (armor, accessories)")]
+    [Description("Equip the item (weapons, armor, accessories)")]
     public bool Equip { get; init; }
-
-    [CommandOption("-w|--wield")]
-    [Description("Wield the item (weapons)")]
-    public bool Wield { get; init; }
 }

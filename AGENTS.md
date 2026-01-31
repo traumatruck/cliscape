@@ -136,7 +136,7 @@ Commands use Spectre.Console.Cli framework.
 Items support a composable action system via `IItemAction` interface.
 
 - **Action Interface**: `IItemAction` in `CliScape.Core.Items` represents an executable action
-  - `ActionType` — The `ItemAction` enum value (Examine, Use, Eat, Bury, Drink, Read, Equip, Wield)
+  - `ActionType` — The `ItemAction` enum value (Examine, Use, Eat, Bury, Drink, Read, Equip)
   - `Description` — Human-readable description of the action
   - `ConsumesItem` — Whether executing the action removes the item from inventory
   - `Execute(item, player)` — Performs the action and returns a result message
@@ -153,7 +153,7 @@ Items support a composable action system via `IItemAction` interface.
   - `EdibleItem` — Extends `ActionableItem`, auto-adds `EatAction` and `UseAction`
   - `BuryableItem` — Extends `ActionableItem`, auto-adds `BuryAction` and `UseAction`
 - **Adding Multiple Actions**: Use `WithAction()` or `WithActions()` to add actions to any `ActionableItem`
-- **CLI Usage**: `item <name> --examine|--use|--eat|--bury|--drink|--read|--equip|--wield`
+- **CLI Usage**: `item <name> --examine|--use|--eat|--bury|--drink|--read|--equip`
 - **Example**: See `src/CliScape.Content/Items/Food.cs` for edible items
 
 ## Shop Implementation

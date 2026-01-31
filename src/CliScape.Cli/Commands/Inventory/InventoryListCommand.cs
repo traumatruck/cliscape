@@ -19,13 +19,6 @@ public class InventoryListCommand : Command, ICommand
         var player = _gameState.GetPlayer();
         var inventory = player.Inventory;
 
-        // Check if inventory is completely empty
-        if (inventory.UsedSlots == 0)
-        {
-            AnsiConsole.MarkupLine("Your inventory is empty.");
-            return (int)ExitCode.Success;
-        }
-
         var table = new Table()
             .AddColumn("#")
             .AddColumn("Item")
@@ -33,24 +26,37 @@ public class InventoryListCommand : Command, ICommand
             .AddColumn("Value")
             .AddColumn("Actions");
 
-        var slotNum = 1;
-
-        foreach (var (item, quantity, _) in inventory.GetItems())
+        // Show all 28 slots, including empty ones
+        for (var i = 0; i < Core.Items.Inventory.MaxSlots; i++)
         {
-            var totalValue = item.BaseValue * quantity;
+            var slot = inventory.GetSlot(i);
+            var slotNum = i + 1;
 
-            // Get available actions for the item
-            var actionsText = GetAvailableActionsText(item);
+            if (slot.IsEmpty)
+            {
+                table.AddRow(
+                    $"[dim]{slotNum}[/]",
+                    "[dim]---[/]",
+                    "[dim]-[/]",
+                    "[dim]-[/]",
+                    "[dim]-[/]"
+                );
+            }
+            else
+            {
+                var item = slot.Item!;
+                var quantity = slot.Quantity;
+                var totalValue = item.BaseValue * quantity;
+                var actionsText = GetAvailableActionsText(item);
 
-            table.AddRow(
-                slotNum.ToString(),
-                item.Name.Value,
-                quantity.ToString(),
-                $"{totalValue:N0} gp",
-                actionsText
-            );
-
-            slotNum++;
+                table.AddRow(
+                    slotNum.ToString(),
+                    item.Name.Value,
+                    quantity.ToString(),
+                    $"{totalValue:N0} gp",
+                    actionsText
+                );
+            }
         }
 
         AnsiConsole.Write(table);
@@ -77,11 +83,9 @@ public class InventoryListCommand : Command, ICommand
         }
 
         // Check if item is equippable
-        if (item is IEquippable equippable)
+        if (item is IEquippable)
         {
-            // Use "Wield" for weapons, "Equip" for other equipment
-            var equipAction = equippable.Slot == EquipmentSlot.Weapon ? "wield" : "equip";
-            actions.Add(equipAction);
+            actions.Add("equip");
         }
 
         return string.Join(", ", actions);
