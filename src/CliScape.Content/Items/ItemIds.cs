@@ -93,4 +93,69 @@ public static class ItemIds
     public static readonly ItemId Cowhide = new(1102);
     public static readonly ItemId Feather = new(1103);
     public static readonly ItemId RawChicken = new(1104);
+
+    // Logs: 1200-1299
+    public static readonly ItemId Logs = new(1200);
+    public static readonly ItemId OakLogs = new(1201);
+    public static readonly ItemId WillowLogs = new(1202);
+    public static readonly ItemId MapleLogs = new(1203);
+    public static readonly ItemId YewLogs = new(1204);
+    public static readonly ItemId MagicLogs = new(1205);
+
+    // Raw Fish: 1300-1399
+    public static readonly ItemId RawShrimps = new(1300);
+    public static readonly ItemId RawAnchovies = new(1301);
+    public static readonly ItemId RawSardine = new(1302);
+    public static readonly ItemId RawHerring = new(1303);
+    public static readonly ItemId RawTrout = new(1304);
+    public static readonly ItemId RawSalmon = new(1305);
+    public static readonly ItemId RawLobster = new(1306);
+    public static readonly ItemId RawTuna = new(1307);
+    public static readonly ItemId RawSwordfish = new(1308);
+
+    // Ores: 1400-1499
+    public static readonly ItemId CopperOre = new(1400);
+    public static readonly ItemId TinOre = new(1401);
+    public static readonly ItemId IronOre = new(1402);
+    public static readonly ItemId Coal = new(1403);
+    public static readonly ItemId MithrilOre = new(1404);
+    public static readonly ItemId AdamantiteOre = new(1405);
+    public static readonly ItemId RuniteOre = new(1406);
+
+    // Bars: 1500-1599
+    public static readonly ItemId BronzeBar = new(1500);
+    public static readonly ItemId IronBar = new(1501);
+    public static readonly ItemId SteelBar = new(1502);
+    public static readonly ItemId MithrilBar = new(1503);
+    public static readonly ItemId AdamantiteBar = new(1504);
+    public static readonly ItemId RuniteBar = new(1505);
+
+    // Burnt Food: 1800-1899
+    public static readonly ItemId BurntShrimps = new(1800);
+    public static readonly ItemId BurntAnchovies = new(1801);
+    public static readonly ItemId BurntSardine = new(1802);
+    public static readonly ItemId BurntHerring = new(1803);
+    public static readonly ItemId BurntTrout = new(1804);
+    public static readonly ItemId BurntSalmon = new(1805);
+    public static readonly ItemId BurntLobster = new(1806);
+    public static readonly ItemId BurntTuna = new(1807);
+    public static readonly ItemId BurntSwordfish = new(1808);
+    public static readonly ItemId BurntChicken = new(1809);
+    public static readonly ItemId BurntMeat = new(1810);
+
+    // Cooked Meat: 1850-1899
+    public static readonly ItemId CookedChicken = new(1850);
+    public static readonly ItemId CookedMeat = new(1851);
+    public static readonly ItemId Anchovies = new(1852);
+    public static readonly ItemId Sardine = new(1853);
+    public static readonly ItemId Herring = new(1854);
+    public static readonly ItemId Tuna = new(1855);
+    public static readonly ItemId Swordfish = new(1856);
+
+    // Pickaxes: 710-719
+    public static readonly ItemId IronPickaxe = new(710);
+    public static readonly ItemId SteelPickaxe = new(711);
+    public static readonly ItemId MithrilPickaxe = new(712);
+    public static readonly ItemId AdamantPickaxe = new(713);
+    public static readonly ItemId RunePickaxe = new(714);
 }

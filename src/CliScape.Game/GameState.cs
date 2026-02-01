@@ -161,6 +161,8 @@ public class GameState
             Equipment = equipment,
             SlayerTask = slayerTask
         };
+
+        Player.SetPrayerPoints(Player.MaximumPrayerPoints);
     }
 
     public void Save()
@@ -245,6 +247,8 @@ public class GameState
             CurrentLocation = GetCurrentLocation(),
             Inventory = inventory
         };
+
+        player.SetPrayerPoints(player.MaximumPrayerPoints);
 
         return player;
     }

@@ -5,6 +5,7 @@ using CliScape.Cli.Commands.Inventory;
 using CliScape.Cli.Commands.Item;
 using CliScape.Cli.Commands.Save;
 using CliScape.Cli.Commands.Shop;
+using CliScape.Cli.Commands.Skills;
 using CliScape.Cli.Commands.Slayer;
 using CliScape.Cli.Commands.Status;
 using CliScape.Cli.Commands.Walk;
@@ -26,12 +27,22 @@ app.Configure(configuration =>
 {
     configuration.SetInterceptor(new CommandInterceptor());
     
-    configuration.AddBranch("status", status =>
+    configuration.AddCommand<StatusCommand>(StatusCommand.CommandName);
+    
+    // Skills command branch - skill listing and training
+    configuration.AddBranch("skills", skills =>
     {
-        status.AddCommand<StatusOverviewCommand>(StatusOverviewCommand.CommandName);
-        status.AddCommand<StatusSkillsCommand>(StatusSkillsCommand.CommandName);
+        skills.AddCommand<SkillsListCommand>(SkillsListCommand.CommandName);
+        skills.AddCommand<FishCommand>(FishCommand.CommandName);
+        skills.AddCommand<ChopCommand>(ChopCommand.CommandName);
+        skills.AddCommand<MineCommand>(MineCommand.CommandName);
+        skills.AddCommand<SmeltCommand>(SmeltCommand.CommandName);
+        skills.AddCommand<SmithCommand>(SmithCommand.CommandName);
+        skills.AddCommand<CookCommand>(CookCommand.CommandName);
+        skills.AddCommand<ThieveCommand>(ThieveCommand.CommandName);
         
-        status.SetDefaultCommand<StatusOverviewCommand>();
+        skills.SetDefaultCommand<SkillsListCommand>();
+        skills.SetDescription("Perform skill related actions");
     });
     
     configuration.AddCommand<WalkCommand>(WalkCommand.CommandName);

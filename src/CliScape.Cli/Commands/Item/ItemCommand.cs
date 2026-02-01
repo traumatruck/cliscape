@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using CliScape.Core.Items;
 using CliScape.Core.Players;
+using CliScape.Core.Skills;
 using CliScape.Game;
 using Spectre.Console;
 using Spectre.Console.Cli;
@@ -55,6 +56,12 @@ public class ItemCommand : Command<ItemCommandSettings>, ICommand
             return (int)ExitCode.Failure;
         }
 
+        // Handle item-on-item interaction when --target is specified
+        if (settings.TargetItemName is not null)
+        {
+            return ExecuteItemOnItem(item, settings.TargetItemName, player, inventory);
+        }
+
         // Handle examine action
         if (settings.Examine)
         {
@@ -70,6 +77,35 @@ public class ItemCommand : Command<ItemCommandSettings>, ICommand
         }
 
         return ExecuteAction(item, actionType.Value, player, inventory);
+    }
+
+    private int ExecuteItemOnItem(IItem sourceItem, string targetItemName, Player player, Core.Items.Inventory inventory)
+    {
+        // Find the target item
+        var targetItem = FindItemByName(inventory, targetItemName);
+        if (targetItem is null)
+        {
+            AnsiConsole.MarkupLine($"[red]You don't have any '{targetItemName}' in your inventory.[/]");
+            return (int)ExitCode.Failure;
+        }
+
+        // Check for firemaking (tinderbox + logs)
+        if (FiremakingHelper.CanUseForFiremaking(sourceItem, targetItem, out _, out var logs) && logs is not null)
+        {
+            if (FiremakingHelper.TryLightLogs(player, logs, out var message))
+            {
+                AnsiConsole.MarkupLine($"[green]{message}[/]");
+                _gameState.Save();
+                return (int)ExitCode.Success;
+            }
+
+            AnsiConsole.MarkupLine($"[red]{message}[/]");
+            return (int)ExitCode.Failure;
+        }
+
+        // No valid interaction found
+        AnsiConsole.MarkupLine($"[yellow]Nothing interesting happens when you use {sourceItem.Name} on {targetItem.Name}.[/]");
+        return (int)ExitCode.Success;
     }
 
     private static IItem? FindItemByName(Core.Items.Inventory inventory, string name)

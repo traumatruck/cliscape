@@ -29,6 +29,10 @@ public sealed class Player
 
     public int MaximumHealth => Health.MaximumHealth;
 
+    public int CurrentPrayerPoints { get; private set; }
+
+    public int MaximumPrayerPoints => this.GetSkillLevel(SkillConstants.PrayerSkillName).Value;
+
     public int CombatLevel => SkillCollection.CombatLevel;
 
     public int TotalLevel => SkillCollection.TotalLevel;
@@ -38,6 +42,11 @@ public sealed class Player
     public void Move(ILocation location)
     {
         CurrentLocation = location;
+    }
+
+    public void SetPrayerPoints(int points)
+    {
+        CurrentPrayerPoints = Math.Clamp(points, 0, MaximumPrayerPoints);
     }
 
     /// <summary>

@@ -13,6 +13,10 @@ public sealed class ItemCommandSettings : CommandSettings
     [Description("The inventory slot number of the item (1-28)")]
     public int? ItemSlot { get; init; }
 
+    [CommandOption("-t|--target <target>")]
+    [Description("The name of another item in your inventory to use the first item on")]
+    public string? TargetItemName { get; init; }
+
     [CommandOption("-x|--examine")]
     [Description("Examine the item to see its description and stats")]
     public bool Examine { get; init; }

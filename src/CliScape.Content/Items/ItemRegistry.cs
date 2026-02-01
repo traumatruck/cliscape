@@ -32,9 +32,16 @@ public static class ItemRegistry
             typeof(LeatherEquipment),
             typeof(MiscEquipment),
             typeof(Food),
+            typeof(CookedFood),
+            typeof(BurntFood),
             typeof(Materials),
             typeof(Tools),
-            typeof(Ammunition)
+            typeof(Ammunition),
+            typeof(Logs),
+            typeof(RawFish),
+            typeof(Ores),
+            typeof(Bars),
+            typeof(Pickaxes)
         };
 
         foreach (var type in itemTypes)

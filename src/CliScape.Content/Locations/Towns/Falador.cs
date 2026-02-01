@@ -1,5 +1,7 @@
 using CliScape.Core.Npcs;
 using CliScape.Core.World;
+using CliScape.Core.World.Resources;
+using CliScape.Content.Resources;
 using CliScape.Content.Shops;
 
 namespace CliScape.Content.Locations.Towns;
@@ -18,4 +20,29 @@ public class Falador : ILocation
     public Bank? Bank { get; }
     
     public IReadOnlyList<INpc> AvailableNpcs { get; } = Array.Empty<INpc>();
+
+    public IReadOnlyList<IMiningRock> MiningRocks { get; } =
+    [
+        Resources.MiningRocks.CopperRock,
+        Resources.MiningRocks.TinRock,
+        Resources.MiningRocks.IronRock,
+        Resources.MiningRocks.CoalRock,
+        Resources.MiningRocks.MithrilRock
+    ];
+
+    public IReadOnlyList<IFurnace> Furnaces { get; } =
+    [
+        Resources.Furnaces.FaladorFurnace
+    ];
+
+    public IReadOnlyList<IAnvil> Anvils { get; } =
+    [
+        Resources.Anvils.FaladorAnvil
+    ];
+
+    public IReadOnlyList<IThievingTarget> ThievingTargets { get; } =
+    [
+        Resources.ThievingTargets.Man,
+        Resources.ThievingTargets.Guard
+    ];
 }

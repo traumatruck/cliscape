@@ -82,6 +82,8 @@ Commands use Spectre.Console.Cli framework.
   - `Shop` — Optional shop at location (can be `null`)
   - `Bank` — Optional bank at location (can be `null`)
   - `AvailableNpcs` — Collection of `ICombatableNpc` at this location
+  - `FishingSpots` — Collection of `IFishingSpot` at this location (defaults to empty)
+  - `Trees` — Collection of `ITree` at this location (defaults to empty)
 - **Discovery**: Locations are auto-discovered via reflection (no manual registration)
 
 ## NPC Implementation
@@ -153,8 +155,47 @@ Items support a composable action system via `IItemAction` interface.
   - `EdibleItem` — Extends `ActionableItem`, auto-adds `EatAction` and `UseAction`
   - `BuryableItem` — Extends `ActionableItem`, auto-adds `BuryAction` and `UseAction`
 - **Adding Multiple Actions**: Use `WithAction()` or `WithActions()` to add actions to any `ActionableItem`
+- **Item-on-Item Interactions**: Use `item --name <item> --target <other>` for item-on-item use (e.g., tinderbox on logs)
 - **CLI Usage**: `item <name> --examine|--use|--eat|--bury|--drink|--read|--equip`
 - **Example**: See `src/CliScape.Content/Items/Food.cs` for edible items
+
+## Skilling System
+
+Players train skills via world interactions and item-on-item mechanics.
+
+### Skill Commands
+
+- **`skills list`** — View all 23 skills with levels, XP, and progress to next level
+- **`skills fish [spot]`** — List fishing spots or fish at a specific spot
+- **`skills chop [tree]`** — List trees or chop a specific tree type
+- **Firemaking**: Use `item --name Tinderbox --target Logs` to burn logs
+
+### World Resources
+
+Resources are defined in `src/CliScape.Content/Resources/`:
+
+- **FishingSpots.cs** — Fishing spot definitions (SmallNetSpot, LureSpot, CageSpot, HarpoonSpot)
+- **Trees.cs** — Tree definitions (NormalTree, OakTree, WillowTree, etc.)
+
+### Resource Interfaces
+
+Located in `src/CliScape.Core/World/Resources/`:
+
+- **IFishingSpot** — Fishing spots with spot type, required level, tool, and possible catches
+- **ITree** — Trees with type, required level, experience, and log output
+
+### Adding New Skilling Resources
+
+1. Add item IDs to `ItemIds.cs` (logs use 1200-1299, raw fish use 1300-1399)
+2. Create item definitions in appropriate class (Logs.cs, RawFish.cs)
+3. Register in `ItemRegistry.cs`
+4. Add resource definition in `Resources/` folder
+5. Add resources to location `FishingSpots` or `Trees` property
+
+### Skill Helpers
+
+- **FiremakingHelper** (`CliScape.Core.Skills`) — Handles tinderbox + logs interactions
+- Use `Player.AddExperience(skill, xp)` to grant experience
 
 ## Shop Implementation
 
