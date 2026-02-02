@@ -9,8 +9,8 @@ CliScape is an OSRS-inspired CLI game built with .NET 10. This document provides
 ```
 src/
 ├── CliScape.Cli        → CLI entry point, command wiring (Spectre.Console.Cli)
-├── CliScape.Game       → Game orchestration, state management, persistence
-├── CliScape.Core       → Domain models: players, NPCs, skills, combat mechanics
+├── CliScape.Game       → Game orchestration, services, state management, persistence
+├── CliScape.Core       → Domain models: players, NPCs, skills, combat, events
 ├── CliScape.Content    → Game content: locations, NPCs, items
 └── CliScape.Infrastructure → Configuration, binary persistence implementation
 tests/
@@ -29,6 +29,11 @@ Cli → Game → Content → Core
 - **Spectre.Console** — CLI framework and terminal UI
 - **OneOf** — Discriminated unions for result types
 - **xUnit + coverlet.collector** — Testing and coverage
+
+### Architecture Patterns
+- **Singleton + DI Ready**: Services expose `Instance` singletons but accept dependencies via constructor for testing
+- **Domain Events**: Cross-cutting concerns (level-ups, combat outcomes) use event dispatching
+- **Value Objects**: Domain primitives wrapped for type safety (Gold, Damage, Experience, ItemId, etc.)
 
 ## Build & Run
 
@@ -65,13 +70,34 @@ Commands use Spectre.Console.Cli framework.
 
 ## GameState & Persistence
 
-- **Singleton**: `GameState.Instance` is the central state manager
-- **Initialization**: Call `GameState.Instance.Configure(persistenceStore)` before use
-- **Player Access**: `GameState.Instance.Player` returns current player
-- **Location Access**: `GameState.Instance.FindLocation(name)` to look up locations
+- **Singleton**: `GameState.Instance` is the central state manager implementing `IPlayerManager`, `ILocationRegistry`, `ICombatSessionManager`
+- **Initialization**: Call `GameState.Instance.Configure(persistenceStore, savePath)` before use
+- **Player Access**: `GameState.Instance.GetPlayer()` returns current player
+- **Location Access**: `GameState.Instance.GetLocation(name)` to look up locations
 - **Combat**: `GameState.Instance.StartCombat(npc)` and `CombatSession` methods
 - **Save Format**: Binary via `BinaryPersistenceStore`
 - **Save Location**: `~/.local/share/CliScape/save.bin`
+
+### Game Services
+
+Services in `CliScape.Game` provide orchestrated game logic:
+
+- **CombatEngine** (`Game/Combat/`) — Executes combat turns, processes outcomes, handles XP/drops
+- **SlayerService** (`Game/Slayer/`) — Assigns and cancels slayer tasks
+- **FishingService** (`Game/Skills/`) — Handles fishing validation and execution
+- **WoodcuttingService** (`Game/Skills/`) — Handles tree chopping
+- **MiningService** (`Game/Skills/`) — Handles ore mining with pickaxe tier checks
+- **SmeltingService** (`Game/Skills/`) — Handles ore smelting
+- **CookingService** (`Game/Skills/`) — Handles cooking with burn chance calculation
+- **FiremakingService** (`Game/Skills/`) — Handles log burning
+- **EquipmentService** (`Game/Items/`) — Equipment requirement validation and equip/unequip
+- **LootService** (`Game/Items/`) — Handles looting from pending loot
+
+All services use singleton pattern with injectable dependencies:
+```csharp
+public static readonly MyService Instance = new(RandomProvider.Instance, DomainEventDispatcher.Instance);
+public MyService(IRandomProvider random, IDomainEventDispatcher events) { ... }
+```
 
 ## Location Implementation
 
@@ -195,7 +221,81 @@ Located in `src/CliScape.Core/World/Resources/`:
 ### Skill Helpers
 
 - **FiremakingHelper** (`CliScape.Core.Skills`) — Handles tinderbox + logs interactions
+- **CookingHelper** (`CliScape.Core.Skills`) — Recipe lookup and burn chance calculations
+- **SmithingHelper** (`CliScape.Core.Skills`) — Smelting and smithing recipe definitions
 - Use `Player.AddExperience(skill, xp)` to grant experience
+
+### Skill Data Types
+
+Located in `CliScape.Core.Skills/`:
+- **SmeltingRecipe** — Record for smelting ore into bars
+- **SmithingRecipe** — Record for smithing bars into equipment
+- **CookingRecipe** — Record for cooking raw food
+
+## Domain Events
+
+Events are dispatched for cross-cutting concerns via `IDomainEventDispatcher`.
+
+### Event Types (in `CliScape.Core.Events/`)
+
+- **LevelUpEvent** — Skill level increased
+- **ExperienceGainedEvent** — XP awarded to a skill
+- **CombatStartedEvent** / **CombatEndedEvent** — Combat lifecycle
+- **ItemPickedUpEvent** / **ItemDroppedEvent** — Inventory changes
+- **SlayerTaskCompletedEvent** — Slayer task finished
+- **PlayerDiedEvent** — Player died
+
+### Usage Pattern
+
+```csharp
+// Raise events
+_eventDispatcher.Raise(new LevelUpEvent("Fishing", 50));
+
+// Subscribe to events
+dispatcher.Subscribe<LevelUpEvent>(e => Console.WriteLine($"Level up: {e.SkillName}"));
+```
+
+## Randomness & Testability
+
+All random-dependent code uses `IRandomProvider` for testability.
+
+- **Interface**: `IRandomProvider` in `CliScape.Core`
+- **Default**: `RandomProvider.Instance` uses `Random.Shared`
+- **Testing**: Inject mock implementations for deterministic tests
+
+```csharp
+public class MyService
+{
+    private readonly IRandomProvider _random;
+    
+    public static readonly MyService Instance = new(RandomProvider.Instance);
+    
+    public MyService(IRandomProvider random) => _random = random;
+    
+    public int RollDamage(int maxHit) => _random.Next(0, maxHit + 1);
+}
+```
+
+## Value Objects
+
+Domain primitives in `CliScape.Core/` for type safety:
+
+- **Gold** — Non-negative coin amounts with display formatting
+- **Damage** — Combat damage with hit/miss semantics
+- **Hitpoints** — Health points with damage/heal operations
+- **Experience** — XP values capped at 200M
+- **ItemId** — Item type identifier
+- **ItemName** — Item display name
+- **NpcName** — NPC display name
+- **LocationName** — Location identifier
+- **SkillName** — Skill identifier
+- **ShopName** — Shop display name
+
+Value objects provide:
+- Validation (non-negative, max values)
+- Operator overloading (+, -, comparisons)
+- Display formatting (1.2M, 50K, etc.)
+- Implicit conversion to/from primitives
 
 ## Shop Implementation
 

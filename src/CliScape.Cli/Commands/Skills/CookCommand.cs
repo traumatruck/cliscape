@@ -98,7 +98,7 @@ public class CookCommand : Command<CookCommandSettings>, ICommand
         return (int)ExitCode.Success;
     }
 
-    private int CookFood(Player player, ICookingRange range, CookingHelper.CookingRecipe recipe,
+    private int CookFood(Player player, ICookingRange range, CookingRecipe recipe,
         int count)
     {
         var cookingSkill = player.GetSkill(SkillConstants.CookingSkillName);

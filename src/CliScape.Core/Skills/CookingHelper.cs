@@ -25,7 +25,7 @@ public static class CookingHelper
         new(ItemIds.RawSwordfish, ItemIds.Swordfish, ItemIds.BurntSwordfish, 45, 140, 86)
     ];
 
-    private static readonly Random _random = new();
+    private static readonly Random Random = new();
 
     /// <summary>
     ///     Finds a cooking recipe for the given raw item.
@@ -102,7 +102,7 @@ public static class CookingHelper
     /// </summary>
     public static bool DoesBurn(double burnChance)
     {
-        return _random.NextDouble() < burnChance;
+        return Random.NextDouble() < burnChance;
     }
 
     /// <summary>
@@ -283,21 +283,4 @@ public static class CookingHelper
         public static readonly ItemId BurntChicken = new(1809);
         public static readonly ItemId BurntMeat = new(1810);
     }
-
-    /// <summary>
-    ///     Represents a cooking recipe.
-    /// </summary>
-    /// <param name="RawItemId">The raw food item ID.</param>
-    /// <param name="CookedItemId">The cooked food item ID.</param>
-    /// <param name="BurntItemId">The burnt food item ID.</param>
-    /// <param name="RequiredLevel">The cooking level required.</param>
-    /// <param name="Experience">The XP granted on success.</param>
-    /// <param name="StopBurnLevel">The level at which burning stops (for ranges).</param>
-    public readonly record struct CookingRecipe(
-        ItemId RawItemId,
-        ItemId CookedItemId,
-        ItemId BurntItemId,
-        int RequiredLevel,
-        int Experience,
-        int StopBurnLevel);
 }

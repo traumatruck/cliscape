@@ -161,7 +161,7 @@ public class SmithCommand : Command<SmithCommandSettings>, ICommand
         return (int)ExitCode.Success;
     }
 
-    private int SmithItems(Player player, ItemId barId, SmithingHelper.SmithingRecipe recipe, int count)
+    private int SmithItems(Player player, ItemId barId, SmithingRecipe recipe, int count)
     {
         var smithingSkill = player.GetSkill(SkillConstants.SmithingSkillName);
         var smithingLevel = smithingSkill.Level.Value;

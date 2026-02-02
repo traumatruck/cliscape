@@ -1,69 +1,53 @@
 namespace CliScape.Core.Players.Skills;
 
+/// <summary>
+///     Contains all skills for a player, providing access by name and calculating derived stats.
+/// </summary>
 public class PlayerSkillCollection
 {
+    private readonly Dictionary<string, IPlayerSkill> _skillsByName;
+
     public PlayerSkillCollection()
     {
+        // Create all skills using the consolidated PlayerSkill class
         All =
         [
-            Attack,
-            Defence,
-            Strength,
-            Hitpoints,
-            Ranged,
-            Prayer,
-            Magic,
-            Cooking,
-            Woodcutting,
-            Fletching,
-            Fishing,
-            Firemaking,
-            Crafting,
-            Smithing,
-            Mining,
-            Herblore,
-            Agility,
-            Thieving,
-            Slayer,
-            Farming,
-            Runecraft,
-            Hunter,
-            Construction
+            // Combat Skills
+            new PlayerSkill(SkillConstants.AttackSkillName),
+            new PlayerSkill(SkillConstants.DefenceSkillName),
+            new PlayerSkill(SkillConstants.StrengthSkillName),
+            new PlayerSkill(SkillConstants.HitpointsSkillName, SkillConstants.StartingHitpoints),
+            new PlayerSkill(SkillConstants.RangedSkillName),
+            new PlayerSkill(SkillConstants.PrayerSkillName),
+            new PlayerSkill(SkillConstants.MagicSkillName),
+
+            // Gathering Skills
+            new PlayerSkill(SkillConstants.CookingSkillName),
+            new PlayerSkill(SkillConstants.WoodcuttingSkillName),
+            new PlayerSkill(SkillConstants.FletchingSkillName),
+            new PlayerSkill(SkillConstants.FishingSkillName),
+            new PlayerSkill(SkillConstants.FiremakingSkillName),
+            new PlayerSkill(SkillConstants.CraftingSkillName),
+            new PlayerSkill(SkillConstants.SmithingSkillName),
+            new PlayerSkill(SkillConstants.MiningSkillName),
+            new PlayerSkill(SkillConstants.HerbloreSkillName),
+            new PlayerSkill(SkillConstants.AgilitySkillName),
+            new PlayerSkill(SkillConstants.ThievingSkillName),
+            new PlayerSkill(SkillConstants.SlayerSkillName),
+            new PlayerSkill(SkillConstants.FarmingSkillName),
+            new PlayerSkill(SkillConstants.RunecraftSkillName),
+            new PlayerSkill(SkillConstants.HunterSkillName),
+            new PlayerSkill(SkillConstants.ConstructionSkillName)
         ];
+
+        // Build lookup dictionary for fast access
+        _skillsByName = All.ToDictionary(s => s.Name.Name, s => s);
     }
 
+    /// <summary>
+    ///     Gets all player skills.
+    /// </summary>
     public IPlayerSkill[] All { get; }
-
-    // Combat Skills
-    private AttackSkill Attack { get; } = new();
-    private StrengthSkill Strength { get; } = new();
-    private DefenceSkill Defence { get; } = new();
-    private HitpointsSkill Hitpoints { get; } = new();
-    private RangedSkill Ranged { get; } = new();
-    private PrayerSkill Prayer { get; } = new();
-    private MagicSkill Magic { get; } = new();
-
-    // Gathering Skills
-    private MiningSkill Mining { get; } = new();
-    private FishingSkill Fishing { get; } = new();
-    private WoodcuttingSkill Woodcutting { get; } = new();
-    private FarmingSkill Farming { get; } = new();
-    private HunterSkill Hunter { get; } = new();
-
-    // Artisan Skills
-    private SmithingSkill Smithing { get; } = new();
-    private CraftingSkill Crafting { get; } = new();
-    private FletchingSkill Fletching { get; } = new();
-    private CookingSkill Cooking { get; } = new();
-    private FiremakingSkill Firemaking { get; } = new();
-    private HerbloreSkill Herblore { get; } = new();
-    private ConstructionSkill Construction { get; } = new();
-
-    // Support Skills
-    private AgilitySkill Agility { get; } = new();
-    private ThievingSkill Thieving { get; } = new();
-    private SlayerSkill Slayer { get; } = new();
-    private RunecraftSkill Runecraft { get; } = new();
 
     /// <summary>
     ///     Calculates the player's combat level using OSRS formula.
@@ -72,10 +56,18 @@ public class PlayerSkillCollection
     {
         get
         {
-            var baseLevel = 0.25 * (Defence.GetLevel() + Hitpoints.GetLevel() + Math.Floor(Prayer.GetLevel() / 2.0));
-            var meleeLevel = 0.325 * (Attack.GetLevel() + Strength.GetLevel());
-            var rangedLevel = 0.325 * (Math.Floor(Ranged.GetLevel() / 2.0) + Ranged.GetLevel());
-            var magicLevel = 0.325 * (Math.Floor(Magic.GetLevel() / 2.0) + Magic.GetLevel());
+            var defence = GetLevel(SkillConstants.DefenceSkillName);
+            var hitpoints = GetLevel(SkillConstants.HitpointsSkillName);
+            var prayer = GetLevel(SkillConstants.PrayerSkillName);
+            var attack = GetLevel(SkillConstants.AttackSkillName);
+            var strength = GetLevel(SkillConstants.StrengthSkillName);
+            var ranged = GetLevel(SkillConstants.RangedSkillName);
+            var magic = GetLevel(SkillConstants.MagicSkillName);
+
+            var baseLevel = 0.25 * (defence + hitpoints + Math.Floor(prayer / 2.0));
+            var meleeLevel = 0.325 * (attack + strength);
+            var rangedLevel = 0.325 * (Math.Floor(ranged / 2.0) + ranged);
+            var magicLevel = 0.325 * (Math.Floor(magic / 2.0) + magic);
             var combatLevel = baseLevel + Math.Max(meleeLevel, Math.Max(rangedLevel, magicLevel));
 
             return (int)Math.Floor(combatLevel);
@@ -85,8 +77,30 @@ public class PlayerSkillCollection
     /// <summary>
     ///     Calculates the player's total level (sum of all skill levels).
     /// </summary>
-    public int TotalLevel
+    public int TotalLevel => All.Sum(skill => skill.Level.Value);
+
+    /// <summary>
+    ///     Gets a skill by its name.
+    /// </summary>
+    /// <param name="name">The skill name.</param>
+    /// <returns>The skill if found, null otherwise.</returns>
+    public IPlayerSkill? GetByName(SkillName name)
     {
-        get { return All.Sum(skill => skill.Level.Value); }
+        return _skillsByName.GetValueOrDefault(name.Name);
+    }
+
+    /// <summary>
+    ///     Gets a skill by its string name.
+    /// </summary>
+    /// <param name="name">The skill name as a string.</param>
+    /// <returns>The skill if found, null otherwise.</returns>
+    public IPlayerSkill? GetByName(string name)
+    {
+        return _skillsByName.GetValueOrDefault(name);
+    }
+
+    private int GetLevel(SkillName name)
+    {
+        return GetByName(name)?.Level.Value ?? 1;
     }
 }

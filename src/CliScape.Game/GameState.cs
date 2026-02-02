@@ -10,35 +10,26 @@ using CliScape.Game.Persistence;
 
 namespace CliScape.Game;
 
-public class GameState
+/// <summary>
+///     Central game state facade providing access to player, location, and combat management.
+///     Implements focused interfaces and delegates to specialized managers.
+/// </summary>
+public class GameState : IPlayerManager, ILocationRegistry, ICombatSessionManager
 {
     public static readonly GameState Instance = new();
+    private readonly CombatSessionManager _combatSessionManager;
+
+    private readonly LocationRegistry _locationRegistry;
     private string? _saveFilePath;
     private IGameStateStore? _store;
 
     private GameState()
     {
-        LocationLibrary.LoadFrom(typeof(Lumbridge).Assembly);
+        _locationRegistry = LocationRegistry.Instance;
+        _combatSessionManager = CombatSessionManager.Instance;
     }
 
-    private LocationLibrary LocationLibrary { get; } = new();
-
     private Player? Player { get; set; }
-
-    /// <summary>
-    ///     The current active combat session, if any.
-    /// </summary>
-    public CombatSession? CurrentCombat { get; private set; }
-
-    /// <summary>
-    ///     Whether the player is currently in combat.
-    /// </summary>
-    public bool IsInCombat => CurrentCombat is { IsComplete: false };
-
-    /// <summary>
-    ///     Loot available from the most recent combat.
-    /// </summary>
-    public PendingLoot PendingLoot { get; } = new();
 
     /// <summary>
     ///     Gets the path to the save file. Must be configured before use.
@@ -47,33 +38,43 @@ public class GameState
                                   ?? throw new InvalidOperationException(
                                       "GameState has not been configured. Call Configure() first.");
 
-    /// <summary>
-    ///     Configures the game state with the required dependencies.
-    /// </summary>
-    /// <param name="store">The game state store implementation.</param>
-    /// <param name="saveFilePath">The path to the save file.</param>
-    public void Configure(IGameStateStore store, string saveFilePath)
+    /// <inheritdoc />
+    public CombatSession? CurrentCombat => _combatSessionManager.CurrentCombat;
+
+    /// <inheritdoc />
+    public bool IsInCombat => _combatSessionManager.IsInCombat;
+
+    /// <inheritdoc />
+    public PendingLoot PendingLoot => _combatSessionManager.PendingLoot;
+
+    /// <inheritdoc />
+    public CombatSession StartCombat(Player player, ICombatableNpc npc)
     {
-        _store = store;
-        _saveFilePath = saveFilePath;
+        return _combatSessionManager.StartCombat(player, npc);
     }
 
-    /// <summary>
-    ///     Start a combat session with the specified NPC.
-    /// </summary>
-    public CombatSession StartCombat(ICombatableNpc npc)
-    {
-        var player = GetPlayer();
-        CurrentCombat = new CombatSession(player, npc);
-        return CurrentCombat;
-    }
-
-    /// <summary>
-    ///     End the current combat session.
-    /// </summary>
+    /// <inheritdoc />
     public void EndCombat()
     {
-        CurrentCombat = null;
+        _combatSessionManager.EndCombat();
+    }
+
+    /// <inheritdoc />
+    public ILocation? GetLocation(string name)
+    {
+        return _locationRegistry.GetLocation(name);
+    }
+
+    /// <inheritdoc />
+    public ILocation? GetLocation(LocationName name)
+    {
+        return _locationRegistry.GetLocation(name);
+    }
+
+    /// <inheritdoc />
+    public IEnumerable<ILocation> GetAllLocations()
+    {
+        return _locationRegistry.GetAllLocations();
     }
 
     /// <summary>
@@ -209,14 +210,30 @@ public class GameState
         store.SavePlayer(snapshot);
     }
 
-    public ILocation? GetLocation(string name)
-    {
-        return LocationLibrary.GetLocation(new LocationName(name));
-    }
-
+    /// <inheritdoc />
     public Player GetPlayer()
     {
         return Player ?? throw new InvalidOperationException("A player has not been loaded.");
+    }
+
+    /// <summary>
+    ///     Configures the game state with the required dependencies.
+    /// </summary>
+    /// <param name="store">The game state store implementation.</param>
+    /// <param name="saveFilePath">The path to the save file.</param>
+    public void Configure(IGameStateStore store, string saveFilePath)
+    {
+        _store = store;
+        _saveFilePath = saveFilePath;
+    }
+
+    /// <summary>
+    ///     Start a combat session with the specified NPC using the current player.
+    /// </summary>
+    public CombatSession StartCombat(ICombatableNpc npc)
+    {
+        var player = GetPlayer();
+        return _combatSessionManager.StartCombat(player, npc);
     }
 
     private ILocation GetCurrentLocation()
@@ -227,18 +244,18 @@ public class GameState
     private Player CreateDefaultPlayer()
     {
         var inventory = new Inventory();
-        
+
         // Add starter items like OSRS
         inventory.TryAdd(ItemRegistry.GetById(ItemIds.Coins)!, 500);
-        inventory.TryAdd(ItemRegistry.GetById(ItemIds.BronzeSword)!, 1);
-        inventory.TryAdd(ItemRegistry.GetById(ItemIds.WoodenShield)!, 1);
-        inventory.TryAdd(ItemRegistry.GetById(ItemIds.Shortbow)!, 1);
+        inventory.TryAdd(ItemRegistry.GetById(ItemIds.BronzeSword)!);
+        inventory.TryAdd(ItemRegistry.GetById(ItemIds.WoodenShield)!);
+        inventory.TryAdd(ItemRegistry.GetById(ItemIds.Shortbow)!);
         inventory.TryAdd(ItemRegistry.GetById(ItemIds.BronzeArrow)!, 50);
-        inventory.TryAdd(ItemRegistry.GetById(ItemIds.BronzeHatchet)!, 1);
-        inventory.TryAdd(ItemRegistry.GetById(ItemIds.BronzePickaxe)!, 1);
-        inventory.TryAdd(ItemRegistry.GetById(ItemIds.Tinderbox)!, 1);
-        inventory.TryAdd(ItemRegistry.GetById(ItemIds.SmallFishingNet)!, 1);
-        inventory.TryAdd(ItemRegistry.GetById(ItemIds.Hammer)!, 1);
+        inventory.TryAdd(ItemRegistry.GetById(ItemIds.BronzeHatchet)!);
+        inventory.TryAdd(ItemRegistry.GetById(ItemIds.BronzePickaxe)!);
+        inventory.TryAdd(ItemRegistry.GetById(ItemIds.Tinderbox)!);
+        inventory.TryAdd(ItemRegistry.GetById(ItemIds.SmallFishingNet)!);
+        inventory.TryAdd(ItemRegistry.GetById(ItemIds.Hammer)!);
 
         var player = new Player
         {

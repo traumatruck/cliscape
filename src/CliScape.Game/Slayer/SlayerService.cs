@@ -1,3 +1,4 @@
+using CliScape.Core;
 using CliScape.Core.Players;
 using CliScape.Core.Slayer;
 
@@ -6,12 +7,34 @@ namespace CliScape.Game.Slayer;
 /// <summary>
 ///     Manages slayer task assignment and completion.
 /// </summary>
-public static class SlayerService
+public interface ISlayerService
 {
     /// <summary>
     ///     Attempts to assign a new slayer task from the specified master.
     /// </summary>
-    public static SlayerTaskResult AssignTask(Player player, SlayerMaster master)
+    SlayerTaskResult AssignTask(Player player, SlayerMaster master);
+
+    /// <summary>
+    ///     Cancels the player's current slayer task.
+    /// </summary>
+    bool CancelTask(Player player);
+}
+
+/// <summary>
+///     Default implementation of <see cref="ISlayerService" />.
+/// </summary>
+public sealed class SlayerService : ISlayerService
+{
+    public static readonly SlayerService Instance = new(RandomProvider.Instance);
+    private readonly IRandomProvider _random;
+
+    public SlayerService(IRandomProvider random)
+    {
+        _random = random;
+    }
+
+    /// <inheritdoc />
+    public SlayerTaskResult AssignTask(Player player, SlayerMaster master)
     {
         // Check if player already has a task
         if (player.SlayerTask != null && !player.SlayerTask.IsComplete)
@@ -45,7 +68,7 @@ public static class SlayerService
 
         // Weighted random selection
         var totalWeight = validAssignments.Sum(a => a.Weight);
-        var roll = Random.Shared.Next(totalWeight);
+        var roll = _random.Next(totalWeight);
         var cumulativeWeight = 0;
         SlayerAssignment? selectedAssignment = null;
 
@@ -62,7 +85,7 @@ public static class SlayerService
         selectedAssignment ??= validAssignments[0];
 
         // Generate random kill count
-        var killCount = Random.Shared.Next(selectedAssignment.MinKills, selectedAssignment.MaxKills + 1);
+        var killCount = _random.Next(selectedAssignment.MinKills, selectedAssignment.MaxKills + 1);
 
         // Create and assign the task
         var task = new SlayerTask
@@ -78,10 +101,8 @@ public static class SlayerService
         return new SlayerTaskResult.TaskAssigned(task);
     }
 
-    /// <summary>
-    ///     Cancels the player's current slayer task.
-    /// </summary>
-    public static bool CancelTask(Player player)
+    /// <inheritdoc />
+    public bool CancelTask(Player player)
     {
         if (player.SlayerTask == null)
         {
@@ -91,16 +112,4 @@ public static class SlayerService
         player.SlayerTask = null;
         return true;
     }
-}
-
-/// <summary>
-///     Result of attempting to get a slayer task.
-/// </summary>
-public abstract record SlayerTaskResult
-{
-    public record TaskAssigned(SlayerTask Task) : SlayerTaskResult;
-    public record AlreadyHaveTask(SlayerTask CurrentTask) : SlayerTaskResult;
-    public record InsufficientCombatLevel(int Required) : SlayerTaskResult;
-    public record InsufficientSlayerLevel(int Required) : SlayerTaskResult;
-    public record NoValidAssignments() : SlayerTaskResult;
 }

@@ -19,6 +19,11 @@ public class CombatRewards
     public IReadOnlyList<LevelUp> LevelUps => _levelUps;
 
     /// <summary>
+    ///     Gets the total experience gained across all skills.
+    /// </summary>
+    public int TotalExperience => _experienceGained.Values.Sum();
+
+    /// <summary>
     ///     Records experience gained for a skill.
     /// </summary>
     public void AddExperience(string skillName, int amount)
@@ -36,14 +41,4 @@ public class CombatRewards
     {
         _levelUps.Add(new LevelUp(skillName, newLevel));
     }
-
-    /// <summary>
-    ///     Gets the total experience gained across all skills.
-    /// </summary>
-    public int TotalExperience => _experienceGained.Values.Sum();
 }
-
-/// <summary>
-///     Represents a level-up event.
-/// </summary>
-public record LevelUp(string SkillName, int NewLevel);

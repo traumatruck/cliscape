@@ -93,7 +93,7 @@ public class SlayerCommand : Command<SlayerCommandSettings>, ICommand
             return (int)ExitCode.BadRequest;
         }
 
-        var result = SlayerService.AssignTask(player, master);
+        var result = SlayerService.Instance.AssignTask(player, master);
 
         return result switch
         {
@@ -148,7 +148,7 @@ public class SlayerCommand : Command<SlayerCommandSettings>, ICommand
         }
 
         var task = player.SlayerTask;
-        SlayerService.CancelTask(player);
+        SlayerService.Instance.CancelTask(player);
         AnsiConsole.MarkupLine($"[yellow]Your {task.Category} task has been cancelled.[/]");
         return (int)ExitCode.Success;
     }

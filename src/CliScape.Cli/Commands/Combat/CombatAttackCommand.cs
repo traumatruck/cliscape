@@ -229,13 +229,13 @@ public class CombatAttackCommand : Command<CombatAttackCommandSettings>, IComman
         var player = combat.Player;
         var npc = combat.Npc;
 
-        var attackRoll = CombatCalculator.CalculatePlayerAttackRoll(player);
-        var defenceRoll = CombatCalculator.CalculateNpcDefenceRoll(npc);
+        var attackRoll = CombatCalculator.Instance.CalculatePlayerAttackRoll(player);
+        var defenceRoll = CombatCalculator.Instance.CalculateNpcDefenceRoll(npc);
 
-        if (CombatCalculator.DoesAttackHit(attackRoll, defenceRoll))
+        if (CombatCalculator.Instance.DoesAttackHit(attackRoll, defenceRoll))
         {
-            var maxHit = CombatCalculator.CalculatePlayerMaxHit(player);
-            var damage = CombatCalculator.RollDamage(maxHit);
+            var maxHit = CombatCalculator.Instance.CalculatePlayerMaxHit(player);
+            var damage = CombatCalculator.Instance.RollDamage(maxHit);
 
             combat.DamageNpc(damage);
 
@@ -244,7 +244,7 @@ public class CombatAttackCommand : Command<CombatAttackCommandSettings>, IComman
                 _lastPlayerAction = $"[green]You hit the {npc.Name} for {damage} damage![/]";
 
                 // Award experience
-                var xp = CombatCalculator.CalculateExperience(damage, style);
+                var xp = CombatCalculator.Instance.CalculateExperience(damage, style);
                 AwardExperience(combat, xp);
             }
             else
@@ -301,12 +301,12 @@ public class CombatAttackCommand : Command<CombatAttackCommandSettings>, IComman
             return;
         }
 
-        var attackRoll = CombatCalculator.CalculateNpcAttackRoll(npc);
-        var defenceRoll = CombatCalculator.CalculatePlayerDefenceRoll(player, npc);
+        var attackRoll = CombatCalculator.Instance.CalculateNpcAttackRoll(npc);
+        var defenceRoll = CombatCalculator.Instance.CalculatePlayerDefenceRoll(player, npc);
 
-        if (CombatCalculator.DoesAttackHit(attackRoll, defenceRoll))
+        if (CombatCalculator.Instance.DoesAttackHit(attackRoll, defenceRoll))
         {
-            var damage = CombatCalculator.RollDamage(attack.MaxHit);
+            var damage = CombatCalculator.Instance.RollDamage(attack.MaxHit);
 
             combat.DamagePlayer(damage);
 

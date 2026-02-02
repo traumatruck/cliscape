@@ -90,7 +90,7 @@ public class SmeltCommand : Command<SmeltCommandSettings>, ICommand
         return (int)ExitCode.Success;
     }
 
-    private int SmeltBars(Player player, SmithingHelper.SmeltingRecipe recipe, int count)
+    private int SmeltBars(Player player, SmeltingRecipe recipe, int count)
     {
         var smithingSkill = player.GetSkill(SkillConstants.SmithingSkillName);
         var smithingLevel = smithingSkill.Level.Value;
