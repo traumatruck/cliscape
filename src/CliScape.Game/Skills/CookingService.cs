@@ -9,39 +9,6 @@ using CliScape.Core.World.Resources;
 namespace CliScape.Game.Skills;
 
 /// <summary>
-///     Result of a cooking action.
-/// </summary>
-public record CookingResult(
-    bool Success,
-    string Message,
-    int ItemsCooked,
-    int ItemsBurnt,
-    string? FoodName,
-    int TotalExperience,
-    LevelUpInfo? LevelUp = null);
-
-/// <summary>
-///     Handles cooking logic.
-/// </summary>
-public interface ICookingService
-{
-    /// <summary>
-    ///     Validates if the player can cook the specified recipe.
-    /// </summary>
-    (bool CanCook, string? ErrorMessage) CanCook(Player player, int requiredLevel);
-
-    /// <summary>
-    ///     Performs cooking of the specified recipe.
-    /// </summary>
-    CookingResult Cook(
-        Player player,
-        ICookingRange range,
-        CookingRecipe recipe,
-        int count,
-        Func<ItemId, IItem?> itemResolver);
-}
-
-/// <summary>
 ///     Default implementation of <see cref="ICookingService" />.
 /// </summary>
 public sealed class CookingService : ICookingService

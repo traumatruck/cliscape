@@ -21,31 +21,3 @@ public interface ICookingRange
     /// </summary>
     int BurnChanceReduction { get; }
 }
-
-/// <summary>
-///     The type of cooking source.
-/// </summary>
-public enum CookingSourceType
-{
-    /// <summary>
-    ///     A fire made from logs.
-    /// </summary>
-    Fire,
-
-    /// <summary>
-    ///     A proper cooking range.
-    /// </summary>
-    Range
-}
-
-/// <summary>
-///     A standard cooking range implementation.
-/// </summary>
-public class CookingRange : ICookingRange
-{
-    public required string Name { get; init; }
-
-    public required CookingSourceType SourceType { get; init; }
-
-    public required int BurnChanceReduction { get; init; }
-}

@@ -6,36 +6,6 @@ using CliScape.Core.Players.Skills;
 namespace CliScape.Game.Items;
 
 /// <summary>
-///     Result of an equip action.
-/// </summary>
-public record EquipResult(
-    bool Success,
-    string Message,
-    IEquippable? EquippedItem = null,
-    IEquippable? UnequippedItem = null);
-
-/// <summary>
-///     Handles equipment logic.
-/// </summary>
-public interface IEquipmentService
-{
-    /// <summary>
-    ///     Validates if the player meets requirements to equip an item.
-    /// </summary>
-    (bool CanEquip, string? ErrorMessage) CanEquip(Player player, IEquippable item);
-
-    /// <summary>
-    ///     Equips an item from the player's inventory.
-    /// </summary>
-    EquipResult Equip(Player player, IEquippable item);
-
-    /// <summary>
-    ///     Unequips an item from the specified slot.
-    /// </summary>
-    EquipResult Unequip(Player player, EquipmentSlot slot);
-}
-
-/// <summary>
 ///     Default implementation of <see cref="IEquipmentService" />.
 /// </summary>
 public sealed class EquipmentService : IEquipmentService

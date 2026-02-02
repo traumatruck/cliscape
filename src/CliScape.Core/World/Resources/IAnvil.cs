@@ -10,11 +10,3 @@ public interface IAnvil
     /// </summary>
     string Name { get; }
 }
-
-/// <summary>
-///     A standard anvil implementation.
-/// </summary>
-public class Anvil : IAnvil
-{
-    public required string Name { get; init; }
-}

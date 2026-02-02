@@ -7,37 +7,6 @@ using CliScape.Core.Skills;
 namespace CliScape.Game.Skills;
 
 /// <summary>
-///     Result of a smelting action.
-/// </summary>
-public record SmeltingResult(
-    bool Success,
-    string Message,
-    int BarsSmelted,
-    string? BarName,
-    int TotalExperience,
-    LevelUpInfo? LevelUp = null);
-
-/// <summary>
-///     Handles smelting logic.
-/// </summary>
-public interface ISmeltingService
-{
-    /// <summary>
-    ///     Validates if the player can smelt the specified recipe.
-    /// </summary>
-    (bool CanSmelt, string? ErrorMessage) CanSmelt(Player player, int requiredLevel);
-
-    /// <summary>
-    ///     Performs smelting of the specified recipe.
-    /// </summary>
-    SmeltingResult Smelt(
-        Player player,
-        SmeltingRecipe recipe,
-        int count,
-        Func<ItemId, IItem?> itemResolver);
-}
-
-/// <summary>
 ///     Default implementation of <see cref="ISmeltingService" />.
 /// </summary>
 public sealed class SmeltingService : ISmeltingService

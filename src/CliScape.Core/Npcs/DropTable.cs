@@ -70,8 +70,3 @@ public class DropTable
     /// </summary>
     public static DropTable Empty => new();
 }
-
-/// <summary>
-///     Represents an item that has been dropped.
-/// </summary>
-public record DroppedItem(ItemId ItemId, int Quantity);

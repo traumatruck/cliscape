@@ -6,36 +6,6 @@ using CliScape.Core.Players;
 namespace CliScape.Game.Items;
 
 /// <summary>
-///     Result of a loot action.
-/// </summary>
-public record LootResult(
-    bool Success,
-    string Message,
-    IReadOnlyList<LootedItem> ItemsLooted);
-
-/// <summary>
-///     An item that was looted.
-/// </summary>
-public record LootedItem(ItemId ItemId, string ItemName, int Quantity);
-
-/// <summary>
-///     Handles looting logic.
-/// </summary>
-public interface ILootService
-{
-    /// <summary>
-    ///     Loots all available items.
-    /// </summary>
-    LootResult LootAll(PendingLoot pendingLoot, Player player, Func<ItemId, IItem?> itemResolver);
-
-    /// <summary>
-    ///     Loots a specific item by name.
-    /// </summary>
-    LootResult LootItem(PendingLoot pendingLoot, Player player, string itemName, int? amount,
-        Func<ItemId, IItem?> itemResolver);
-}
-
-/// <summary>
 ///     Default implementation of <see cref="ILootService" />.
 /// </summary>
 public sealed class LootService : ILootService

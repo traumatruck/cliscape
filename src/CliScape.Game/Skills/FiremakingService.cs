@@ -7,46 +7,6 @@ using CliScape.Core.Skills;
 namespace CliScape.Game.Skills;
 
 /// <summary>
-///     Result of a firemaking action.
-/// </summary>
-public record FiremakingResult(
-    bool Success,
-    string Message,
-    int ExperienceGained,
-    LevelUpInfo? LevelUp = null);
-
-/// <summary>
-///     Handles firemaking logic.
-/// </summary>
-public interface IFiremakingService
-{
-    /// <summary>
-    ///     Validates if the player can light the specified logs.
-    /// </summary>
-    (bool CanLight, string? ErrorMessage) CanLight(Player player, IItem logs);
-
-    /// <summary>
-    ///     Attempts to light logs using a tinderbox.
-    /// </summary>
-    FiremakingResult LightLogs(Player player, IItem logs);
-
-    /// <summary>
-    ///     Checks if an item is a type of log that can be burned.
-    /// </summary>
-    bool IsLog(IItem item);
-
-    /// <summary>
-    ///     Checks if an item is a tinderbox.
-    /// </summary>
-    bool IsTinderbox(IItem item);
-
-    /// <summary>
-    ///     Checks if two items can be used together for firemaking.
-    /// </summary>
-    bool CanUseForFiremaking(IItem item1, IItem item2, out IItem? tinderbox, out IItem? logs);
-}
-
-/// <summary>
 ///     Default implementation of <see cref="IFiremakingService" />.
 /// </summary>
 public sealed class FiremakingService : IFiremakingService

@@ -9,32 +9,6 @@ using CliScape.Core.World.Resources;
 namespace CliScape.Game.Skills;
 
 /// <summary>
-///     Result of a fishing action.
-/// </summary>
-public record FishingResult(
-    bool Success,
-    string Message,
-    IReadOnlyDictionary<string, int> FishCaught,
-    int TotalExperience,
-    LevelUpInfo? LevelUp = null);
-
-/// <summary>
-///     Handles fishing logic.
-/// </summary>
-public interface IFishingService
-{
-    /// <summary>
-    ///     Validates if the player can fish at the specified spot.
-    /// </summary>
-    (bool CanFish, string? ErrorMessage) CanFish(Player player, IFishingSpot spot);
-
-    /// <summary>
-    ///     Performs fishing at the specified spot.
-    /// </summary>
-    FishingResult Fish(Player player, IFishingSpot spot, int count, Func<ItemId, IItem?> itemResolver);
-}
-
-/// <summary>
 ///     Default implementation of <see cref="IFishingService" />.
 /// </summary>
 public sealed class FishingService : IFishingService

@@ -7,34 +7,6 @@ using CliScape.Core.Skills;
 namespace CliScape.Game.Skills;
 
 /// <summary>
-///     Result of a woodcutting action.
-/// </summary>
-public record WoodcuttingResult(
-    bool Success,
-    string Message,
-    int LogsObtained,
-    string? LogName,
-    int TotalExperience,
-    LevelUpInfo? LevelUp = null);
-
-/// <summary>
-///     Handles woodcutting logic.
-/// </summary>
-public interface IWoodcuttingService
-{
-    /// <summary>
-    ///     Validates if the player can chop the specified tree.
-    /// </summary>
-    (bool CanChop, string? ErrorMessage) CanChop(Player player, int requiredLevel);
-
-    /// <summary>
-    ///     Performs woodcutting at the specified tree.
-    /// </summary>
-    WoodcuttingResult Chop(Player player, ItemId logItemId, int experience, int count,
-        Func<ItemId, IItem?> itemResolver);
-}
-
-/// <summary>
 ///     Default implementation of <see cref="IWoodcuttingService" />.
 /// </summary>
 public sealed class WoodcuttingService : IWoodcuttingService
