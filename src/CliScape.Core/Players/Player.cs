@@ -1,3 +1,4 @@
+using CliScape.Core.Achievements;
 using CliScape.Core.Items;
 using CliScape.Core.Players.Skills;
 using CliScape.Core.World;
@@ -24,6 +25,16 @@ public sealed class Player
     ///     The player's current slayer task, if any.
     /// </summary>
     public SlayerTask? SlayerTask { get; set; }
+
+    /// <summary>
+    ///     Tracks the player's achievement diary progress across all locations.
+    /// </summary>
+    public DiaryProgressCollection DiaryProgress { get; init; } = new();
+
+    /// <summary>
+    ///     Tracks which diary tier rewards have been claimed (format: "location_tier").
+    /// </summary>
+    public HashSet<string> ClaimedDiaryRewards { get; init; } = new();
 
     public int CurrentHealth => Health.CurrentHealth;
 

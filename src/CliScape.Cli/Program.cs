@@ -1,5 +1,6 @@
 ﻿using CliScape.Cli.Commands;
 using CliScape.Cli.Commands.Combat;
+using CliScape.Cli.Commands.Diary;
 using CliScape.Cli.Commands.Equipment;
 using CliScape.Cli.Commands.Inventory;
 using CliScape.Cli.Commands.Item;
@@ -26,9 +27,9 @@ var app = new CommandApp();
 app.Configure(configuration =>
 {
     configuration.SetInterceptor(new CommandInterceptor());
-    
+
     configuration.AddCommand<StatusCommand>(StatusCommand.CommandName);
-    
+
     // Skills command branch - skill listing and training
     configuration.AddBranch("skills", skills =>
     {
@@ -40,25 +41,25 @@ app.Configure(configuration =>
         skills.AddCommand<SmithCommand>(SmithCommand.CommandName);
         skills.AddCommand<CookCommand>(CookCommand.CommandName);
         skills.AddCommand<ThieveCommand>(ThieveCommand.CommandName);
-        
+
         skills.SetDefaultCommand<SkillsListCommand>();
         skills.SetDescription("Perform skill related actions");
     });
-    
+
     configuration.AddCommand<WalkCommand>(WalkCommand.CommandName);
-    
+
     configuration.AddBranch("save", save =>
     {
         save.AddCommand<SaveDeleteCommand>(SaveDeleteCommand.CommandName);
         save.SetDescription("Manage your save");
     });
-    
+
     configuration.AddBranch("combat", combat =>
     {
         combat.AddCommand<CombatListCommand>(CombatListCommand.CommandName);
         combat.AddCommand<CombatAttackCommand>(CombatAttackCommand.CommandName);
         combat.AddCommand<CombatLootCommand>(CombatLootCommand.CommandName);
-        
+
         combat.SetDefaultCommand<CombatListCommand>();
     });
 
@@ -93,6 +94,16 @@ app.Configure(configuration =>
     });
 
     configuration.AddCommand<SlayerCommand>(SlayerCommand.CommandName);
+
+    configuration.AddBranch("diary", diary =>
+    {
+        diary.AddCommand<DiaryListCommand>(DiaryListCommand.CommandName);
+        diary.AddCommand<DiaryViewCommand>(DiaryViewCommand.CommandName);
+        diary.AddCommand<DiaryClaimCommand>(DiaryClaimCommand.CommandName);
+
+        diary.SetDefaultCommand<DiaryListCommand>();
+        diary.SetDescription("View and claim achievement diary rewards");
+    });
 });
 
 app.Run(args);

@@ -1,5 +1,6 @@
 using CliScape.Content.Items;
 using CliScape.Content.Locations.Towns;
+using CliScape.Core.Achievements;
 using CliScape.Core.Combat;
 using CliScape.Core.Items;
 using CliScape.Core.Npcs;
@@ -143,6 +144,29 @@ public class GameState : IPlayerManager, ILocationRegistry, ICombatSessionManage
             };
         }
 
+        // Restore diary progress
+        var diaryProgressCollection = new DiaryProgressCollection();
+        if (snapshot.Value.DiaryProgress is not null)
+        {
+            var progressList = new List<DiaryProgress>();
+            foreach (var progressSnapshot in snapshot.Value.DiaryProgress)
+            {
+                var location = new LocationName(progressSnapshot.LocationName);
+                var achievementIds = progressSnapshot.CompletedAchievementIds
+                    .Select(id => new AchievementId(id));
+                progressList.Add(new DiaryProgress(location, achievementIds));
+            }
+
+            diaryProgressCollection = new DiaryProgressCollection(progressList);
+        }
+
+        // Restore claimed diary rewards
+        var claimedDiaryRewards = new HashSet<string>();
+        if (snapshot.Value.ClaimedDiaryRewards is not null)
+        {
+            claimedDiaryRewards = new HashSet<string>(snapshot.Value.ClaimedDiaryRewards);
+        }
+
         Player = new Player
         {
             Id = snapshot.Value.Id,
@@ -160,7 +184,9 @@ public class GameState : IPlayerManager, ILocationRegistry, ICombatSessionManage
             SkillCollection = skills,
             Inventory = inventory,
             Equipment = equipment,
-            SlayerTask = slayerTask
+            SlayerTask = slayerTask,
+            DiaryProgress = diaryProgressCollection,
+            ClaimedDiaryRewards = claimedDiaryRewards
         };
 
         Player.SetPrayerPoints(Player.MaximumPrayerPoints);
@@ -196,6 +222,16 @@ public class GameState : IPlayerManager, ILocationRegistry, ICombatSessionManage
                 player.SlayerTask.SlayerMaster);
         }
 
+        // Create diary progress snapshots
+        var diaryProgressSnapshots = player.DiaryProgress.GetAllProgress()
+            .Select(p => new DiaryProgressSnapshot(
+                p.Location.Value,
+                p.CompletedAchievements.Select(a => a.Value).ToArray()))
+            .ToArray();
+
+        // Create claimed diary rewards snapshot
+        var claimedRewardsSnapshot = player.ClaimedDiaryRewards.ToArray();
+
         var snapshot = new PlayerSnapshot(
             player.Id,
             player.Name,
@@ -205,7 +241,9 @@ public class GameState : IPlayerManager, ILocationRegistry, ICombatSessionManage
             skillSnapshots,
             inventorySnapshots,
             equipmentSnapshots,
-            slayerTaskSnapshot);
+            slayerTaskSnapshot,
+            diaryProgressSnapshots,
+            claimedRewardsSnapshot);
 
         store.SavePlayer(snapshot);
     }

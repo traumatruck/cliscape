@@ -72,13 +72,15 @@ public sealed class BinaryGameStateStore : IGameStateStore
         InventorySlotSnapshot[]? inventorySlots = null;
         EquippedItemSnapshot[]? equippedItems = null;
         SlayerTaskSnapshot? slayerTask = null;
+        DiaryProgressSnapshot[]? diaryProgress = null;
+        string[]? claimedDiaryRewards = null;
 
         if (stream.Position < stream.Length)
         {
             // Deserialize inventory
             var inventoryCount = reader.ReadInt32();
             inventorySlots = new InventorySlotSnapshot[inventoryCount];
-            
+
             for (var i = 0; i < inventoryCount; i++)
             {
                 var slotIndex = reader.ReadInt32();
@@ -90,7 +92,7 @@ public sealed class BinaryGameStateStore : IGameStateStore
             // Deserialize equipment
             var equippedCount = reader.ReadInt32();
             equippedItems = new EquippedItemSnapshot[equippedCount];
-            
+
             for (var i = 0; i < equippedCount; i++)
             {
                 var slot = reader.ReadInt32();
@@ -111,10 +113,43 @@ public sealed class BinaryGameStateStore : IGameStateStore
                     slayerTask = new SlayerTaskSnapshot(category, remainingKills, totalKills, slayerMaster);
                 }
             }
+
+            // Deserialize diary progress (if present)
+            if (stream.Position < stream.Length)
+            {
+                var diaryProgressCount = reader.ReadInt32();
+                diaryProgress = new DiaryProgressSnapshot[diaryProgressCount];
+
+                for (var i = 0; i < diaryProgressCount; i++)
+                {
+                    var diaryLocationName = ReadString(reader);
+                    var achievementCount = reader.ReadInt32();
+                    var achievements = new string[achievementCount];
+
+                    for (var j = 0; j < achievementCount; j++)
+                    {
+                        achievements[j] = ReadString(reader);
+                    }
+
+                    diaryProgress[i] = new DiaryProgressSnapshot(diaryLocationName, achievements);
+                }
+            }
+
+            // Deserialize claimed diary rewards (if present)
+            if (stream.Position < stream.Length)
+            {
+                var claimedRewardCount = reader.ReadInt32();
+                claimedDiaryRewards = new string[claimedRewardCount];
+
+                for (var i = 0; i < claimedRewardCount; i++)
+                {
+                    claimedDiaryRewards[i] = ReadString(reader);
+                }
+            }
         }
 
         return new PlayerSnapshot(id, name, locationName, currentHealth, maxHealth, skills, inventorySlots,
-            equippedItems, slayerTask);
+            equippedItems, slayerTask, diaryProgress, claimedDiaryRewards);
     }
 
     /// <summary>
@@ -145,7 +180,7 @@ public sealed class BinaryGameStateStore : IGameStateStore
         // Serialize inventory (gold is now stored as Coins item in inventory)
         var inventorySlots = snapshot.InventorySlots ?? [];
         writer.Write(inventorySlots.Length);
-        
+
         foreach (var slot in inventorySlots)
         {
             writer.Write(slot.SlotIndex);
@@ -156,7 +191,7 @@ public sealed class BinaryGameStateStore : IGameStateStore
         // Serialize equipment
         var equippedItems = snapshot.EquippedItems ?? [];
         writer.Write(equippedItems.Length);
-        
+
         foreach (var equipped in equippedItems)
         {
             writer.Write(equipped.Slot);
@@ -173,6 +208,30 @@ public sealed class BinaryGameStateStore : IGameStateStore
             writer.Write(task.RemainingKills);
             writer.Write(task.TotalKills);
             WriteString(writer, task.SlayerMaster);
+        }
+
+        // Serialize diary progress
+        var diaryProgress = snapshot.DiaryProgress ?? [];
+        writer.Write(diaryProgress.Length);
+
+        foreach (var progress in diaryProgress)
+        {
+            WriteString(writer, progress.LocationName);
+            writer.Write(progress.CompletedAchievementIds.Length);
+
+            foreach (var achievementId in progress.CompletedAchievementIds)
+            {
+                WriteString(writer, achievementId);
+            }
+        }
+
+        // Serialize claimed diary rewards
+        var claimedRewards = snapshot.ClaimedDiaryRewards ?? [];
+        writer.Write(claimedRewards.Length);
+
+        foreach (var reward in claimedRewards)
+        {
+            WriteString(writer, reward);
         }
 
         writer.Flush();
