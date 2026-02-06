@@ -12,6 +12,7 @@ using CliScape.Cli.Commands.Slayer;
 using CliScape.Cli.Commands.Status;
 using CliScape.Cli.Commands.Walk;
 using CliScape.Game;
+using CliScape.Game.ClueScrolls;
 using CliScape.Infrastructure.Configuration;
 using CliScape.Infrastructure.Persistence;
 using Spectre.Console.Cli;
@@ -22,6 +23,9 @@ var settings = AppSettings.CreateDefault();
 // Configure game state with infrastructure dependencies
 var store = new BinaryGameStateStore(settings.Persistence);
 GameState.Instance.Configure(store, settings.Persistence.SaveFilePath);
+
+// Initialize the clue scroll system
+ClueScrollWiring.Initialize();
 
 var app = new CommandApp();
 

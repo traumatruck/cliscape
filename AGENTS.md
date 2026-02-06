@@ -319,6 +319,43 @@ Value objects provide:
 - **Gold**: Gold is stored as Coins item in the inventory, not as a separate property
 - **Combat Integration**: Equipment bonuses automatically applied via `CombatCalculator`
 
+## Clue Scroll System
+
+Clue scrolls are treasure trail items obtained as NPC drops. Players interact with them entirely through the `item` command — no separate command branch.
+
+### Architecture
+- **Core models**: `src/CliScape.Core/ClueScrolls/` — `ClueScrollTier` enum (Easy/Medium/Hard/Elite), `ClueStepType` enum (Dig/Search/Talk), `ClueStep` record, `ClueScroll` record, `ClueReward` record, `IClueStepPool` and `IClueRewardTable` interfaces
+- **Content definitions**: `src/CliScape.Content/ClueScrolls/` — `ClueStepPool` (step definitions per tier referencing locations), `ClueRewardTable` (reward tables per tier)
+- **Items**: `src/CliScape.Content/Items/ClueScrollItems.cs` — Clue scroll and reward casket items (IDs 900–913)
+- **Service**: `src/CliScape.Game/ClueScrolls/ClueScrollService.cs` — Assembles clues, validates steps, rolls rewards
+- **Wiring**: `src/CliScape.Game/ClueScrolls/ClueScrollWiring.cs` — Connects item actions to service via `ClueScrollActions` static delegates
+- **Events**: `ClueStepCompletedEvent`, `ClueScrollCompletedEvent`
+- **Persistence**: `ClueScrollSnapshot` / `ClueStepSnapshot` in `PlayerSnapshot`
+- **Player state**: `Player.ActiveClue` (nullable `ClueScroll` record)
+
+### Player Interaction Flow
+1. Kill an NPC → clue scroll drops → loot it into inventory
+2. `item --name "Clue scroll (easy)" --use` → starts trail, shows first hint
+3. `item --name "Clue scroll (easy)" --read` → re-read current step hint
+4. `walk <location>` → travel to the hinted location
+5. `item --name "Clue scroll (easy)" --use` → validates location, advances step
+6. Repeat steps 3–5 until all steps are completed
+7. On final step completion → scroll consumed, reward casket added to inventory
+8. `item --name "Reward casket (easy)" --use` → opens casket, grants random rewards
+
+### Cross-Layer Wiring Pattern
+Content-layer items cannot reference Game-layer services directly. The `ClueScrollActions` static class in Core holds `Func` delegates that Game wires at startup via `ClueScrollWiring.Initialize()`. This keeps the dependency chain clean: `Content → Core` (no circular deps).
+
+### Adding New Clue Steps
+1. Add `ClueStep` entries to the appropriate tier array in `ClueStepPool.cs`
+2. Reference existing `LocationName` values — steps must point to locations that exist
+3. Each step needs: `StepType`, `HintText`, `RequiredLocation`, `CompletionText`
+
+### Adding New Clue Rewards
+1. Add `ClueReward` entries to the appropriate tier array in `ClueRewardTable.cs`
+2. Reference existing `ItemId` values from `ItemIds.cs`
+3. Set `Weight` for rarity (higher = more common), and `MinQuantity`/`MaxQuantity`
+
 ## Wrapper Records
 
 The codebase uses wrapper records for type safety:

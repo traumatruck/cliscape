@@ -41,7 +41,8 @@ public static class ItemRegistry
             typeof(RawFish),
             typeof(Ores),
             typeof(Bars),
-            typeof(Pickaxes)
+            typeof(Pickaxes),
+            typeof(ClueScrollItems)
         };
 
         foreach (var type in itemTypes)

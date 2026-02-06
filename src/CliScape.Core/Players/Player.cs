@@ -1,4 +1,5 @@
 using CliScape.Core.Achievements;
+using CliScape.Core.ClueScrolls;
 using CliScape.Core.Items;
 using CliScape.Core.Players.Skills;
 using CliScape.Core.World;
@@ -37,6 +38,11 @@ public sealed class Player
     ///     Tracks which diary tier rewards have been claimed (format: "location_tier").
     /// </summary>
     public HashSet<string> ClaimedDiaryRewards { get; init; } = new();
+
+    /// <summary>
+    ///     The player's active clue scroll, if any. Only one clue can be active at a time.
+    /// </summary>
+    public ClueScroll? ActiveClue { get; set; }
 
     public int CurrentHealth => Health.CurrentHealth;
 

@@ -79,6 +79,16 @@ public static class ItemIds
     // Ammunition: 800-899
     public static readonly ItemId BronzeArrow = new(800);
 
+    // Clue Scrolls: 900-913
+    public static readonly ItemId ClueScrollEasy = new(900);
+    public static readonly ItemId ClueScrollMedium = new(901);
+    public static readonly ItemId ClueScrollHard = new(902);
+    public static readonly ItemId ClueScrollElite = new(903);
+    public static readonly ItemId RewardCasketEasy = new(910);
+    public static readonly ItemId RewardCasketMedium = new(911);
+    public static readonly ItemId RewardCasketHard = new(912);
+    public static readonly ItemId RewardCasketElite = new(913);
+
     // Food: 1000-1099
     public static readonly ItemId Bread = new(1000);
     public static readonly ItemId Cake = new(1001);

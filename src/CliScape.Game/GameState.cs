@@ -1,6 +1,7 @@
 using CliScape.Content.Items;
 using CliScape.Content.Locations.Towns;
 using CliScape.Core.Achievements;
+using CliScape.Core.ClueScrolls;
 using CliScape.Core.Combat;
 using CliScape.Core.Items;
 using CliScape.Core.Npcs;
@@ -181,6 +182,27 @@ public class GameState : IPlayerManager, ILocationRegistry, ICombatSessionManage
             claimedDiaryRewards = new HashSet<string>(snapshot.Value.ClaimedDiaryRewards);
         }
 
+        // Restore active clue scroll
+        ClueScroll? activeClue = null;
+        if (snapshot.Value.ActiveClue is not null)
+        {
+            var clueSnapshot = snapshot.Value.ActiveClue.Value;
+            var steps = clueSnapshot.Steps.Select(s => new ClueStep
+            {
+                StepType = Enum.Parse<ClueStepType>(s.StepType),
+                HintText = s.HintText,
+                RequiredLocation = new LocationName(s.RequiredLocation),
+                CompletionText = s.CompletionText
+            }).ToArray();
+
+            activeClue = new ClueScroll
+            {
+                Tier = Enum.Parse<ClueScrollTier>(clueSnapshot.Tier),
+                Steps = steps,
+                CurrentStepIndex = clueSnapshot.CurrentStepIndex
+            };
+        }
+
         Player = new Player
         {
             Id = snapshot.Value.Id,
@@ -201,7 +223,8 @@ public class GameState : IPlayerManager, ILocationRegistry, ICombatSessionManage
             Bank = bank,
             SlayerTask = slayerTask,
             DiaryProgress = diaryProgressCollection,
-            ClaimedDiaryRewards = claimedDiaryRewards
+            ClaimedDiaryRewards = claimedDiaryRewards,
+            ActiveClue = activeClue
         };
 
         Player.SetPrayerPoints(Player.MaximumPrayerPoints);
@@ -252,6 +275,23 @@ public class GameState : IPlayerManager, ILocationRegistry, ICombatSessionManage
         // Create claimed diary rewards snapshot
         var claimedRewardsSnapshot = player.ClaimedDiaryRewards.ToArray();
 
+        // Create active clue scroll snapshot
+        ClueScrollSnapshot? activeClueSnapshot = null;
+        if (player.ActiveClue != null)
+        {
+            var clue = player.ActiveClue;
+            var stepSnapshots = clue.Steps.Select(s => new ClueStepSnapshot(
+                s.StepType.ToString(),
+                s.HintText,
+                s.RequiredLocation.Value,
+                s.CompletionText)).ToArray();
+
+            activeClueSnapshot = new ClueScrollSnapshot(
+                clue.Tier.ToString(),
+                stepSnapshots,
+                clue.CurrentStepIndex);
+        }
+
         var snapshot = new PlayerSnapshot(
             player.Id,
             player.Name,
@@ -264,7 +304,8 @@ public class GameState : IPlayerManager, ILocationRegistry, ICombatSessionManage
             bankSnapshots,
             slayerTaskSnapshot,
             diaryProgressSnapshots,
-            claimedRewardsSnapshot);
+            claimedRewardsSnapshot,
+            activeClueSnapshot);
 
         store.SavePlayer(snapshot);
     }

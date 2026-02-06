@@ -16,6 +16,7 @@ namespace CliScape.Game.Persistence;
 /// <param name="SlayerTask">The player's current slayer task, if any.</param>
 /// <param name="DiaryProgress">The player's achievement diary progress.</param>
 /// <param name="ClaimedDiaryRewards">The diary tier rewards that have been claimed.</param>
+/// <param name="ActiveClue">The player's active clue scroll, if any.</param>
 public readonly record struct PlayerSnapshot(
     int Id,
     string Name,
@@ -28,4 +29,5 @@ public readonly record struct PlayerSnapshot(
     BankSlotSnapshot[]? BankSlots = null,
     SlayerTaskSnapshot? SlayerTask = null,
     DiaryProgressSnapshot[]? DiaryProgress = null,
-    string[]? ClaimedDiaryRewards = null);
+    string[]? ClaimedDiaryRewards = null,
+    ClueScrollSnapshot? ActiveClue = null);
