@@ -25,18 +25,18 @@ public sealed class DiaryViewCommand : Command<DiaryViewCommandSettings>
         // Check for any newly completed achievements
         diaryService.CheckAllAchievements(player);
 
-        var location = new LocationName(settings.Location);
+        var location = string.IsNullOrWhiteSpace(settings.Location)
+            ? player.CurrentLocation.Name
+            : new LocationName(settings.Location);
         var diary = DiaryRegistry.Instance.GetDiary(location);
 
         if (diary == null)
         {
-            AnsiConsole.MarkupLine($"[red]No diary found for location '{settings.Location}'.[/]");
+            AnsiConsole.MarkupLine($"[red]No diary found for location '{location.Value}'.[/]");
             return (int)ExitCode.Failure;
         }
 
         var progress = player.DiaryProgress.GetProgress(location);
-
-        AnsiConsole.MarkupLine($"[bold cyan]{diary.Location.Value} Achievement Diary[/]");
         AnsiConsole.WriteLine();
 
         // Display achievements grouped by tier

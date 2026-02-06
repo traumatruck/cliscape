@@ -73,8 +73,6 @@ public class ChopCommand : Command<ChopCommandSettings>, ICommand
 
         var woodcuttingLevel = player.GetSkillLevel(SkillConstants.WoodcuttingSkillName).Value;
 
-        AnsiConsole.MarkupLine("[bold]Trees at this location:[/]\n");
-
         var table = new Table()
             .AddColumn("Tree")
             .AddColumn("Req. Level")

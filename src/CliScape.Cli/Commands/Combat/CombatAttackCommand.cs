@@ -357,8 +357,6 @@ public class CombatAttackCommand : Command<CombatAttackCommandSettings>, IComman
             // Handle drops
             HandleDrops(combat, npc);
 
-            // Display level-ups
-            DisplayLevelUps(combat);
         }
         else if (combat.PlayerDied)
         {
@@ -491,20 +489,6 @@ public class CombatAttackCommand : Command<CombatAttackCommandSettings>, IComman
         AnsiConsole.MarkupLine("[dim]Use 'combat loot <item>' to pick up items.[/]");
     }
 
-    private static void DisplayLevelUps(CombatSession combat)
-    {
-        var levelUps = combat.Rewards.LevelUps;
-        if (levelUps.Count == 0)
-        {
-            return;
-        }
-
-        AnsiConsole.WriteLine();
-        foreach (var levelUp in levelUps)
-        {
-            AnsiConsole.MarkupLine($"[bold yellow]Congratulations! Your {levelUp.SkillName} level is now {levelUp.NewLevel}![/]");
-        }
-    }
 }
 
 internal enum CombatAction

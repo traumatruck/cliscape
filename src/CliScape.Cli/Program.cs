@@ -28,7 +28,8 @@ app.Configure(configuration =>
 {
     configuration.SetInterceptor(new CommandInterceptor());
 
-    configuration.AddCommand<StatusCommand>(StatusCommand.CommandName);
+    configuration.AddCommand<StatusCommand>(StatusCommand.CommandName)
+        .WithDescription("View your character status");
 
     // Skills command branch - skill listing and training
     configuration.AddBranch("skills", skills =>
@@ -46,7 +47,8 @@ app.Configure(configuration =>
         skills.SetDescription("Perform skill related actions");
     });
 
-    configuration.AddCommand<WalkCommand>(WalkCommand.CommandName);
+    configuration.AddCommand<WalkCommand>(WalkCommand.CommandName)
+        .WithDescription("Travel to a new location");
 
     configuration.AddBranch("save", save =>
     {
@@ -61,6 +63,7 @@ app.Configure(configuration =>
         combat.AddCommand<CombatLootCommand>(CombatLootCommand.CommandName);
 
         combat.SetDefaultCommand<CombatListCommand>();
+        combat.SetDescription("Manage combat encounters");
     });
 
     configuration.AddBranch("inventory", inventory =>
@@ -70,9 +73,11 @@ app.Configure(configuration =>
         inventory.AddCommand<InventorySortCommand>(InventorySortCommand.CommandName);
 
         inventory.SetDefaultCommand<InventoryListCommand>();
+        inventory.SetDescription("View and manage your inventory");
     }).WithAlias("inv");
 
-    configuration.AddCommand<ItemCommand>(ItemCommand.CommandName);
+    configuration.AddCommand<ItemCommand>(ItemCommand.CommandName)
+        .WithDescription("Interact with items in your inventory");
 
     configuration.AddBranch("shop", shop =>
     {
@@ -83,6 +88,7 @@ app.Configure(configuration =>
         shop.AddCommand<ShopValueCommand>(ShopValueCommand.CommandName);
 
         shop.SetDefaultCommand<ShopListCommand>();
+        shop.SetDescription("Browse and trade with shops");
     });
 
     configuration.AddBranch("equipment", equipment =>
@@ -91,9 +97,11 @@ app.Configure(configuration =>
         equipment.AddCommand<UnequipCommand>(UnequipCommand.CommandName);
 
         equipment.SetDefaultCommand<EquipmentViewCommand>();
+        equipment.SetDescription("View and manage equipped items");
     });
 
-    configuration.AddCommand<SlayerCommand>(SlayerCommand.CommandName);
+    configuration.AddCommand<SlayerCommand>(SlayerCommand.CommandName)
+        .WithDescription("Get or manage slayer tasks");
 
     configuration.AddBranch("diary", diary =>
     {
