@@ -9,7 +9,5 @@ public class Burthorpe : ILocation
 
     public Shop? Shop { get; }
 
-    public Bank? Bank { get; }
-    
     public IReadOnlyList<INpc> AvailableNpcs { get; } = Array.Empty<INpc>();
 }

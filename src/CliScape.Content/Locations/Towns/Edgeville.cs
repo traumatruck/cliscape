@@ -6,10 +6,10 @@ namespace CliScape.Content.Locations.Towns;
 public class Edgeville : ILocation
 {
     public static LocationName Name => new("Edgeville");
-    
+
     public Shop? Shop { get; }
-    
-    public Bank? Bank { get; }
-    
+
+    public bool HasBank => true;
+
     public IReadOnlyList<INpc> AvailableNpcs { get; } = Array.Empty<INpc>();
 }

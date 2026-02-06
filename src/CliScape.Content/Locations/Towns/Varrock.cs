@@ -18,8 +18,8 @@ public class Varrock : ILocation
         VarrockShops.GeneralStore
     ];
 
-    public Bank? Bank { get; }
-    
+    public bool HasBank => true;
+
     public IReadOnlyList<INpc> AvailableNpcs { get; } = Array.Empty<INpc>();
 
     public IReadOnlyList<IMiningRock> MiningRocks { get; } =

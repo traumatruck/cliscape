@@ -1,4 +1,5 @@
 ﻿using CliScape.Cli.Commands;
+using CliScape.Cli.Commands.Bank;
 using CliScape.Cli.Commands.Combat;
 using CliScape.Cli.Commands.Diary;
 using CliScape.Cli.Commands.Equipment;
@@ -111,6 +112,16 @@ app.Configure(configuration =>
 
         diary.SetDefaultCommand<DiaryListCommand>();
         diary.SetDescription("View and claim achievement diary rewards");
+    });
+
+    configuration.AddBranch("bank", bank =>
+    {
+        bank.AddCommand<BankViewCommand>(BankViewCommand.CommandName);
+        bank.AddCommand<BankDepositCommand>(BankDepositCommand.CommandName);
+        bank.AddCommand<BankWithdrawCommand>(BankWithdrawCommand.CommandName);
+
+        bank.SetDefaultCommand<BankViewCommand>();
+        bank.SetDescription("Access your bank to store and retrieve items");
     });
 });
 

@@ -71,6 +71,7 @@ public sealed class BinaryGameStateStore : IGameStateStore
         // Deserialize inventory and equipment
         InventorySlotSnapshot[]? inventorySlots = null;
         EquippedItemSnapshot[]? equippedItems = null;
+        BankSlotSnapshot[]? bankSlots = null;
         SlayerTaskSnapshot? slayerTask = null;
         DiaryProgressSnapshot[]? diaryProgress = null;
         string[]? claimedDiaryRewards = null;
@@ -98,6 +99,20 @@ public sealed class BinaryGameStateStore : IGameStateStore
                 var slot = reader.ReadInt32();
                 var itemId = reader.ReadInt32();
                 equippedItems[i] = new EquippedItemSnapshot(slot, itemId);
+            }
+
+            // Deserialize bank slots (if present)
+            if (stream.Position < stream.Length)
+            {
+                var bankSlotCount = reader.ReadInt32();
+                bankSlots = new BankSlotSnapshot[bankSlotCount];
+                for (var i = 0; i < bankSlotCount; i++)
+                {
+                    bankSlots[i] = new BankSlotSnapshot(
+                        reader.ReadInt32(), // SlotIndex
+                        reader.ReadInt32(), // ItemId
+                        reader.ReadInt32()); // Quantity
+                }
             }
 
             // Deserialize slayer task (if present)
@@ -149,7 +164,7 @@ public sealed class BinaryGameStateStore : IGameStateStore
         }
 
         return new PlayerSnapshot(id, name, locationName, currentHealth, maxHealth, skills, inventorySlots,
-            equippedItems, slayerTask, diaryProgress, claimedDiaryRewards);
+            equippedItems, bankSlots, slayerTask, diaryProgress, claimedDiaryRewards);
     }
 
     /// <summary>
@@ -196,6 +211,16 @@ public sealed class BinaryGameStateStore : IGameStateStore
         {
             writer.Write(equipped.Slot);
             writer.Write(equipped.ItemId);
+        }
+
+        // Serialize bank slots
+        var bankSlots = snapshot.BankSlots ?? [];
+        writer.Write(bankSlots.Length);
+        foreach (var slot in bankSlots)
+        {
+            writer.Write(slot.SlotIndex);
+            writer.Write(slot.ItemId);
+            writer.Write(slot.Quantity);
         }
 
         // Serialize slayer task

@@ -9,8 +9,6 @@ public class BarbarianVillage : ILocation
 {
     public static LocationName Name => new("Barbarian Village");
 
-    public Bank? Bank { get; }
-    
     public IReadOnlyList<INpc> AvailableNpcs { get; } = Array.Empty<INpc>();
 
     public IReadOnlyList<IFishingSpot> FishingSpots { get; } =

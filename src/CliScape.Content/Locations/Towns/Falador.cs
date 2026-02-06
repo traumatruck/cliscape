@@ -16,9 +16,9 @@ public class Falador : ILocation
         FaladorShops.WaynesChains,
         FaladorShops.GeneralStore
     ];
-    
-    public Bank? Bank { get; }
-    
+
+    public bool HasBank => true;
+
     public IReadOnlyList<INpc> AvailableNpcs { get; } = Array.Empty<INpc>();
 
     public IReadOnlyList<IMiningRock> MiningRocks { get; } =

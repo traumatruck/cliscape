@@ -17,8 +17,8 @@ public class Lumbridge : ILocation
         LumbridgeShops.GeneralStore
     ];
 
-    public Bank? Bank { get; }
-    
+    public bool HasBank => true;
+
     public IReadOnlyList<INpc> AvailableNpcs { get; } = new INpc[]
     {
         Cow.Instance,

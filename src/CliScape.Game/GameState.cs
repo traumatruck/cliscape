@@ -130,6 +130,20 @@ public class GameState : IPlayerManager, ILocationRegistry, ICombatSessionManage
             }
         }
 
+        // Restore bank
+        var bank = new Bank();
+        if (snapshot.Value.BankSlots is not null)
+        {
+            foreach (var bankSlotSnapshot in snapshot.Value.BankSlots)
+            {
+                var item = ItemRegistry.GetById(new ItemId(bankSlotSnapshot.ItemId));
+                if (item is not null)
+                {
+                    bank.TrySetSlot(bankSlotSnapshot.SlotIndex, item, bankSlotSnapshot.Quantity);
+                }
+            }
+        }
+
         // Restore slayer task
         SlayerTask? slayerTask = null;
         if (snapshot.Value.SlayerTask is not null)
@@ -184,6 +198,7 @@ public class GameState : IPlayerManager, ILocationRegistry, ICombatSessionManage
             SkillCollection = skills,
             Inventory = inventory,
             Equipment = equipment,
+            Bank = bank,
             SlayerTask = slayerTask,
             DiaryProgress = diaryProgressCollection,
             ClaimedDiaryRewards = claimedDiaryRewards
@@ -209,6 +224,11 @@ public class GameState : IPlayerManager, ILocationRegistry, ICombatSessionManage
         // Create equipment snapshots
         var equipmentSnapshots = player.Equipment.GetAllEquippedWithSlots()
             .Select(e => new EquippedItemSnapshot((int)e.Slot, e.Item.Id.Value))
+            .ToArray();
+
+        // Create bank snapshots
+        var bankSnapshots = player.Bank.GetItems()
+            .Select(i => new BankSlotSnapshot(i.SlotIndex, i.Item.Id.Value, i.Quantity))
             .ToArray();
 
         // Create slayer task snapshot
@@ -241,6 +261,7 @@ public class GameState : IPlayerManager, ILocationRegistry, ICombatSessionManage
             skillSnapshots,
             inventorySnapshots,
             equipmentSnapshots,
+            bankSnapshots,
             slayerTaskSnapshot,
             diaryProgressSnapshots,
             claimedRewardsSnapshot);

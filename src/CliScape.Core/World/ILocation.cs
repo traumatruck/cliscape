@@ -26,9 +26,9 @@ public interface ILocation
     IReadOnlyList<Shop> Shops => [];
 
     /// <summary>
-    ///     The bank at this location, if any.
+    ///     Whether a bank is available at this location.
     /// </summary>
-    Bank? Bank => null;
+    bool HasBank => false;
 
     /// <summary>
     ///     The fishing spots available at this location.

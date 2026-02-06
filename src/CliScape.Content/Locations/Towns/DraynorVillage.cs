@@ -8,9 +8,9 @@ namespace CliScape.Content.Locations.Towns;
 public class DraynorVillage : ILocation
 {
     public static LocationName Name => new("Draynor Village");
-    
-    public Bank? Bank { get; }
-    
+
+    public bool HasBank => true;
+
     public IReadOnlyList<INpc> AvailableNpcs { get; } = Array.Empty<INpc>();
 
     public IReadOnlyList<IFishingSpot> FishingSpots { get; } =

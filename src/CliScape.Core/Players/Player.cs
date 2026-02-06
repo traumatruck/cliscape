@@ -21,6 +21,8 @@ public sealed class Player
 
     public Equipment Equipment { get; init; } = new();
 
+    public Bank Bank { get; init; } = new();
+
     /// <summary>
     ///     The player's current slayer task, if any.
     /// </summary>
