@@ -1,6 +1,7 @@
 using CliScape.Core.Npcs;
 using CliScape.Core.World;
 using CliScape.Core.World.Resources;
+using CliScape.Content.Npcs;
 using CliScape.Content.Resources;
 using CliScape.Content.Shops;
 
@@ -19,14 +20,19 @@ public class AlKharid : ILocation
 
     public bool HasBank => true;
 
-    public IReadOnlyList<INpc> AvailableNpcs { get; } = Array.Empty<INpc>();
+    public IReadOnlyList<INpc> AvailableNpcs { get; } = new INpc[]
+    {
+        Scorpion.Instance
+    };
 
     public IReadOnlyList<IMiningRock> MiningRocks { get; } =
     [
         Resources.MiningRocks.CopperRock,
         Resources.MiningRocks.TinRock,
         Resources.MiningRocks.IronRock,
-        Resources.MiningRocks.CoalRock
+        Resources.MiningRocks.SilverRock,
+        Resources.MiningRocks.CoalRock,
+        Resources.MiningRocks.GoldRock
     ];
 
     public IReadOnlyList<IFurnace> Furnaces { get; } =
@@ -42,6 +48,7 @@ public class AlKharid : ILocation
     public IReadOnlyList<IThievingTarget> ThievingTargets { get; } =
     [
         Resources.ThievingTargets.Man,
-        Resources.ThievingTargets.SilkStall
+        Resources.ThievingTargets.SilkStall,
+        Resources.ThievingTargets.GemStall
     ];
 }

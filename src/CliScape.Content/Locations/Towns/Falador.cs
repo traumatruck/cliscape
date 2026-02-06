@@ -1,6 +1,7 @@
 using CliScape.Core.Npcs;
 using CliScape.Core.World;
 using CliScape.Core.World.Resources;
+using CliScape.Content.Npcs;
 using CliScape.Content.Resources;
 using CliScape.Content.Shops;
 
@@ -19,7 +20,11 @@ public class Falador : ILocation
 
     public bool HasBank => true;
 
-    public IReadOnlyList<INpc> AvailableNpcs { get; } = Array.Empty<INpc>();
+    public IReadOnlyList<INpc> AvailableNpcs { get; } = new INpc[]
+    {
+        Guard.Instance,
+        Imp.Instance
+    };
 
     public IReadOnlyList<IMiningRock> MiningRocks { get; } =
     [
@@ -43,6 +48,7 @@ public class Falador : ILocation
     public IReadOnlyList<IThievingTarget> ThievingTargets { get; } =
     [
         Resources.ThievingTargets.Man,
-        Resources.ThievingTargets.Guard
+        Resources.ThievingTargets.Guard,
+        Resources.ThievingTargets.SilverStall
     ];
 }

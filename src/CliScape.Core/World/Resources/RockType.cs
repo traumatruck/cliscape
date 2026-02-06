@@ -8,7 +8,9 @@ public enum RockType
     Copper,
     Tin,
     Iron,
+    Silver,
     Coal,
+    Gold,
     Mithril,
     Adamantite,
     Runite

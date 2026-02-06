@@ -62,4 +62,20 @@ public static class Ores
         ExamineText = "Some runite ore.",
         BaseValue = 6400
     };
+
+    public static readonly IItem SilverOre = new Item
+    {
+        Id = ItemIds.SilverOre,
+        Name = new ItemName("Silver ore"),
+        ExamineText = "Some silver ore.",
+        BaseValue = 75
+    };
+
+    public static readonly IItem GoldOre = new Item
+    {
+        Id = ItemIds.GoldOre,
+        Name = new ItemName("Gold ore"),
+        ExamineText = "Some gold ore.",
+        BaseValue = 150
+    };
 }

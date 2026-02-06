@@ -1,6 +1,7 @@
 using CliScape.Core.Npcs;
 using CliScape.Core.World;
 using CliScape.Core.World.Resources;
+using CliScape.Content.Npcs;
 using CliScape.Content.Resources;
 using CliScape.Content.Shops;
 
@@ -20,7 +21,12 @@ public class Varrock : ILocation
 
     public bool HasBank => true;
 
-    public IReadOnlyList<INpc> AvailableNpcs { get; } = Array.Empty<INpc>();
+    public IReadOnlyList<INpc> AvailableNpcs { get; } = new INpc[]
+    {
+        Man.Instance,
+        Guard.Instance,
+        Imp.Instance
+    };
 
     public IReadOnlyList<IMiningRock> MiningRocks { get; } =
     [
@@ -44,6 +50,7 @@ public class Varrock : ILocation
         Resources.ThievingTargets.Man,
         Resources.ThievingTargets.BakeryStall,
         Resources.ThievingTargets.TeaStall,
-        Resources.ThievingTargets.SilkStall
+        Resources.ThievingTargets.SilkStall,
+        Resources.ThievingTargets.FurStall
     ];
 }

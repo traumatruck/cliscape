@@ -43,6 +43,9 @@ public static class ItemIds
     public static readonly ItemId IronPlateskirt = new(231);
     public static readonly ItemId IronKiteshield = new(240);
     public static readonly ItemId IronSqShield = new(241);
+    public static readonly ItemId IronBoots = new(250);
+    public static readonly ItemId IronGloves = new(251);
+    public static readonly ItemId IronHatchet = new(205);
 
     // Steel Equipment: 300-399
     public static readonly ItemId SteelDagger = new(300);
@@ -54,8 +57,31 @@ public static class ItemIds
     public static readonly ItemId SteelMedHelm = new(311);
     public static readonly ItemId SteelPlatebody = new(320);
     public static readonly ItemId SteelChainbody = new(321);
+    public static readonly ItemId SteelHatchet = new(305);
     public static readonly ItemId SteelPlatelegs = new(330);
+    public static readonly ItemId SteelPlateskirt = new(331);
     public static readonly ItemId SteelKiteshield = new(340);
+    public static readonly ItemId SteelSqShield = new(341);
+    public static readonly ItemId SteelBoots = new(350);
+    public static readonly ItemId SteelGloves = new(351);
+
+    // Mithril Equipment: 400-499
+    public static readonly ItemId MithrilDagger = new(400);
+    public static readonly ItemId MithrilSword = new(401);
+    public static readonly ItemId MithrilScimitar = new(402);
+    public static readonly ItemId MithrilAxe = new(403);
+    public static readonly ItemId MithrilMace = new(404);
+    public static readonly ItemId MithrilHatchet = new(405);
+    public static readonly ItemId MithrilFullHelm = new(410);
+    public static readonly ItemId MithrilMedHelm = new(411);
+    public static readonly ItemId MithrilPlatebody = new(420);
+    public static readonly ItemId MithrilChainbody = new(421);
+    public static readonly ItemId MithrilPlatelegs = new(430);
+    public static readonly ItemId MithrilPlateskirt = new(431);
+    public static readonly ItemId MithrilKiteshield = new(440);
+    public static readonly ItemId MithrilSqShield = new(441);
+    public static readonly ItemId MithrilBoots = new(450);
+    public static readonly ItemId MithrilGloves = new(451);
 
     // Leather Armor: 500-599
     public static readonly ItemId LeatherBody = new(500);
@@ -131,6 +157,8 @@ public static class ItemIds
     public static readonly ItemId MithrilOre = new(1404);
     public static readonly ItemId AdamantiteOre = new(1405);
     public static readonly ItemId RuniteOre = new(1406);
+    public static readonly ItemId SilverOre = new(1407);
+    public static readonly ItemId GoldOre = new(1408);
 
     // Bars: 1500-1599
     public static readonly ItemId BronzeBar = new(1500);
@@ -139,6 +167,8 @@ public static class ItemIds
     public static readonly ItemId MithrilBar = new(1503);
     public static readonly ItemId AdamantiteBar = new(1504);
     public static readonly ItemId RuniteBar = new(1505);
+    public static readonly ItemId SilverBar = new(1506);
+    public static readonly ItemId GoldBar = new(1507);
 
     // Burnt Food: 1800-1899
     public static readonly ItemId BurntShrimps = new(1800);
