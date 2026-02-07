@@ -41,11 +41,13 @@ public sealed class ClueRewardTable : IClueRewardTable
     private static readonly IReadOnlyList<ClueReward> HardRewards =
     [
         new() { ItemId = ItemIds.Coins, MinQuantity = 1000, MaxQuantity = 10000, Weight = 10 },
-        new() { ItemId = ItemIds.SteelSword, Weight = 5 },
-        new() { ItemId = ItemIds.SteelFullHelm, Weight = 5 },
-        new() { ItemId = ItemIds.SteelPlatebody, Weight = 4 },
-        new() { ItemId = ItemIds.SteelKiteshield, Weight = 4 },
-        new() { ItemId = ItemIds.SteelScimitar, Weight = 3 },
+        new() { ItemId = ItemIds.SteelSword, Weight = 4 },
+        new() { ItemId = ItemIds.SteelFullHelm, Weight = 4 },
+        new() { ItemId = ItemIds.SteelPlatebody, Weight = 3 },
+        new() { ItemId = ItemIds.SteelKiteshield, Weight = 3 },
+        new() { ItemId = ItemIds.MithrilDagger, Weight = 4 },
+        new() { ItemId = ItemIds.MithrilFullHelm, Weight = 3 },
+        new() { ItemId = ItemIds.MithrilChainbody, Weight = 3 },
         new() { ItemId = ItemIds.Lobster, MinQuantity = 5, MaxQuantity = 10, Weight = 5 },
         new() { ItemId = ItemIds.Salmon, MinQuantity = 5, MaxQuantity = 10, Weight = 5 },
         new() { ItemId = ItemIds.BronzeArrow, MinQuantity = 100, MaxQuantity = 300, Weight = 4 }
@@ -54,10 +56,11 @@ public sealed class ClueRewardTable : IClueRewardTable
     private static readonly IReadOnlyList<ClueReward> EliteRewards =
     [
         new() { ItemId = ItemIds.Coins, MinQuantity = 5000, MaxQuantity = 50000, Weight = 10 },
-        new() { ItemId = ItemIds.SteelPlatebody, Weight = 5 },
-        new() { ItemId = ItemIds.SteelPlatelegs, Weight = 5 },
-        new() { ItemId = ItemIds.SteelScimitar, Weight = 4 },
-        new() { ItemId = ItemIds.SteelKiteshield, Weight = 4 },
+        new() { ItemId = ItemIds.MithrilPlatebody, Weight = 5 },
+        new() { ItemId = ItemIds.MithrilPlatelegs, Weight = 5 },
+        new() { ItemId = ItemIds.MithrilScimitar, Weight = 4 },
+        new() { ItemId = ItemIds.MithrilKiteshield, Weight = 4 },
+        new() { ItemId = ItemIds.MithrilFullHelm, Weight = 3 },
         new() { ItemId = ItemIds.Lobster, MinQuantity = 10, MaxQuantity = 20, Weight = 5 },
         new() { ItemId = ItemIds.Swordfish, MinQuantity = 5, MaxQuantity = 10, Weight = 4 },
         new() { ItemId = ItemIds.BronzeArrow, MinQuantity = 200, MaxQuantity = 500, Weight = 3 }

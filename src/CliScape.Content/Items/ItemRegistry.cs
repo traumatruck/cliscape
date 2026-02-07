@@ -29,6 +29,7 @@ public static class ItemRegistry
             typeof(BronzeEquipment),
             typeof(IronEquipment),
             typeof(SteelEquipment),
+            typeof(MithrilEquipment),
             typeof(LeatherEquipment),
             typeof(MiscEquipment),
             typeof(Food),

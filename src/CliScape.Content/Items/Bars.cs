@@ -54,4 +54,20 @@ public static class Bars
         ExamineText = "It's a bar of runite.",
         BaseValue = 12800
     };
+
+    public static readonly IItem SilverBar = new Item
+    {
+        Id = ItemIds.SilverBar,
+        Name = new ItemName("Silver bar"),
+        ExamineText = "It's a bar of silver.",
+        BaseValue = 150
+    };
+
+    public static readonly IItem GoldBar = new Item
+    {
+        Id = ItemIds.GoldBar,
+        Name = new ItemName("Gold bar"),
+        ExamineText = "It's a bar of gold.",
+        BaseValue = 300
+    };
 }
