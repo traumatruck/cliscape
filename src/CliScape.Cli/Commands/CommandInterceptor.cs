@@ -80,6 +80,7 @@ public class CommandInterceptor : ICommandInterceptor
             }
 
             var levelAfter = skill.Level.Value;
+            
             if (levelAfter <= levelBefore)
             {
                 continue;
@@ -87,12 +88,12 @@ public class CommandInterceptor : ICommandInterceptor
 
             if (!wroteHeader)
             {
-                AnsiConsole.WriteLine();
                 wroteHeader = true;
             }
 
             var levelsGained = levelAfter - levelBefore;
             var levelWord = levelsGained == 1 ? "level" : "levels";
+            
             AnsiConsole.MarkupLine(
                 $"[bold yellow]Congratulations! Your {skill.Name.Name} level increased by {levelsGained} {levelWord} to {levelAfter}![/]");
         }

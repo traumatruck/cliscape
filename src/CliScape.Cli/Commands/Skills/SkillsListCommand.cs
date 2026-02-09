@@ -55,10 +55,8 @@ public class SkillsListCommand : Command, ICommand
         AddSkillRow(table, player, SkillConstants.ThievingSkillName, "Thieving");
         AddSkillRow(table, player, SkillConstants.SlayerSkillName, "Slayer");
         AddSkillRow(table, player, SkillConstants.RunecraftSkillName, "Runecraft");
-
+        
         AnsiConsole.Write(table);
-        AnsiConsole.MarkupLine($"\n[dim]Total Level: {player.TotalLevel} | Combat Level: {player.CombatLevel}[/]");
-
         return (int)ExitCode.Success;
     }
 
