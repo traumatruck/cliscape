@@ -268,5 +268,5 @@ Thumbs.db
 # .editorconfig
 
 # Local Configuration Files
-.github*
-.vscode*
+.github/copilot-instructions*.md
+.vscode/settings*.json
