@@ -1,6 +1,7 @@
 using CliScape.Core.Npcs;
 using CliScape.Core.World;
 using CliScape.Core.World.Resources;
+using CliScape.Content.Npcs;
 using CliScape.Content.Resources;
 
 namespace CliScape.Content.Locations.Towns;
@@ -11,7 +12,12 @@ public class DraynorVillage : ILocation
 
     public bool HasBank => true;
 
-    public IReadOnlyList<INpc> AvailableNpcs { get; } = Array.Empty<INpc>();
+    public IReadOnlyList<INpc> AvailableNpcs { get; } = new INpc[]
+    {
+        Highwayman.Instance,
+        GiantRat.Instance,
+        DarkWizard.Instance
+    };
 
     public IReadOnlyList<IFishingSpot> FishingSpots { get; } =
     [

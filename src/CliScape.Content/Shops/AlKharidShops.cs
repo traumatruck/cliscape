@@ -37,6 +37,7 @@ public static class AlKharidShops
         shop.AddStock(BronzeEquipment.Scimitar, 10);
         shop.AddStock(IronEquipment.Scimitar, 5);
         shop.AddStock(SteelEquipment.Scimitar, 3);
+        shop.AddStock(MithrilEquipment.Scimitar, 1);
 
         return shop;
     }
@@ -70,6 +71,7 @@ public static class AlKharidShops
         shop.AddStock(BronzeEquipment.Platelegs, 5);
         shop.AddStock(IronEquipment.Platelegs, 3);
         shop.AddStock(SteelEquipment.Platelegs, 2);
+        shop.AddStock(MithrilEquipment.Platelegs, 1);
 
         return shop;
     }

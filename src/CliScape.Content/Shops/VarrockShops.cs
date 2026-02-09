@@ -63,6 +63,8 @@ public static class VarrockShops
         shop.AddStock(IronEquipment.Scimitar, 3);
         shop.AddStock(SteelEquipment.Sword, 3);
         shop.AddStock(SteelEquipment.Scimitar, 2);
+        shop.AddStock(MithrilEquipment.Sword, 1);
+        shop.AddStock(MithrilEquipment.Scimitar, 1);
 
         return shop;
     }

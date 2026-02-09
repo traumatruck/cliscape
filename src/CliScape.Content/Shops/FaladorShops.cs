@@ -39,6 +39,7 @@ public static class FaladorShops
         shop.AddStock(BronzeEquipment.Kiteshield, 3);
         shop.AddStock(IronEquipment.Kiteshield, 2);
         shop.AddStock(SteelEquipment.Kiteshield, 1);
+        shop.AddStock(MithrilEquipment.Kiteshield, 1);
 
         return shop;
     }
@@ -56,6 +57,7 @@ public static class FaladorShops
         shop.AddStock(BronzeEquipment.Chainbody, 5);
         shop.AddStock(IronEquipment.Chainbody, 3);
         shop.AddStock(SteelEquipment.Chainbody, 2);
+        shop.AddStock(MithrilEquipment.Chainbody, 1);
 
         return shop;
     }

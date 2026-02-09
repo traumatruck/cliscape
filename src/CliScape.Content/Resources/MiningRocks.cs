@@ -51,6 +51,20 @@ public static class MiningRocks
     };
 
     /// <summary>
+    ///     Silver rock requiring level 20 mining.
+    /// </summary>
+    public static readonly MiningRock SilverRock = new()
+    {
+        Name = "Silver rock",
+        RockType = RockType.Silver,
+        OreItemId = ItemIds.SilverOre,
+        RequiredLevel = 20,
+        Experience = 40,
+        RequiredPickaxe = PickaxeTier.Bronze,
+        MaxActions = 2
+    };
+
+    /// <summary>
     ///     Coal rock requiring level 30 mining.
     /// </summary>
     public static readonly MiningRock CoalRock = new()
@@ -62,6 +76,20 @@ public static class MiningRocks
         Experience = 50,
         RequiredPickaxe = PickaxeTier.Iron,
         MaxActions = 3
+    };
+
+    /// <summary>
+    ///     Gold rock requiring level 40 mining.
+    /// </summary>
+    public static readonly MiningRock GoldRock = new()
+    {
+        Name = "Gold rock",
+        RockType = RockType.Gold,
+        OreItemId = ItemIds.GoldOre,
+        RequiredLevel = 40,
+        Experience = 65,
+        RequiredPickaxe = PickaxeTier.Iron,
+        MaxActions = 2
     };
 
     /// <summary>

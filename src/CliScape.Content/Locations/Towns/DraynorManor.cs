@@ -1,5 +1,8 @@
 using CliScape.Core.Npcs;
 using CliScape.Core.World;
+using CliScape.Core.World.Resources;
+using CliScape.Content.Npcs;
+using CliScape.Content.Resources;
 
 namespace CliScape.Content.Locations.Towns;
 
@@ -7,7 +10,17 @@ public class DraynorManor : ILocation
 {
     public static LocationName Name => new("Draynor Manor");
 
-    public Shop? Shop { get; }
+    public IReadOnlyList<INpc> AvailableNpcs { get; } = new INpc[]
+    {
+        Spider.Instance,
+        GiantSpider.Instance,
+        Skeleton.Instance,
+        Zombie.Instance
+    };
 
-    public IReadOnlyList<INpc> AvailableNpcs { get; } = Array.Empty<INpc>();
+    public IReadOnlyList<ITree> Trees { get; } =
+    [
+        Resources.Trees.NormalTree,
+        Resources.Trees.OakTree
+    ];
 }
