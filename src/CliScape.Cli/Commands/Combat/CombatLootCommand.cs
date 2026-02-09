@@ -1,4 +1,7 @@
 using CliScape.Content.Items;
+using CliScape.Core.Combat;
+using CliScape.Core.Items;
+using CliScape.Core.Players;
 using CliScape.Game;
 using Spectre.Console;
 using Spectre.Console.Cli;
@@ -42,7 +45,7 @@ public class CombatLootCommand : Command<CombatLootCommandSettings>, ICommand
         return LootSpecificItem(pendingLoot, player, settings.ItemName, settings.Amount);
     }
 
-    private static int ShowAvailableLoot(Core.Combat.PendingLoot pendingLoot)
+    private static int ShowAvailableLoot(PendingLoot pendingLoot)
     {
         AnsiConsole.MarkupLine("[bold]Available loot:[/]");
 
@@ -64,7 +67,7 @@ public class CombatLootCommand : Command<CombatLootCommandSettings>, ICommand
         return (int)ExitCode.Success;
     }
 
-    private static int LootAll(Core.Combat.PendingLoot pendingLoot, Core.Players.Player player)
+    private static int LootAll(PendingLoot pendingLoot, Player player)
     {
         var itemsLooted = 0;
         var itemsSkipped = 0;
@@ -109,12 +112,12 @@ public class CombatLootCommand : Command<CombatLootCommandSettings>, ICommand
         return (int)ExitCode.Success;
     }
 
-    private static int LootSpecificItem(Core.Combat.PendingLoot pendingLoot, Core.Players.Player player,
+    private static int LootSpecificItem(PendingLoot pendingLoot, Player player,
         string itemName, int? requestedAmount)
     {
         // Find matching item in pending loot
-        Core.Combat.LootItem? matchingLoot = null;
-        Core.Items.IItem? matchingItem = null;
+        LootItem? matchingLoot = null;
+        IItem? matchingItem = null;
 
         foreach (var lootItem in pendingLoot.Items)
         {

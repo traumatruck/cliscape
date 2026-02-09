@@ -6,7 +6,7 @@ namespace CliScape.Core.Items;
 public sealed class InventorySlot
 {
     public IItem? Item { get; private set; }
-    
+
     public int Quantity { get; private set; }
 
     public bool IsEmpty => Item is null || Quantity <= 0;

@@ -7,7 +7,9 @@ namespace CliScape.Cli.Commands.Status;
 public class StatusOverviewCommand : Command, ICommand
 {
     private readonly GameState _gameState = GameState.Instance;
-    
+
+    public static string CommandName => "overview";
+
     public override int Execute(CommandContext context, CancellationToken cancellationToken)
     {
         var player = _gameState.GetPlayer();
@@ -17,11 +19,9 @@ public class StatusOverviewCommand : Command, ICommand
             .AddColumn($"Combat Level: {player.CombatLevel} | Total Level: {player.TotalLevel}")
             .AddRow("HP", $"{player.CurrentHealth}/{player.MaximumHealth}")
             .AddRow("Location", $"{player.CurrentLocation.Name}");
-        
+
         AnsiConsole.Write(table);
 
-        return (int) ExitCode.Success;
+        return (int)ExitCode.Success;
     }
-
-    public static string CommandName => "overview";
 }

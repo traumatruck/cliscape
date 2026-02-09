@@ -199,7 +199,7 @@ public readonly record struct PlayerSkillLevel
         }
 
         var totalExperience = 0;
-        
+
         for (var lvl = 1; lvl < level; lvl++)
         {
             totalExperience += (int)Math.Floor((lvl + 300.0 * Math.Pow(2.0, lvl / 7.0)) / 4.0);

@@ -1,8 +1,7 @@
+using CliScape.Content.Shops;
 using CliScape.Core.Npcs;
 using CliScape.Core.World;
 using CliScape.Core.World.Resources;
-using CliScape.Content.Resources;
-using CliScape.Content.Shops;
 
 namespace CliScape.Content.Locations.Towns;
 

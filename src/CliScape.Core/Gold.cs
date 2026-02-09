@@ -27,27 +27,66 @@ public readonly record struct Gold : IComparable<Gold>
     /// </summary>
     public static Gold Zero => new(0);
 
+    public int CompareTo(Gold other)
+    {
+        return Amount.CompareTo(other.Amount);
+    }
+
     /// <summary>
     ///     Implicit conversion from int.
     /// </summary>
-    public static implicit operator Gold(int amount) => new(amount);
+    public static implicit operator Gold(int amount)
+    {
+        return new Gold(amount);
+    }
 
     /// <summary>
     ///     Implicit conversion to int.
     /// </summary>
-    public static implicit operator int(Gold gold) => gold.Amount;
+    public static implicit operator int(Gold gold)
+    {
+        return gold.Amount;
+    }
 
-    public static Gold operator +(Gold left, Gold right) => new(left.Amount + right.Amount);
-    public static Gold operator -(Gold left, Gold right) => new(Math.Max(0, left.Amount - right.Amount));
-    public static Gold operator *(Gold left, int multiplier) => new(left.Amount * multiplier);
-    public static Gold operator /(Gold left, int divisor) => new(left.Amount / divisor);
+    public static Gold operator +(Gold left, Gold right)
+    {
+        return new Gold(left.Amount + right.Amount);
+    }
 
-    public static bool operator <(Gold left, Gold right) => left.Amount < right.Amount;
-    public static bool operator >(Gold left, Gold right) => left.Amount > right.Amount;
-    public static bool operator <=(Gold left, Gold right) => left.Amount <= right.Amount;
-    public static bool operator >=(Gold left, Gold right) => left.Amount >= right.Amount;
+    public static Gold operator -(Gold left, Gold right)
+    {
+        return new Gold(Math.Max(0, left.Amount - right.Amount));
+    }
 
-    public int CompareTo(Gold other) => Amount.CompareTo(other.Amount);
+    public static Gold operator *(Gold left, int multiplier)
+    {
+        return new Gold(left.Amount * multiplier);
+    }
+
+    public static Gold operator /(Gold left, int divisor)
+    {
+        return new Gold(left.Amount / divisor);
+    }
+
+    public static bool operator <(Gold left, Gold right)
+    {
+        return left.Amount < right.Amount;
+    }
+
+    public static bool operator >(Gold left, Gold right)
+    {
+        return left.Amount > right.Amount;
+    }
+
+    public static bool operator <=(Gold left, Gold right)
+    {
+        return left.Amount <= right.Amount;
+    }
+
+    public static bool operator >=(Gold left, Gold right)
+    {
+        return left.Amount >= right.Amount;
+    }
 
     /// <summary>
     ///     Formats the gold amount for display (e.g., "1,234 gp" or "1.2M").
@@ -62,5 +101,8 @@ public readonly record struct Gold : IComparable<Gold>
         };
     }
 
-    public override string ToString() => ToDisplayString();
+    public override string ToString()
+    {
+        return ToDisplayString();
+    }
 }

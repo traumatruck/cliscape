@@ -160,10 +160,12 @@ public class CombatAttackCommand : Command<CombatAttackCommandSettings>, IComman
             {
                 grid.AddRow(new Markup(_lastPlayerAction));
             }
+
             if (hasNpcAction)
             {
                 grid.AddRow(new Markup(_lastNpcAction));
             }
+
             grid.AddEmptyRow();
         }
 
@@ -178,7 +180,7 @@ public class CombatAttackCommand : Command<CombatAttackCommandSettings>, IComman
         const double scaleFactor = 2.0;
         var barLength = baseLength + (int)(Math.Sqrt(maxHealth) * scaleFactor);
         barLength = Math.Clamp(barLength, 15, 35); // Keep reasonable bounds
-        
+
         var filled = (int)(percent * barLength);
         var empty = barLength - filled;
 
@@ -356,7 +358,6 @@ public class CombatAttackCommand : Command<CombatAttackCommandSettings>, IComman
 
             // Handle drops
             HandleDrops(combat, npc);
-
         }
         else if (combat.PlayerDied)
         {
@@ -395,7 +396,8 @@ public class CombatAttackCommand : Command<CombatAttackCommandSettings>, IComman
         }
         else
         {
-            AnsiConsole.MarkupLine($"[purple]Slayer task:[/] [dim]{player.SlayerTask.RemainingKills} {task.Category} remaining[/]");
+            AnsiConsole.MarkupLine(
+                $"[purple]Slayer task:[/] [dim]{player.SlayerTask.RemainingKills} {task.Category} remaining[/]");
         }
     }
 
@@ -488,7 +490,6 @@ public class CombatAttackCommand : Command<CombatAttackCommandSettings>, IComman
         AnsiConsole.WriteLine();
         AnsiConsole.MarkupLine("[dim]Use 'combat loot <item>' to pick up items.[/]");
     }
-
 }
 
 internal enum CombatAction

@@ -24,7 +24,7 @@ public class InventorySortCommand : Command<InventorySortCommandSettings>, IComm
         {
             AnsiConsole.MarkupLine(
                 $"[red]Invalid from slot. Must be between 1 and {Core.Items.Inventory.MaxSlots}.[/]");
-            
+
             return (int)ExitCode.Failure;
         }
 

@@ -7,14 +7,14 @@ namespace CliScape.Core.Items.Actions;
 /// </summary>
 public class ExamineAction : IItemAction
 {
+    private ExamineAction()
+    {
+    }
+
     /// <summary>
     ///     Singleton instance of the examine action.
     /// </summary>
     public static ExamineAction Instance { get; } = new();
-
-    private ExamineAction()
-    {
-    }
 
     /// <inheritdoc />
     public ItemAction ActionType => ItemAction.Examine;

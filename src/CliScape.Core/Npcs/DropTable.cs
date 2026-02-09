@@ -1,5 +1,3 @@
-using CliScape.Core.Items;
-
 namespace CliScape.Core.Npcs;
 
 /// <summary>
@@ -18,6 +16,11 @@ public class DropTable
     ///     Gets all possible drops.
     /// </summary>
     public IReadOnlyList<NpcDrop> Drops => _drops;
+
+    /// <summary>
+    ///     An empty drop table for NPCs with no drops.
+    /// </summary>
+    public static DropTable Empty => new();
 
     /// <summary>
     ///     Rolls for drops and returns the items that drop.
@@ -64,9 +67,4 @@ public class DropTable
 
         return Random.Shared.Next(drop.MinQuantity, drop.MaxQuantity + 1);
     }
-
-    /// <summary>
-    ///     An empty drop table for NPCs with no drops.
-    /// </summary>
-    public static DropTable Empty => new();
 }

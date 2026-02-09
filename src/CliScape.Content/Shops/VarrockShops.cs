@@ -5,28 +5,28 @@ using CliScape.Core.World;
 namespace CliScape.Content.Shops;
 
 /// <summary>
-/// Shop definitions for Varrock.
+///     Shop definitions for Varrock.
 /// </summary>
 public static class VarrockShops
 {
     /// <summary>
-    /// Zaff's Superior Staves - sells staves and magic equipment.
-    /// (Currently sells melee gear until magic is implemented)
+    ///     Zaff's Superior Staves - sells staves and magic equipment.
+    ///     (Currently sells melee gear until magic is implemented)
     /// </summary>
     public static Shop ZaffsStaves { get; } = CreateZaffsStaves();
 
     /// <summary>
-    /// Varrock Sword Shop - Specialty sword shop.
+    ///     Varrock Sword Shop - Specialty sword shop.
     /// </summary>
     public static Shop SwordShop { get; } = CreateSwordShop();
 
     /// <summary>
-    /// Thessalia's Fine Clothes - sells basic armor.
+    ///     Thessalia's Fine Clothes - sells basic armor.
     /// </summary>
     public static Shop ThessaliasClothes { get; } = CreateThessaliasClothes();
 
     /// <summary>
-    /// Varrock General Store.
+    ///     Varrock General Store.
     /// </summary>
     public static Shop GeneralStore { get; } = CreateGeneralStore();
 

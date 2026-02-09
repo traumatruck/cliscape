@@ -5,22 +5,22 @@ using CliScape.Core.World;
 namespace CliScape.Content.Shops;
 
 /// <summary>
-/// Shop definitions for Al Kharid.
+///     Shop definitions for Al Kharid.
 /// </summary>
 public static class AlKharidShops
 {
     /// <summary>
-    /// Al Kharid Scimitar Shop - best place for scimitars.
+    ///     Al Kharid Scimitar Shop - best place for scimitars.
     /// </summary>
     public static Shop ScimitarShop { get; } = CreateScimitarShop();
 
     /// <summary>
-    /// Al Kharid General Store.
+    ///     Al Kharid General Store.
     /// </summary>
     public static Shop GeneralStore { get; } = CreateGeneralStore();
 
     /// <summary>
-    /// Louie's Armoured Legs - sells platelegs.
+    ///     Louie's Armoured Legs - sells platelegs.
     /// </summary>
     public static Shop LouiesLegs { get; } = CreateLouiesLegs();
 

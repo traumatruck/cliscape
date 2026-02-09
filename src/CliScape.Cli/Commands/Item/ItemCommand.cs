@@ -79,7 +79,8 @@ public class ItemCommand : Command<ItemCommandSettings>, ICommand
         return ExecuteAction(item, actionType.Value, player, inventory);
     }
 
-    private int ExecuteItemOnItem(IItem sourceItem, string targetItemName, Player player, Core.Items.Inventory inventory)
+    private int ExecuteItemOnItem(IItem sourceItem, string targetItemName, Player player,
+        Core.Items.Inventory inventory)
     {
         // Find the target item
         var targetItem = FindItemByName(inventory, targetItemName);
@@ -104,7 +105,8 @@ public class ItemCommand : Command<ItemCommandSettings>, ICommand
         }
 
         // No valid interaction found
-        AnsiConsole.MarkupLine($"[yellow]Nothing interesting happens when you use {sourceItem.Name} on {targetItem.Name}.[/]");
+        AnsiConsole.MarkupLine(
+            $"[yellow]Nothing interesting happens when you use {sourceItem.Name} on {targetItem.Name}.[/]");
         return (int)ExitCode.Success;
     }
 

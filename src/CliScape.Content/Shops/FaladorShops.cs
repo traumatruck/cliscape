@@ -5,22 +5,22 @@ using CliScape.Core.World;
 namespace CliScape.Content.Shops;
 
 /// <summary>
-/// Shop definitions for Falador.
+///     Shop definitions for Falador.
 /// </summary>
 public static class FaladorShops
 {
     /// <summary>
-    /// Falador Shield Shop - specialty shop for shields.
+    ///     Falador Shield Shop - specialty shop for shields.
     /// </summary>
     public static Shop ShieldShop { get; } = CreateShieldShop();
 
     /// <summary>
-    /// Wayne's Chains - sells chainmail armor.
+    ///     Wayne's Chains - sells chainmail armor.
     /// </summary>
     public static Shop WaynesChains { get; } = CreateWaynesChains();
 
     /// <summary>
-    /// Falador General Store.
+    ///     Falador General Store.
     /// </summary>
     public static Shop GeneralStore { get; } = CreateGeneralStore();
 

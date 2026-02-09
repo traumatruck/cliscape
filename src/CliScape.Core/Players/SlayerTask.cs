@@ -26,15 +26,15 @@ public record SlayerTask
     public required string SlayerMaster { get; init; }
 
     /// <summary>
+    ///     Whether the task is complete.
+    /// </summary>
+    public bool IsComplete => RemainingKills <= 0;
+
+    /// <summary>
     ///     Returns a new SlayerTask with one kill completed.
     /// </summary>
     public SlayerTask CompleteKill()
     {
         return this with { RemainingKills = Math.Max(0, RemainingKills - 1) };
     }
-
-    /// <summary>
-    ///     Whether the task is complete.
-    /// </summary>
-    public bool IsComplete => RemainingKills <= 0;
 }

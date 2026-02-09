@@ -27,8 +27,7 @@ public class UseAction : IItemAction
     /// </summary>
     public static UseAction Default { get; } = new(
         "Use the item",
-        (item, _) => $"Nothing interesting happens when you use the {item.Name}.",
-        false);
+        (item, _) => $"Nothing interesting happens when you use the {item.Name}.");
 
     /// <inheritdoc />
     public ItemAction ActionType => ItemAction.Use;

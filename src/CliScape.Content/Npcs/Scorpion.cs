@@ -1,4 +1,3 @@
-using CliScape.Content.Items;
 using CliScape.Core.Npcs;
 
 namespace CliScape.Content.Npcs;

@@ -37,24 +37,54 @@ public readonly record struct Damage : IComparable<Damage>
     /// </summary>
     public bool IsMiss => Amount == 0;
 
+    public int CompareTo(Damage other)
+    {
+        return Amount.CompareTo(other.Amount);
+    }
+
     /// <summary>
     ///     Implicit conversion from int.
     /// </summary>
-    public static implicit operator Damage(int amount) => new(amount);
+    public static implicit operator Damage(int amount)
+    {
+        return new Damage(amount);
+    }
 
     /// <summary>
     ///     Implicit conversion to int.
     /// </summary>
-    public static implicit operator int(Damage damage) => damage.Amount;
+    public static implicit operator int(Damage damage)
+    {
+        return damage.Amount;
+    }
 
-    public static Damage operator +(Damage left, Damage right) => new(left.Amount + right.Amount);
+    public static Damage operator +(Damage left, Damage right)
+    {
+        return new Damage(left.Amount + right.Amount);
+    }
 
-    public static bool operator <(Damage left, Damage right) => left.Amount < right.Amount;
-    public static bool operator >(Damage left, Damage right) => left.Amount > right.Amount;
-    public static bool operator <=(Damage left, Damage right) => left.Amount <= right.Amount;
-    public static bool operator >=(Damage left, Damage right) => left.Amount >= right.Amount;
+    public static bool operator <(Damage left, Damage right)
+    {
+        return left.Amount < right.Amount;
+    }
 
-    public int CompareTo(Damage other) => Amount.CompareTo(other.Amount);
+    public static bool operator >(Damage left, Damage right)
+    {
+        return left.Amount > right.Amount;
+    }
 
-    public override string ToString() => Amount.ToString();
+    public static bool operator <=(Damage left, Damage right)
+    {
+        return left.Amount <= right.Amount;
+    }
+
+    public static bool operator >=(Damage left, Damage right)
+    {
+        return left.Amount >= right.Amount;
+    }
+
+    public override string ToString()
+    {
+        return Amount.ToString();
+    }
 }

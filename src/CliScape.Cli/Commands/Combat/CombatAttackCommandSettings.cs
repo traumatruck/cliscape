@@ -4,7 +4,7 @@ using Spectre.Console.Cli;
 namespace CliScape.Cli.Commands.Combat;
 
 /// <summary>
-/// Settings for initiating combat with an NPC.
+///     Settings for initiating combat with an NPC.
 /// </summary>
 public class CombatAttackCommandSettings : CommandSettings
 {

@@ -39,17 +39,23 @@ public class EquipmentViewCommand : Command, ICommand
             .AddColumn("Attack")
             .AddColumn("Defence");
 
-        bonusesTable.AddRow("Stab", FormatBonus(equipment.TotalStabAttackBonus), FormatBonus(equipment.TotalStabDefenceBonus));
-        bonusesTable.AddRow("Slash", FormatBonus(equipment.TotalSlashAttackBonus), FormatBonus(equipment.TotalSlashDefenceBonus));
-        bonusesTable.AddRow("Crush", FormatBonus(equipment.TotalCrushAttackBonus), FormatBonus(equipment.TotalCrushDefenceBonus));
-        bonusesTable.AddRow("Ranged", FormatBonus(equipment.TotalRangedAttackBonus), FormatBonus(equipment.TotalRangedDefenceBonus));
-        bonusesTable.AddRow("Magic", FormatBonus(equipment.TotalMagicAttackBonus), FormatBonus(equipment.TotalMagicDefenceBonus));
+        bonusesTable.AddRow("Stab", FormatBonus(equipment.TotalStabAttackBonus),
+            FormatBonus(equipment.TotalStabDefenceBonus));
+        bonusesTable.AddRow("Slash", FormatBonus(equipment.TotalSlashAttackBonus),
+            FormatBonus(equipment.TotalSlashDefenceBonus));
+        bonusesTable.AddRow("Crush", FormatBonus(equipment.TotalCrushAttackBonus),
+            FormatBonus(equipment.TotalCrushDefenceBonus));
+        bonusesTable.AddRow("Ranged", FormatBonus(equipment.TotalRangedAttackBonus),
+            FormatBonus(equipment.TotalRangedDefenceBonus));
+        bonusesTable.AddRow("Magic", FormatBonus(equipment.TotalMagicAttackBonus),
+            FormatBonus(equipment.TotalMagicDefenceBonus));
         bonusesTable.AddEmptyRow();
         bonusesTable.AddRow("Melee Strength", FormatBonus(equipment.TotalMeleeStrengthBonus), "");
         bonusesTable.AddRow("Ranged Strength", FormatBonus(equipment.TotalRangedStrengthBonus), "");
         bonusesTable.AddRow("Magic Damage", $"{equipment.TotalMagicDamageBonus}%", "");
         bonusesTable.AddRow("Prayer", FormatBonus(equipment.TotalPrayerBonus), "");
-        bonusesTable.AddRow("Weapon Speed", $"[cyan]{equipment.WeaponAttackSpeed}[/] ({equipment.WeaponAttackSpeed * 0.6:F1}s)", "");
+        bonusesTable.AddRow("Weapon Speed",
+            $"[cyan]{equipment.WeaponAttackSpeed}[/] ({equipment.WeaponAttackSpeed * 0.6:F1}s)", "");
 
         AnsiConsole.Write(new Columns(equipmentTable, bonusesTable).Collapse());
 

@@ -98,7 +98,7 @@ public static class ClueScrollItems
 
                 return ClueScrollActions.OnOpenRewardCasket(i, player, tier);
             },
-            consumesItem: true));
+            true));
 
         return item;
     }

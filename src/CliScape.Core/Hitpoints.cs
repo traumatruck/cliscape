@@ -6,8 +6,6 @@ namespace CliScape.Core;
 /// </summary>
 public readonly record struct Hitpoints : IComparable<Hitpoints>
 {
-    private readonly int _value;
-
     /// <summary>
     ///     Creates a new Hitpoints value.
     /// </summary>
@@ -16,13 +14,13 @@ public readonly record struct Hitpoints : IComparable<Hitpoints>
     public Hitpoints(int value)
     {
         ArgumentOutOfRangeException.ThrowIfNegative(value);
-        _value = value;
+        Value = value;
     }
 
     /// <summary>
     ///     The hitpoints value.
     /// </summary>
-    public int Value => _value;
+    public int Value { get; }
 
     /// <summary>
     ///     Zero hitpoints (dead).
@@ -32,29 +30,40 @@ public readonly record struct Hitpoints : IComparable<Hitpoints>
     /// <summary>
     ///     Whether the entity is alive (has hitpoints).
     /// </summary>
-    public bool IsAlive => _value > 0;
+    public bool IsAlive => Value > 0;
 
     /// <summary>
     ///     Whether the entity is dead (no hitpoints).
     /// </summary>
-    public bool IsDead => _value == 0;
+    public bool IsDead => Value == 0;
+
+    public int CompareTo(Hitpoints other)
+    {
+        return Value.CompareTo(other.Value);
+    }
 
     /// <summary>
     ///     Implicit conversion from int.
     /// </summary>
-    public static implicit operator Hitpoints(int value) => new(value);
+    public static implicit operator Hitpoints(int value)
+    {
+        return new Hitpoints(value);
+    }
 
     /// <summary>
     ///     Implicit conversion to int.
     /// </summary>
-    public static implicit operator int(Hitpoints hp) => hp._value;
+    public static implicit operator int(Hitpoints hp)
+    {
+        return hp.Value;
+    }
 
     /// <summary>
     ///     Subtracts damage from hitpoints, clamping at zero.
     /// </summary>
     public Hitpoints TakeDamage(Damage damage)
     {
-        return new Hitpoints(Math.Max(0, _value - damage.Amount));
+        return new Hitpoints(Math.Max(0, Value - damage.Amount));
     }
 
     /// <summary>
@@ -62,15 +71,31 @@ public readonly record struct Hitpoints : IComparable<Hitpoints>
     /// </summary>
     public Hitpoints Heal(int amount, Hitpoints maximum)
     {
-        return new Hitpoints(Math.Min(maximum._value, _value + amount));
+        return new Hitpoints(Math.Min(maximum.Value, Value + amount));
     }
 
-    public static bool operator <(Hitpoints left, Hitpoints right) => left._value < right._value;
-    public static bool operator >(Hitpoints left, Hitpoints right) => left._value > right._value;
-    public static bool operator <=(Hitpoints left, Hitpoints right) => left._value <= right._value;
-    public static bool operator >=(Hitpoints left, Hitpoints right) => left._value >= right._value;
+    public static bool operator <(Hitpoints left, Hitpoints right)
+    {
+        return left.Value < right.Value;
+    }
 
-    public int CompareTo(Hitpoints other) => _value.CompareTo(other._value);
+    public static bool operator >(Hitpoints left, Hitpoints right)
+    {
+        return left.Value > right.Value;
+    }
 
-    public override string ToString() => _value.ToString();
+    public static bool operator <=(Hitpoints left, Hitpoints right)
+    {
+        return left.Value <= right.Value;
+    }
+
+    public static bool operator >=(Hitpoints left, Hitpoints right)
+    {
+        return left.Value >= right.Value;
+    }
+
+    public override string ToString()
+    {
+        return Value.ToString();
+    }
 }

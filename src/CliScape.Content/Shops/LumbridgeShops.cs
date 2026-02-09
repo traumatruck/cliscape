@@ -5,17 +5,17 @@ using CliScape.Core.World;
 namespace CliScape.Content.Shops;
 
 /// <summary>
-/// Shop definitions for Lumbridge.
+///     Shop definitions for Lumbridge.
 /// </summary>
 public static class LumbridgeShops
 {
     /// <summary>
-    /// Bob's Brilliant Axes - sells axes and basic equipment.
+    ///     Bob's Brilliant Axes - sells axes and basic equipment.
     /// </summary>
     public static Shop BobsAxes { get; } = CreateBobsAxes();
 
     /// <summary>
-    /// Lumbridge General Store - buys and sells various goods.
+    ///     Lumbridge General Store - buys and sells various goods.
     /// </summary>
     public static Shop GeneralStore { get; } = CreateGeneralStore();
 
