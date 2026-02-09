@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using CliScape.Content.Items;
+using CliScape.Core;
 using CliScape.Core.Items;
 using CliScape.Core.Players;
 using CliScape.Core.Players.Skills;
@@ -26,6 +27,7 @@ public class ChopCommand : Command<ChopCommandSettings>, ICommand
     ];
 
     private readonly GameState _gameState = GameState.Instance;
+    private readonly IRandomProvider _random = RandomProvider.Instance;
 
     public static string CommandName => "chop";
 
@@ -50,17 +52,7 @@ public class ChopCommand : Command<ChopCommandSettings>, ICommand
             return (int)ExitCode.Failure;
         }
 
-        // Determine how many times to chop (limited by tree's max and requested count)
-        var requestedCount = settings.Count ?? 1;
-        var maxCount = Math.Min(requestedCount, tree.MaxActions);
-
-        if (requestedCount > tree.MaxActions)
-        {
-            AnsiConsole.MarkupLine(
-                $"[dim]Note: {tree.Name} can only be chopped {tree.MaxActions} time(s) before it falls.[/]");
-        }
-
-        return ChopTreeMultiple(player, tree, maxCount);
+        return ChopTree(player, tree);
     }
 
     private static int ListTrees(IReadOnlyList<ITree> trees, Player player)
@@ -94,12 +86,11 @@ public class ChopCommand : Command<ChopCommandSettings>, ICommand
 
         AnsiConsole.Write(table);
         AnsiConsole.MarkupLine("\n[dim]Use 'skills chop <tree>' to chop a tree (e.g., 'skills chop oak').[/]");
-        AnsiConsole.MarkupLine("[dim]Use 'skills chop <tree> -c <count>' to chop multiple times.[/]");
 
         return (int)ExitCode.Success;
     }
 
-    private int ChopTreeMultiple(Player player, ITree tree, int count)
+    private int ChopTree(Player player, ITree tree)
     {
         var woodcuttingSkill = player.GetSkill(SkillConstants.WoodcuttingSkillName);
         var woodcuttingLevel = woodcuttingSkill.Level.Value;
@@ -126,34 +117,36 @@ public class ChopCommand : Command<ChopCommandSettings>, ICommand
             return (int)ExitCode.Failure;
         }
 
-        var logsObtained = 0;
+        // Determine random number of logs from this tree
+        var potentialLogs = _random.Next(1, tree.MaxActions + 1);
+        
+        // Limit by available inventory space
+        var availableSlots = player.Inventory.FreeSlots;
+        if (availableSlots == 0)
+        {
+            AnsiConsole.MarkupLine("[red]Your inventory is full.[/]");
+            return (int)ExitCode.Failure;
+        }
+        
+        var logsObtained = Math.Min(potentialLogs, availableSlots);
         var totalXp = 0;
 
-        for (var i = 0; i < count; i++)
+        // Add all logs to inventory and calculate total XP
+        for (var i = 0; i < logsObtained; i++)
         {
-            // Check inventory space
-            if (player.Inventory.IsFull)
-            {
-                if (logsObtained == 0)
-                {
-                    AnsiConsole.MarkupLine("[red]Your inventory is full.[/]");
-                    return (int)ExitCode.Failure;
-                }
-
-                AnsiConsole.MarkupLine("[yellow]Your inventory is full.[/]");
-                break;
-            }
-
-            // Add to inventory
             if (!player.Inventory.TryAdd(logItem))
             {
+                // Should not happen since we checked space, but handle it anyway
                 break;
             }
-
-            // Grant experience
-            Player.AddExperience(woodcuttingSkill, tree.Experience);
-            logsObtained++;
+            
             totalXp += tree.Experience;
+        }
+        
+        // Grant all experience at once
+        if (totalXp > 0)
+        {
+            Player.AddExperience(woodcuttingSkill, totalXp);
         }
 
         if (logsObtained == 1)
