@@ -192,7 +192,6 @@ public class ThieveCommand(GameState gameState) : Command<ThieveCommandSettings>
             return (int)ExitCode.Failure;
         }
 
-        gameState.Save();
         return (int)ExitCode.Success;
     }
 

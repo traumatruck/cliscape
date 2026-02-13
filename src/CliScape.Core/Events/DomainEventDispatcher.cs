@@ -25,14 +25,21 @@ public sealed class DomainEventDispatcher : IDomainEventDispatcher
 
         foreach (var handler in handlers)
         {
-            switch (handler)
+            try
             {
-                case IDomainEventHandler<TEvent> typedHandler:
-                    typedHandler.Handle(@event);
-                    break;
-                case Action<TEvent> action:
-                    action(@event);
-                    break;
+                switch (handler)
+                {
+                    case IDomainEventHandler<TEvent> typedHandler:
+                        typedHandler.Handle(@event);
+                        break;
+                    case Action<TEvent> action:
+                        action(@event);
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Event handler failed for {eventType.Name}: {ex.Message}");
             }
         }
     }
@@ -52,7 +59,7 @@ public sealed class DomainEventDispatcher : IDomainEventDispatcher
     }
 
     /// <inheritdoc />
-    public void Register<TEvent>(Action<TEvent> handler) where TEvent : IDomainEvent
+    public IDisposable Register<TEvent>(Action<TEvent> handler) where TEvent : IDomainEvent
     {
         var eventType = typeof(TEvent);
 
@@ -63,6 +70,7 @@ public sealed class DomainEventDispatcher : IDomainEventDispatcher
         }
 
         handlers.Add(handler);
+        return new HandlerRegistration(handlers, handler);
     }
 
     /// <summary>
@@ -71,5 +79,16 @@ public sealed class DomainEventDispatcher : IDomainEventDispatcher
     public void ClearHandlers()
     {
         _handlers.Clear();
+    }
+
+    /// <summary>
+    ///     A disposable that removes a handler from the handler list when disposed.
+    /// </summary>
+    private sealed class HandlerRegistration(List<object> handlers, object handler) : IDisposable
+    {
+        public void Dispose()
+        {
+            handlers.Remove(handler);
+        }
     }
 }

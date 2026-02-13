@@ -1,3 +1,4 @@
+using CliScape.Core;
 using CliScape.Core.Items;
 using CliScape.Core.Players;
 
@@ -11,7 +12,7 @@ public interface IFiremakingService
     /// <summary>
     ///     Validates if the player can light the specified logs.
     /// </summary>
-    (bool CanLight, string? ErrorMessage) CanLight(Player player, IItem logs);
+    ServiceResult CanLight(Player player, IItem logs);
 
     /// <summary>
     ///     Attempts to light logs using a tinderbox.

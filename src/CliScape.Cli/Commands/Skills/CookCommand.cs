@@ -197,7 +197,6 @@ public class CookCommand(GameState gameState) : Command<CookCommandSettings>, IC
             return (int)ExitCode.Failure;
         }
 
-        gameState.Save();
         return (int)ExitCode.Success;
     }
 

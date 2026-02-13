@@ -1,3 +1,4 @@
+using CliScape.Core;
 using CliScape.Core.Items;
 using CliScape.Core.Players;
 using CliScape.Core.World.Resources;
@@ -11,8 +12,9 @@ public interface IMiningService
 {
     /// <summary>
     ///     Validates if the player can mine the specified rock.
+    ///     On success, the result message contains the pickaxe name.
     /// </summary>
-    (bool CanMine, string? ErrorMessage, string? PickaxeName) CanMine(Player player, IMiningRock rock);
+    ServiceResult<string> CanMine(Player player, IMiningRock rock);
 
     /// <summary>
     ///     Performs mining at the specified rock.

@@ -50,10 +50,10 @@ public class FishCommand(GameState gameState, FishingService fishingService) : C
         }
 
         // Validate via service
-        var (canFish, errorMessage) = fishingService.CanFish(player, spot);
-        if (!canFish)
+        var canFishResult = fishingService.CanFish(player, spot);
+        if (!canFishResult.Success)
         {
-            AnsiConsole.MarkupLine($"[red]{errorMessage}[/]");
+            AnsiConsole.MarkupLine($"[red]{canFishResult.Message}[/]");
             return (int)ExitCode.Failure;
         }
 

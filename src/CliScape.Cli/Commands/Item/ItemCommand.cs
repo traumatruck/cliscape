@@ -94,7 +94,6 @@ public class ItemCommand(GameState gameState) : Command<ItemCommandSettings>, IC
             if (FiremakingHelper.TryLightLogs(player, logs, out var message))
             {
                 AnsiConsole.MarkupLine($"[green]{message}[/]");
-                gameState.Save();
                 return (int)ExitCode.Success;
             }
 

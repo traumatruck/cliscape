@@ -90,7 +90,7 @@ public class SlayerCommand(GameState gameState, SlayerService slayerService) : C
                 AnsiConsole.MarkupLine($"  [cyan]{m.Name}[/]");
             }
 
-            return (int)ExitCode.BadRequest;
+            return (int)ExitCode.Failure;
         }
 
         var result = slayerService.AssignTask(player, master);
@@ -118,25 +118,25 @@ public class SlayerCommand(GameState gameState, SlayerService slayerService) : C
         AnsiConsole.MarkupLine("[yellow]You already have a slayer task![/]");
         AnsiConsole.MarkupLine($"  {task.Category} — {task.RemainingKills} remaining");
         AnsiConsole.MarkupLine("[dim]Complete or cancel your current task first (--cancel).[/]");
-        return (int)ExitCode.BadRequest;
+        return (int)ExitCode.Failure;
     }
 
     private static int HandleInsufficientCombat(int required)
     {
         AnsiConsole.MarkupLine($"[red]You need combat level {required} to receive tasks from this master.[/]");
-        return (int)ExitCode.BadRequest;
+        return (int)ExitCode.Failure;
     }
 
     private static int HandleInsufficientSlayer(int required)
     {
         AnsiConsole.MarkupLine($"[red]You need slayer level {required} to receive tasks from this master.[/]");
-        return (int)ExitCode.BadRequest;
+        return (int)ExitCode.Failure;
     }
 
     private static int HandleNoAssignments()
     {
         AnsiConsole.MarkupLine("[red]This slayer master has no tasks suitable for your level.[/]");
-        return (int)ExitCode.BadRequest;
+        return (int)ExitCode.Failure;
     }
 
     private int HandleCancel(Player player)
@@ -144,7 +144,7 @@ public class SlayerCommand(GameState gameState, SlayerService slayerService) : C
         if (player.SlayerTask == null || player.SlayerTask.IsComplete)
         {
             AnsiConsole.MarkupLine("[yellow]You don't have a slayer task to cancel.[/]");
-            return (int)ExitCode.BadRequest;
+            return (int)ExitCode.Failure;
         }
 
         var task = player.SlayerTask;

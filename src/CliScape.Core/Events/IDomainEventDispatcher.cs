@@ -17,6 +17,7 @@ public interface IDomainEventDispatcher
 
     /// <summary>
     ///     Registers an action as an event handler for a specific event type.
+    ///     Returns a disposable that removes the handler when disposed.
     /// </summary>
-    void Register<TEvent>(Action<TEvent> handler) where TEvent : IDomainEvent;
+    IDisposable Register<TEvent>(Action<TEvent> handler) where TEvent : IDomainEvent;
 }

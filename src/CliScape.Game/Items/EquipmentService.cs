@@ -1,3 +1,4 @@
+using CliScape.Core;
 using CliScape.Core.Events;
 using CliScape.Core.Items;
 using CliScape.Core.Players;
@@ -19,7 +20,7 @@ public sealed class EquipmentService : IEquipmentService
     }
 
     /// <inheritdoc />
-    public (bool CanEquip, string? ErrorMessage) CanEquip(Player player, IEquippable item)
+    public ServiceResult CanEquip(Player player, IEquippable item)
     {
         var skills = player.Skills;
 
@@ -31,39 +32,39 @@ public sealed class EquipmentService : IEquipmentService
 
         if (item.RequiredAttackLevel > attack)
         {
-            return (false, $"You need {item.RequiredAttackLevel} Attack to equip this.");
+            return ServiceResult.Fail($"You need {item.RequiredAttackLevel} Attack to equip this.");
         }
 
         if (item.RequiredStrengthLevel > strength)
         {
-            return (false, $"You need {item.RequiredStrengthLevel} Strength to equip this.");
+            return ServiceResult.Fail($"You need {item.RequiredStrengthLevel} Strength to equip this.");
         }
 
         if (item.RequiredDefenceLevel > defence)
         {
-            return (false, $"You need {item.RequiredDefenceLevel} Defence to equip this.");
+            return ServiceResult.Fail($"You need {item.RequiredDefenceLevel} Defence to equip this.");
         }
 
         if (item.RequiredRangedLevel > ranged)
         {
-            return (false, $"You need {item.RequiredRangedLevel} Ranged to equip this.");
+            return ServiceResult.Fail($"You need {item.RequiredRangedLevel} Ranged to equip this.");
         }
 
         if (item.RequiredMagicLevel > magic)
         {
-            return (false, $"You need {item.RequiredMagicLevel} Magic to equip this.");
+            return ServiceResult.Fail($"You need {item.RequiredMagicLevel} Magic to equip this.");
         }
 
-        return (true, null);
+        return ServiceResult.Ok();
     }
 
     /// <inheritdoc />
     public EquipResult Equip(Player player, IEquippable item)
     {
-        var (canEquip, errorMessage) = CanEquip(player, item);
-        if (!canEquip)
+        var canEquipResult = CanEquip(player, item);
+        if (!canEquipResult.Success)
         {
-            return new EquipResult(false, errorMessage!);
+            return new EquipResult(false, canEquipResult.Message);
         }
 
         // Remove from inventory

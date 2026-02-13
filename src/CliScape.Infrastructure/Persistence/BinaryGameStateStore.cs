@@ -11,6 +11,11 @@ namespace CliScape.Infrastructure.Persistence;
 public sealed class BinaryGameStateStore : IGameStateStore
 {
     /// <summary>
+    ///     Current section format version. Old saves without a version byte are silently reset.
+    /// </summary>
+    private const byte CurrentSectionVersion = 2;
+
+    /// <summary>
     ///     UTF-8 encoding without BOM that throws on invalid bytes.
     /// </summary>
     private static readonly Encoding TextEncoding =
@@ -50,6 +55,13 @@ public sealed class BinaryGameStateStore : IGameStateStore
         using var stream = new MemoryStream(data, false);
         using var reader = new BinaryReader(stream, TextEncoding, false);
 
+        // Check section version — old saves silently reset to default player
+        var sectionVersion = reader.ReadByte();
+        if (sectionVersion != CurrentSectionVersion)
+        {
+            return null;
+        }
+
         // Deserialize player data in the order it was written
         var id = reader.ReadInt32();
         var name = ReadString(reader);
@@ -68,103 +80,103 @@ public sealed class BinaryGameStateStore : IGameStateStore
             skills[i] = new SkillSnapshot(skillName, experience);
         }
 
-        // Deserialize inventory and equipment
-        InventorySlotSnapshot[]? inventorySlots = null;
-        EquippedItemSnapshot[]? equippedItems = null;
-        BankSlotSnapshot[]? bankSlots = null;
-        SlayerTaskSnapshot? slayerTask = null;
-        DiaryProgressSnapshot[]? diaryProgress = null;
-        string[]? claimedDiaryRewards = null;
+        // Deserialize inventory
+        var inventoryCount = reader.ReadInt32();
+        var inventorySlots = new InventorySlotSnapshot[inventoryCount];
 
-        if (stream.Position < stream.Length)
+        for (var i = 0; i < inventoryCount; i++)
         {
-            // Deserialize inventory
-            var inventoryCount = reader.ReadInt32();
-            inventorySlots = new InventorySlotSnapshot[inventoryCount];
+            var slotIndex = reader.ReadInt32();
+            var itemId = reader.ReadInt32();
+            var quantity = reader.ReadInt32();
+            inventorySlots[i] = new InventorySlotSnapshot(slotIndex, itemId, quantity);
+        }
 
-            for (var i = 0; i < inventoryCount; i++)
+        // Deserialize equipment
+        var equippedCount = reader.ReadInt32();
+        var equippedItems = new EquippedItemSnapshot[equippedCount];
+
+        for (var i = 0; i < equippedCount; i++)
+        {
+            var slot = reader.ReadInt32();
+            var itemId = reader.ReadInt32();
+            equippedItems[i] = new EquippedItemSnapshot(slot, itemId);
+        }
+
+        // Deserialize bank slots
+        var bankSlotCount = reader.ReadInt32();
+        var bankSlots = new BankSlotSnapshot[bankSlotCount];
+        for (var i = 0; i < bankSlotCount; i++)
+        {
+            bankSlots[i] = new BankSlotSnapshot(
+                reader.ReadInt32(), // SlotIndex
+                reader.ReadInt32(), // ItemId
+                reader.ReadInt32()); // Quantity
+        }
+
+        // Deserialize slayer task
+        SlayerTaskSnapshot? slayerTask = null;
+        var hasSlayerTask = reader.ReadBoolean();
+        if (hasSlayerTask)
+        {
+            var category = ReadString(reader);
+            var remainingKills = reader.ReadInt32();
+            var totalKills = reader.ReadInt32();
+            var slayerMaster = ReadString(reader);
+            slayerTask = new SlayerTaskSnapshot(category, remainingKills, totalKills, slayerMaster);
+        }
+
+        // Deserialize diary progress
+        var diaryProgressCount = reader.ReadInt32();
+        var diaryProgress = new DiaryProgressSnapshot[diaryProgressCount];
+
+        for (var i = 0; i < diaryProgressCount; i++)
+        {
+            var diaryLocationName = ReadString(reader);
+            var achievementCount = reader.ReadInt32();
+            var achievements = new string[achievementCount];
+
+            for (var j = 0; j < achievementCount; j++)
             {
-                var slotIndex = reader.ReadInt32();
-                var itemId = reader.ReadInt32();
-                var quantity = reader.ReadInt32();
-                inventorySlots[i] = new InventorySlotSnapshot(slotIndex, itemId, quantity);
+                achievements[j] = ReadString(reader);
             }
 
-            // Deserialize equipment
-            var equippedCount = reader.ReadInt32();
-            equippedItems = new EquippedItemSnapshot[equippedCount];
+            diaryProgress[i] = new DiaryProgressSnapshot(diaryLocationName, achievements);
+        }
 
-            for (var i = 0; i < equippedCount; i++)
+        // Deserialize claimed diary rewards
+        var claimedRewardCount = reader.ReadInt32();
+        var claimedDiaryRewards = new string[claimedRewardCount];
+
+        for (var i = 0; i < claimedRewardCount; i++)
+        {
+            claimedDiaryRewards[i] = ReadString(reader);
+        }
+
+        // Deserialize active clue scroll
+        ClueScrollSnapshot? activeClue = null;
+        var hasActiveClue = reader.ReadBoolean();
+        if (hasActiveClue)
+        {
+            var tier = ReadString(reader);
+            var currentStepIndex = reader.ReadInt32();
+            var stepCount = reader.ReadInt32();
+            var steps = new ClueStepSnapshot[stepCount];
+
+            for (var i = 0; i < stepCount; i++)
             {
-                var slot = reader.ReadInt32();
-                var itemId = reader.ReadInt32();
-                equippedItems[i] = new EquippedItemSnapshot(slot, itemId);
+                var stepType = ReadString(reader);
+                var hintText = ReadString(reader);
+                var requiredLocation = ReadString(reader);
+                var completionText = ReadString(reader);
+                steps[i] = new ClueStepSnapshot(stepType, hintText, requiredLocation, completionText);
             }
 
-            // Deserialize bank slots (if present)
-            if (stream.Position < stream.Length)
-            {
-                var bankSlotCount = reader.ReadInt32();
-                bankSlots = new BankSlotSnapshot[bankSlotCount];
-                for (var i = 0; i < bankSlotCount; i++)
-                {
-                    bankSlots[i] = new BankSlotSnapshot(
-                        reader.ReadInt32(), // SlotIndex
-                        reader.ReadInt32(), // ItemId
-                        reader.ReadInt32()); // Quantity
-                }
-            }
-
-            // Deserialize slayer task (if present)
-            if (stream.Position < stream.Length)
-            {
-                var hasSlayerTask = reader.ReadBoolean();
-                if (hasSlayerTask)
-                {
-                    var category = ReadString(reader);
-                    var remainingKills = reader.ReadInt32();
-                    var totalKills = reader.ReadInt32();
-                    var slayerMaster = ReadString(reader);
-                    slayerTask = new SlayerTaskSnapshot(category, remainingKills, totalKills, slayerMaster);
-                }
-            }
-
-            // Deserialize diary progress (if present)
-            if (stream.Position < stream.Length)
-            {
-                var diaryProgressCount = reader.ReadInt32();
-                diaryProgress = new DiaryProgressSnapshot[diaryProgressCount];
-
-                for (var i = 0; i < diaryProgressCount; i++)
-                {
-                    var diaryLocationName = ReadString(reader);
-                    var achievementCount = reader.ReadInt32();
-                    var achievements = new string[achievementCount];
-
-                    for (var j = 0; j < achievementCount; j++)
-                    {
-                        achievements[j] = ReadString(reader);
-                    }
-
-                    diaryProgress[i] = new DiaryProgressSnapshot(diaryLocationName, achievements);
-                }
-            }
-
-            // Deserialize claimed diary rewards (if present)
-            if (stream.Position < stream.Length)
-            {
-                var claimedRewardCount = reader.ReadInt32();
-                claimedDiaryRewards = new string[claimedRewardCount];
-
-                for (var i = 0; i < claimedRewardCount; i++)
-                {
-                    claimedDiaryRewards[i] = ReadString(reader);
-                }
-            }
+            activeClue = new ClueScrollSnapshot(tier, steps, currentStepIndex);
         }
 
         return new PlayerSnapshot(id, name, locationName, currentHealth, maxHealth, skills, inventorySlots,
-            equippedItems, bankSlots, slayerTask, diaryProgress, claimedDiaryRewards);
+            equippedItems, bankSlots, slayerTask, diaryProgress, claimedDiaryRewards, activeClue);
     }
 
     /// <summary>
@@ -175,6 +187,9 @@ public sealed class BinaryGameStateStore : IGameStateStore
     {
         using var stream = new MemoryStream();
         using var writer = new BinaryWriter(stream, TextEncoding, true);
+
+        // Write section version byte
+        writer.Write(CurrentSectionVersion);
 
         // Serialize player data in a specific order
         writer.Write(snapshot.Id);
@@ -257,6 +272,25 @@ public sealed class BinaryGameStateStore : IGameStateStore
         foreach (var reward in claimedRewards)
         {
             WriteString(writer, reward);
+        }
+
+        // Serialize active clue scroll
+        var hasActiveClue = snapshot.ActiveClue.HasValue;
+        writer.Write(hasActiveClue);
+        if (hasActiveClue)
+        {
+            var clue = snapshot.ActiveClue!.Value;
+            WriteString(writer, clue.Tier);
+            writer.Write(clue.CurrentStepIndex);
+            writer.Write(clue.Steps.Length);
+
+            foreach (var step in clue.Steps)
+            {
+                WriteString(writer, step.StepType);
+                WriteString(writer, step.HintText);
+                WriteString(writer, step.RequiredLocation);
+                WriteString(writer, step.CompletionText);
+            }
         }
 
         writer.Flush();

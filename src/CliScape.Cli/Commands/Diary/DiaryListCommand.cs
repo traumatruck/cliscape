@@ -75,11 +75,6 @@ public sealed class DiaryListCommand(
         AnsiConsole.MarkupLine("[grey]Use 'diary view <location>' to see achievement details.[/]");
         AnsiConsole.MarkupLine("[grey]Use 'diary claim <location> <tier>' to claim rewards.[/]");
 
-        if (newlyCompleted > 0)
-        {
-            gameState.Save();
-        }
-
         return (int)ExitCode.Success;
     }
 

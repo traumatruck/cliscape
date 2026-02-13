@@ -27,6 +27,7 @@ using CliScape.Game.Slayer;
 using CliScape.Infrastructure.Configuration;
 using CliScape.Infrastructure.Persistence;
 using Microsoft.Extensions.DependencyInjection;
+using Spectre.Console;
 using Spectre.Console.Cli;
 
 // Configure application settings
@@ -72,6 +73,32 @@ services.AddSingleton(DiaryRegistry.Instance);
 
 if (ClueScrollService.Instance is not null)
     services.AddSingleton(ClueScrollService.Instance);
+
+// Wire domain event subscribers
+var events = DomainEventDispatcher.Instance;
+
+events.Register<LevelUpEvent>(e =>
+    AnsiConsole.MarkupLine(
+        $"[bold yellow]Congratulations! Your {e.SkillName.Name} level is now {e.NewLevel}![/]"));
+
+events.Register<PlayerDiedEvent>(_ =>
+    AnsiConsole.MarkupLine(MessageConstants.DeathMessage));
+
+events.Register<SlayerTaskCompletedEvent>(e =>
+    AnsiConsole.MarkupLine(
+        $"[bold green]You have completed your slayer task! ({e.TotalKills} {e.Category} killed)[/]"));
+
+events.Register<ClueScrollCompletedEvent>(e =>
+    AnsiConsole.MarkupLine(
+        $"[bold gold1]You have completed a {e.Tier} clue scroll![/]"));
+
+events.Register<AchievementCompletedEvent>(e =>
+    AnsiConsole.MarkupLine(
+        $"[bold green]Achievement complete: {e.AchievementName}![/]"));
+
+events.Register<DiaryTierCompletedEvent>(e =>
+    AnsiConsole.MarkupLine(
+        $"[bold green]{e.Tier} {e.Location.Value} diary complete![/]"));
 
 var registrar = new TypeRegistrar(services);
 

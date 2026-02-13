@@ -237,7 +237,6 @@ public class SmithCommand(GameState gameState) : Command<SmithCommandSettings>, 
 
         AnsiConsole.MarkupLine($"[dim]You gain {totalXp:N0} Smithing experience.[/]");
 
-        gameState.Save();
         return (int)ExitCode.Success;
     }
 

@@ -123,8 +123,6 @@ public sealed class DiaryClaimCommand(
             }
         }
 
-        gameState.Save();
-
         return (int)ExitCode.Success;
     }
 }

@@ -27,16 +27,16 @@ public sealed class CookingService : ICookingService
     }
 
     /// <inheritdoc />
-    public (bool CanCook, string? ErrorMessage) CanCook(Player player, int requiredLevel)
+    public ServiceResult CanCook(Player player, int requiredLevel)
     {
         var cookingLevel = player.GetSkillLevel(SkillConstants.CookingSkillName).Value;
 
         if (cookingLevel < requiredLevel)
         {
-            return (false, $"You need level {requiredLevel} Cooking to cook this.");
+            return ServiceResult.Fail($"You need level {requiredLevel} Cooking to cook this.");
         }
 
-        return (true, null);
+        return ServiceResult.Ok();
     }
 
     /// <inheritdoc />

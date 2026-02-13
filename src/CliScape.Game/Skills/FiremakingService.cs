@@ -1,3 +1,4 @@
+using CliScape.Core;
 using CliScape.Core.Events;
 using CliScape.Core.Items;
 using CliScape.Core.Players;
@@ -55,11 +56,11 @@ public sealed class FiremakingService : IFiremakingService
     }
 
     /// <inheritdoc />
-    public (bool CanLight, string? ErrorMessage) CanLight(Player player, IItem logs)
+    public ServiceResult CanLight(Player player, IItem logs)
     {
         if (!IsLog(logs))
         {
-            return (false, $"You can't light a {logs.Name}.");
+            return ServiceResult.Fail($"You can't light a {logs.Name}.");
         }
 
         var firemakingSkill = player.GetSkill(SkillConstants.FiremakingSkillName);
@@ -67,19 +68,19 @@ public sealed class FiremakingService : IFiremakingService
 
         if (firemakingSkill.Level.Value < requiredLevel)
         {
-            return (false, $"You need level {requiredLevel} Firemaking to light {logs.Name}.");
+            return ServiceResult.Fail($"You need level {requiredLevel} Firemaking to light {logs.Name}.");
         }
 
-        return (true, null);
+        return ServiceResult.Ok();
     }
 
     /// <inheritdoc />
     public FiremakingResult LightLogs(Player player, IItem logs)
     {
-        var (canLight, errorMessage) = CanLight(player, logs);
-        if (!canLight)
+        var canLightResult = CanLight(player, logs);
+        if (!canLightResult.Success)
         {
-            return new FiremakingResult(false, errorMessage!, 0);
+            return new FiremakingResult(false, canLightResult.Message, 0);
         }
 
         // Remove the logs from inventory

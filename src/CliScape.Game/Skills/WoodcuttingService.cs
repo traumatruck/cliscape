@@ -1,3 +1,4 @@
+using CliScape.Core;
 using CliScape.Core.Events;
 using CliScape.Core.Items;
 using CliScape.Core.Players;
@@ -37,21 +38,21 @@ public sealed class WoodcuttingService : IWoodcuttingService
     }
 
     /// <inheritdoc />
-    public (bool CanChop, string? ErrorMessage) CanChop(Player player, int requiredLevel)
+    public ServiceResult CanChop(Player player, int requiredLevel)
     {
         var woodcuttingLevel = player.GetSkillLevel(SkillConstants.WoodcuttingSkillName).Value;
 
         if (woodcuttingLevel < requiredLevel)
         {
-            return (false, $"You need level {requiredLevel} Woodcutting to chop this tree.");
+            return ServiceResult.Fail($"You need level {requiredLevel} Woodcutting to chop this tree.");
         }
 
         if (!_toolChecker.HasAnyTool(player, HatchetIds, out _))
         {
-            return (false, "You need a hatchet to chop trees.");
+            return ServiceResult.Fail("You need a hatchet to chop trees.");
         }
 
-        return (true, null);
+        return ServiceResult.Ok();
     }
 
     /// <inheritdoc />

@@ -1,3 +1,4 @@
+using CliScape.Core;
 using CliScape.Core.Items;
 using CliScape.Core.Players;
 
@@ -11,7 +12,7 @@ public interface IWoodcuttingService
     /// <summary>
     ///     Validates if the player can chop the specified tree.
     /// </summary>
-    (bool CanChop, string? ErrorMessage) CanChop(Player player, int requiredLevel);
+    ServiceResult CanChop(Player player, int requiredLevel);
 
     /// <summary>
     ///     Performs woodcutting at the specified tree.

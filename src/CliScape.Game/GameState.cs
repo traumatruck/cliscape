@@ -208,8 +208,8 @@ public class GameState : IPlayerManager, ILocationRegistry, ICombatSessionManage
             Id = snapshot.Value.Id,
             Name = snapshot.Value.Name,
 
-            CurrentLocation = GetLocation(snapshot.Value.LocationName) ??
-                              throw new InvalidOperationException("Location not found."),
+            CurrentLocation = GetLocation(snapshot.Value.LocationName)
+                              ?? GetCurrentLocation(),
 
             Health = new PlayerHealth
             {

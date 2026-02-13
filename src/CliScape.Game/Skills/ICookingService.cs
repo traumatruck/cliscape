@@ -1,3 +1,4 @@
+using CliScape.Core;
 using CliScape.Core.Items;
 using CliScape.Core.Players;
 using CliScape.Core.Skills;
@@ -13,7 +14,7 @@ public interface ICookingService
     /// <summary>
     ///     Validates if the player can cook the specified recipe.
     /// </summary>
-    (bool CanCook, string? ErrorMessage) CanCook(Player player, int requiredLevel);
+    ServiceResult CanCook(Player player, int requiredLevel);
 
     /// <summary>
     ///     Performs cooking of the specified recipe.

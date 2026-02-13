@@ -1,3 +1,4 @@
+using CliScape.Core;
 using CliScape.Core.Events;
 using CliScape.Core.Items;
 using CliScape.Core.Players;
@@ -42,21 +43,21 @@ public sealed class MiningService : IMiningService
     }
 
     /// <inheritdoc />
-    public (bool CanMine, string? ErrorMessage, string? PickaxeName) CanMine(Player player, IMiningRock rock)
+    public ServiceResult<string> CanMine(Player player, IMiningRock rock)
     {
         var miningLevel = player.GetSkillLevel(SkillConstants.MiningSkillName).Value;
 
         if (miningLevel < rock.RequiredLevel)
         {
-            return (false, $"You need level {rock.RequiredLevel} Mining to mine this rock.", null);
+            return ServiceResult<string>.Fail($"You need level {rock.RequiredLevel} Mining to mine this rock.");
         }
 
         if (!HasAppropriatePickaxe(player, rock.RequiredPickaxe, miningLevel, out var pickaxeName))
         {
-            return (false, $"You need at least a {rock.RequiredPickaxe} pickaxe to mine this rock.", null);
+            return ServiceResult<string>.Fail($"You need at least a {rock.RequiredPickaxe} pickaxe to mine this rock.");
         }
 
-        return (true, null, pickaxeName);
+        return ServiceResult<string>.Ok(pickaxeName!);
     }
 
     /// <inheritdoc />

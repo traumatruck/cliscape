@@ -132,7 +132,7 @@ public class CombatLootCommand(GameState gameState) : Command<CombatLootCommandS
         if (matchingLoot == null || matchingItem == null)
         {
             AnsiConsole.MarkupLine($"[red]Could not find '{itemName}' in the loot.[/]");
-            return (int)ExitCode.BadRequest;
+            return (int)ExitCode.Failure;
         }
 
         // Determine quantity to pick up
@@ -149,7 +149,7 @@ public class CombatLootCommand(GameState gameState) : Command<CombatLootCommandS
         if (!player.Inventory.CanAdd(matchingItem, quantityToLoot))
         {
             AnsiConsole.MarkupLine("[red]Your inventory is full![/]");
-            return (int)ExitCode.BadRequest;
+            return (int)ExitCode.Failure;
         }
 
         // Pick up the item

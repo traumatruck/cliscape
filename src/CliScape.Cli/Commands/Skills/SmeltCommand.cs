@@ -187,7 +187,6 @@ public class SmeltCommand(GameState gameState) : Command<SmeltCommandSettings>, 
 
         AnsiConsole.MarkupLine($"[dim]You gain {totalXp:N0} Smithing experience.[/]");
 
-        gameState.Save();
         return (int)ExitCode.Success;
     }
 

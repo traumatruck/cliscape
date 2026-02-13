@@ -31,7 +31,7 @@ public class CombatAttackCommand(GameState gameState, ICombatEngine combatEngine
         if (gameState.IsInCombat)
         {
             AnsiConsole.MarkupLine("[red]You are already in combat![/]");
-            return (int)ExitCode.BadRequest;
+            return (int)ExitCode.Failure;
         }
 
         // Find the NPC
@@ -42,7 +42,7 @@ public class CombatAttackCommand(GameState gameState, ICombatEngine combatEngine
         if (npc == null)
         {
             AnsiConsole.MarkupLine($"[red]Could not find '{settings.NpcName}' at this location.[/]");
-            return (int)ExitCode.BadRequest;
+            return (int)ExitCode.Failure;
         }
 
         // Start combat

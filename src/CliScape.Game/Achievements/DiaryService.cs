@@ -57,22 +57,18 @@ public sealed class DiaryService
         progress.CompleteAchievement(achievementId);
 
         // Fire achievement completed event
-        _eventDispatcher.Raise(new AchievementCompletedEvent
-        {
-            Location = location,
-            AchievementId = achievementId,
-            AchievementName = achievement.Name,
-            Tier = achievement.Tier
-        });
+        _eventDispatcher.Raise(new AchievementCompletedEvent(
+            location,
+            achievementId,
+            achievement.Name,
+            achievement.Tier));
 
         // Check if tier is now complete
         if (progress.IsTierComplete(diary, achievement.Tier))
         {
-            _eventDispatcher.Raise(new DiaryTierCompletedEvent
-            {
-                Location = location,
-                Tier = achievement.Tier
-            });
+            _eventDispatcher.Raise(new DiaryTierCompletedEvent(
+                location,
+                achievement.Tier));
         }
 
         return true;

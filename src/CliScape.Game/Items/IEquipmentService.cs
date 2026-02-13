@@ -1,3 +1,4 @@
+using CliScape.Core;
 using CliScape.Core.Items;
 using CliScape.Core.Players;
 
@@ -11,7 +12,7 @@ public interface IEquipmentService
     /// <summary>
     ///     Validates if the player meets requirements to equip an item.
     /// </summary>
-    (bool CanEquip, string? ErrorMessage) CanEquip(Player player, IEquippable item);
+    ServiceResult CanEquip(Player player, IEquippable item);
 
     /// <summary>
     ///     Equips an item from the player's inventory.

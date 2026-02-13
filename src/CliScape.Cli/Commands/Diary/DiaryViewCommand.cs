@@ -95,8 +95,6 @@ public sealed class DiaryViewCommand(
             AnsiConsole.WriteLine();
         }
 
-        gameState.Save();
-
         return (int)ExitCode.Success;
     }
 }

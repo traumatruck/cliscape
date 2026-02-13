@@ -1,3 +1,4 @@
+using CliScape.Core;
 using CliScape.Core.Events;
 using CliScape.Core.Items;
 using CliScape.Core.Players;
@@ -20,16 +21,16 @@ public sealed class SmeltingService : ISmeltingService
     }
 
     /// <inheritdoc />
-    public (bool CanSmelt, string? ErrorMessage) CanSmelt(Player player, int requiredLevel)
+    public ServiceResult CanSmelt(Player player, int requiredLevel)
     {
         var smithingLevel = player.GetSkillLevel(SkillConstants.SmithingSkillName).Value;
 
         if (smithingLevel < requiredLevel)
         {
-            return (false, $"You need level {requiredLevel} Smithing to smelt this bar.");
+            return ServiceResult.Fail($"You need level {requiredLevel} Smithing to smelt this bar.");
         }
 
-        return (true, null);
+        return ServiceResult.Ok();
     }
 
     /// <inheritdoc />

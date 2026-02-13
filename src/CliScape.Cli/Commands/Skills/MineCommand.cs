@@ -50,10 +50,10 @@ public class MineCommand(GameState gameState, MiningService miningService) : Com
         }
 
         // Validate via service
-        var (canMine, errorMessage, pickaxeName) = miningService.CanMine(player, rock);
-        if (!canMine)
+        var canMineResult = miningService.CanMine(player, rock);
+        if (!canMineResult.Success)
         {
-            AnsiConsole.MarkupLine($"[red]{errorMessage}[/]");
+            AnsiConsole.MarkupLine($"[red]{canMineResult.Message}[/]");
             return (int)ExitCode.Failure;
         }
 
@@ -70,12 +70,12 @@ public class MineCommand(GameState gameState, MiningService miningService) : Com
         if (result.OresObtained == 1)
         {
             AnsiConsole.MarkupLine(
-                $"[green]You swing your {pickaxeName} at the rock and get some {result.OreName}.[/]");
+                $"[green]You swing your {canMineResult.Value} at the rock and get some {result.OreName}.[/]");
         }
         else
         {
             AnsiConsole.MarkupLine(
-                $"[green]You swing your {pickaxeName} at the rock and get {result.OresObtained}x {result.OreName}.[/]");
+                $"[green]You swing your {canMineResult.Value} at the rock and get {result.OresObtained}x {result.OreName}.[/]");
         }
 
         AnsiConsole.MarkupLine($"[dim]You gain {result.TotalExperience:N0} Mining experience.[/]");

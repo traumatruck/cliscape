@@ -8,11 +8,6 @@ public enum ExitCode
     Success = 0,
 
     /// <summary>
-    ///     The command parameters failed validation.
-    /// </summary>
-    BadRequest = 1,
-
-    /// <summary>
     ///     The command failed to execute.
     /// </summary>
     Failure = 1

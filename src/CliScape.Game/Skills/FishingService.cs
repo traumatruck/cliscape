@@ -33,21 +33,21 @@ public sealed class FishingService : IFishingService
     }
 
     /// <inheritdoc />
-    public (bool CanFish, string? ErrorMessage) CanFish(Player player, IFishingSpot spot)
+    public ServiceResult CanFish(Player player, IFishingSpot spot)
     {
         var fishingLevel = player.GetSkillLevel(SkillConstants.FishingSkillName).Value;
 
         if (fishingLevel < spot.RequiredLevel)
         {
-            return (false, $"You need level {spot.RequiredLevel} Fishing to fish here.");
+            return ServiceResult.Fail($"You need level {spot.RequiredLevel} Fishing to fish here.");
         }
 
         if (!_toolChecker.HasTool(player, spot.RequiredTool))
         {
-            return (false, "You need the required tool to fish here.");
+            return ServiceResult.Fail("You need the required tool to fish here.");
         }
 
-        return (true, null);
+        return ServiceResult.Ok();
     }
 
     /// <inheritdoc />

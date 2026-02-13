@@ -19,7 +19,7 @@ public class WalkCommand(GameState gameState) : Command<WalkCommandSettings>, IC
         if (destination == null)
         {
             AnsiConsole.WriteLine($"Unknown location {settings.LocationName}");
-            return (int)ExitCode.BadRequest;
+            return (int)ExitCode.Failure;
         }
 
         player.Move(destination);

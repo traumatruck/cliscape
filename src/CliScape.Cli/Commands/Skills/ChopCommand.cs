@@ -42,10 +42,10 @@ public class ChopCommand(GameState gameState, WoodcuttingService woodcuttingServ
         }
 
         // Validate via service
-        var (canChop, errorMessage) = woodcuttingService.CanChop(player, tree.RequiredLevel);
-        if (!canChop)
+        var canChopResult = woodcuttingService.CanChop(player, tree.RequiredLevel);
+        if (!canChopResult.Success)
         {
-            AnsiConsole.MarkupLine($"[red]{errorMessage}[/]");
+            AnsiConsole.MarkupLine($"[red]{canChopResult.Message}[/]");
             return (int)ExitCode.Failure;
         }
 
