@@ -14,16 +14,14 @@ namespace CliScape.Cli.Commands.Skills;
 ///     Smith bars into equipment at an anvil.
 /// </summary>
 [Description("Smith bars into equipment at an anvil")]
-public class SmithCommand : Command<SmithCommandSettings>, ICommand
+public class SmithCommand(GameState gameState) : Command<SmithCommandSettings>, ICommand
 {
-    private readonly GameState _gameState = GameState.Instance;
-
     public static string CommandName => "smith";
 
     public override int Execute(CommandContext context, SmithCommandSettings settings,
         CancellationToken cancellationToken)
     {
-        var player = _gameState.GetPlayer();
+        var player = gameState.GetPlayer();
         var location = player.CurrentLocation;
 
         // Check if there's an anvil here
@@ -239,7 +237,7 @@ public class SmithCommand : Command<SmithCommandSettings>, ICommand
 
         AnsiConsole.MarkupLine($"[dim]You gain {totalXp:N0} Smithing experience.[/]");
 
-        _gameState.Save();
+        gameState.Save();
         return (int)ExitCode.Success;
     }
 

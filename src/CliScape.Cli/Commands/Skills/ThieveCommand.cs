@@ -14,16 +14,14 @@ namespace CliScape.Cli.Commands.Skills;
 ///     Steal from stalls or pickpocket NPCs.
 /// </summary>
 [Description("Steal from stalls or pickpocket NPCs")]
-public class ThieveCommand : Command<ThieveCommandSettings>, ICommand
+public class ThieveCommand(GameState gameState) : Command<ThieveCommandSettings>, ICommand
 {
-    private readonly GameState _gameState = GameState.Instance;
-
     public static string CommandName => "thieve";
 
     public override int Execute(CommandContext context, ThieveCommandSettings settings,
         CancellationToken cancellationToken)
     {
-        var player = _gameState.GetPlayer();
+        var player = gameState.GetPlayer();
         var location = player.CurrentLocation;
 
         // Check if there are thieving targets here
@@ -194,7 +192,7 @@ public class ThieveCommand : Command<ThieveCommandSettings>, ICommand
             return (int)ExitCode.Failure;
         }
 
-        _gameState.Save();
+        gameState.Save();
         return (int)ExitCode.Success;
     }
 

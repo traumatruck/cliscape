@@ -80,12 +80,7 @@ public sealed class Player
 
     public void TakeDamage(int damage)
     {
-        if (damage > Health.CurrentHealth)
-        {
-            Health.CurrentHealth = 0;
-        }
-
-        Health.CurrentHealth -= damage;
+        Health.CurrentHealth = Math.Max(0, Health.CurrentHealth - damage);
     }
 
     public void Heal(int healAmount)

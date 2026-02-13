@@ -7,15 +7,13 @@ namespace CliScape.Cli.Commands.Status;
 /// <summary>
 ///     Displays a holistic overview of the player's state.
 /// </summary>
-public class StatusCommand : Command, ICommand
+public class StatusCommand(GameState gameState) : Command, ICommand
 {
-    private readonly GameState _gameState = GameState.Instance;
-
     public static string CommandName => "status";
 
     public override int Execute(CommandContext context, CancellationToken cancellationToken)
     {
-        var player = _gameState.GetPlayer();
+        var player = gameState.GetPlayer();
 
         // Single table with player status
         var statusTable = new Table()

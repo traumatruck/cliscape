@@ -14,16 +14,14 @@ namespace CliScape.Cli.Commands.Skills;
 ///     Smelt ores into bars at a furnace.
 /// </summary>
 [Description("Smelt ores into bars at a furnace")]
-public class SmeltCommand : Command<SmeltCommandSettings>, ICommand
+public class SmeltCommand(GameState gameState) : Command<SmeltCommandSettings>, ICommand
 {
-    private readonly GameState _gameState = GameState.Instance;
-
     public static string CommandName => "smelt";
 
     public override int Execute(CommandContext context, SmeltCommandSettings settings,
         CancellationToken cancellationToken)
     {
-        var player = _gameState.GetPlayer();
+        var player = gameState.GetPlayer();
         var location = player.CurrentLocation;
 
         // Check if there's a furnace here
@@ -189,7 +187,7 @@ public class SmeltCommand : Command<SmeltCommandSettings>, ICommand
 
         AnsiConsole.MarkupLine($"[dim]You gain {totalXp:N0} Smithing experience.[/]");
 
-        _gameState.Save();
+        gameState.Save();
         return (int)ExitCode.Success;
     }
 

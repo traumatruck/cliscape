@@ -4,7 +4,7 @@ using Spectre.Console.Cli;
 
 namespace CliScape.Cli.Commands.Save;
 
-public class SaveDeleteCommand : Command<SaveDeleteCommandSettings>, ICommand
+public class SaveDeleteCommand(GameState gameState) : Command<SaveDeleteCommandSettings>, ICommand
 {
     public static string CommandName => "delete";
 
@@ -27,7 +27,7 @@ public class SaveDeleteCommand : Command<SaveDeleteCommandSettings>, ICommand
             }
         }
 
-        var saveFilePath = GameState.Instance.SaveFilePath;
+        var saveFilePath = gameState.SaveFilePath;
 
         if (File.Exists(saveFilePath))
         {

@@ -7,15 +7,13 @@ namespace CliScape.Cli.Commands.Shop;
 /// <summary>
 ///     Lists all shops available at the current location.
 /// </summary>
-public class ShopListCommand : Command, ICommand
+public class ShopListCommand(GameState gameState) : Command, ICommand
 {
-    private readonly GameState _gameState = GameState.Instance;
-
     public static string CommandName => "list";
 
     public override int Execute(CommandContext context, CancellationToken cancellationToken)
     {
-        var player = _gameState.GetPlayer();
+        var player = gameState.GetPlayer();
         var location = player.CurrentLocation;
         var shops = location.Shops;
 

@@ -7,16 +7,14 @@ namespace CliScape.Cli.Commands.Inventory;
 /// <summary>
 ///     Drop an item from inventory.
 /// </summary>
-public class InventoryDropCommand : Command<InventoryDropCommandSettings>, ICommand
+public class InventoryDropCommand(GameState gameState) : Command<InventoryDropCommandSettings>, ICommand
 {
-    private readonly GameState _gameState = GameState.Instance;
-
     public static string CommandName => "drop";
 
     public override int Execute(CommandContext context, InventoryDropCommandSettings settings,
         CancellationToken cancellationToken)
     {
-        var player = _gameState.GetPlayer();
+        var player = gameState.GetPlayer();
         var inventory = player.Inventory;
 
         // Find the item by name

@@ -9,15 +9,13 @@ namespace CliScape.Cli.Commands.Skills;
 /// <summary>
 ///     Displays all player skills with levels and experience.
 /// </summary>
-public class SkillsListCommand : Command, ICommand
+public class SkillsListCommand(GameState gameState) : Command, ICommand
 {
-    private readonly GameState _gameState = GameState.Instance;
-
     public static string CommandName => "list";
 
     public override int Execute(CommandContext context, CancellationToken cancellationToken)
     {
-        var player = _gameState.GetPlayer();
+        var player = gameState.GetPlayer();
 
         var table = new Table()
             .AddColumn("Skill")
@@ -55,7 +53,7 @@ public class SkillsListCommand : Command, ICommand
         AddSkillRow(table, player, SkillConstants.ThievingSkillName, "Thieving");
         AddSkillRow(table, player, SkillConstants.SlayerSkillName, "Slayer");
         AddSkillRow(table, player, SkillConstants.RunecraftSkillName, "Runecraft");
-        
+
         AnsiConsole.Write(table);
         return (int)ExitCode.Success;
     }

@@ -9,16 +9,14 @@ namespace CliScape.Cli.Commands.Bank;
 ///     Deposits items from inventory into the bank.
 /// </summary>
 [Description("Deposit items in your bank")]
-public class BankDepositCommand : Command<BankDepositCommandSettings>, ICommand
+public class BankDepositCommand(GameState gameState) : Command<BankDepositCommandSettings>, ICommand
 {
-    private readonly GameState _gameState = GameState.Instance;
-
     public static string CommandName => "deposit";
 
     public override int Execute(CommandContext context, BankDepositCommandSettings settings,
         CancellationToken cancellationToken)
     {
-        var player = _gameState.GetPlayer();
+        var player = gameState.GetPlayer();
         var location = player.CurrentLocation;
 
         // Check if bank exists at current location

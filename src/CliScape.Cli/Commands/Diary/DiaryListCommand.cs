@@ -12,19 +12,22 @@ namespace CliScape.Cli.Commands.Diary;
 /// <summary>
 ///     Command to list all achievement diaries with completion percentages.
 /// </summary>
-public sealed class DiaryListCommand : Command
+public sealed class DiaryListCommand(
+    GameState gameState,
+    DiaryService diaryService,
+    DiaryRewardService diaryRewardService,
+    DiaryRegistry diaryRegistry) : Command
 {
     public const string CommandName = "list";
 
     public override int Execute(CommandContext context, CancellationToken cancellationToken)
     {
-        var player = GameState.Instance.GetPlayer();
-        var diaryService = DiaryService.Instance;
+        var player = gameState.GetPlayer();
 
         // Check for any newly completed achievements
         var newlyCompleted = diaryService.CheckAllAchievements(player);
 
-        var diaries = DiaryRegistry.Instance.GetAllDiaries().ToList();
+        var diaries = diaryRegistry.GetAllDiaries().ToList();
 
         if (diaries.Count == 0)
         {
@@ -74,15 +77,15 @@ public sealed class DiaryListCommand : Command
 
         if (newlyCompleted > 0)
         {
-            GameState.Instance.Save();
+            gameState.Save();
         }
 
         return (int)ExitCode.Success;
     }
 
-    private static bool CanClaimTier(Player player, LocationName location, DiaryTier tier)
+    private bool CanClaimTier(Player player, LocationName location, DiaryTier tier)
     {
-        return DiaryRewardService.Instance.CanClaimRewards(player, location, tier, out _);
+        return diaryRewardService.CanClaimRewards(player, location, tier, out _);
     }
 
     private static string FormatPercentage(double percentage, bool claimable)

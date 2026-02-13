@@ -10,16 +10,14 @@ namespace CliScape.Cli.Commands.Bank;
 ///     Withdraws items from the bank into inventory.
 /// </summary>
 [Description("Withdraw an item from your bank")]
-public class BankWithdrawCommand : Command<BankWithdrawCommandSettings>, ICommand
+public class BankWithdrawCommand(GameState gameState) : Command<BankWithdrawCommandSettings>, ICommand
 {
-    private readonly GameState _gameState = GameState.Instance;
-
     public static string CommandName => "withdraw";
 
     public override int Execute(CommandContext context, BankWithdrawCommandSettings settings,
         CancellationToken cancellationToken)
     {
-        var player = _gameState.GetPlayer();
+        var player = gameState.GetPlayer();
         var location = player.CurrentLocation;
 
         // Check if bank exists at current location

@@ -5,6 +5,7 @@ using CliScape.Core.Players;
 using CliScape.Core.Players.Skills;
 using CliScape.Core.World.Resources;
 using CliScape.Game;
+using CliScape.Game.Skills;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
@@ -14,29 +15,14 @@ namespace CliScape.Cli.Commands.Skills;
 ///     Mine rocks in the current location for ore.
 /// </summary>
 [Description("Mine rocks in your current location")]
-public class MineCommand : Command<MineCommandSettings>, ICommand
+public class MineCommand(GameState gameState, MiningService miningService) : Command<MineCommandSettings>, ICommand
 {
-    /// <summary>
-    ///     Pickaxe item IDs in order of tier.
-    /// </summary>
-    private static readonly (ItemId Id, PickaxeTier Tier, int RequiredLevel)[] Pickaxes =
-    [
-        (new ItemId(701), PickaxeTier.Bronze, 1), // Bronze pickaxe
-        (new ItemId(710), PickaxeTier.Iron, 1), // Iron pickaxe
-        (new ItemId(711), PickaxeTier.Steel, 6), // Steel pickaxe
-        (new ItemId(712), PickaxeTier.Mithril, 21), // Mithril pickaxe
-        (new ItemId(713), PickaxeTier.Adamant, 31), // Adamant pickaxe
-        (new ItemId(714), PickaxeTier.Rune, 41) // Rune pickaxe
-    ];
-
-    private readonly GameState _gameState = GameState.Instance;
-
     public static string CommandName => "mine";
 
     public override int Execute(CommandContext context, MineCommandSettings settings,
         CancellationToken cancellationToken)
     {
-        var player = _gameState.GetPlayer();
+        var player = gameState.GetPlayer();
         var location = player.CurrentLocation;
 
         // If no rock specified, list available rocks
@@ -63,7 +49,44 @@ public class MineCommand : Command<MineCommandSettings>, ICommand
                 $"[dim]Note: {rock.Name} can only be mined {rock.MaxActions} time(s) before it depletes.[/]");
         }
 
-        return MineRockMultiple(player, rock, maxCount);
+        // Validate via service
+        var (canMine, errorMessage, pickaxeName) = miningService.CanMine(player, rock);
+        if (!canMine)
+        {
+            AnsiConsole.MarkupLine($"[red]{errorMessage}[/]");
+            return (int)ExitCode.Failure;
+        }
+
+        // Execute via service
+        var result = miningService.Mine(player, rock, maxCount, ItemRegistry.GetById);
+
+        if (!result.Success)
+        {
+            AnsiConsole.MarkupLine($"[red]{result.Message}[/]");
+            return (int)ExitCode.Failure;
+        }
+
+        // Display result
+        if (result.OresObtained == 1)
+        {
+            AnsiConsole.MarkupLine(
+                $"[green]You swing your {pickaxeName} at the rock and get some {result.OreName}.[/]");
+        }
+        else
+        {
+            AnsiConsole.MarkupLine(
+                $"[green]You swing your {pickaxeName} at the rock and get {result.OresObtained}x {result.OreName}.[/]");
+        }
+
+        AnsiConsole.MarkupLine($"[dim]You gain {result.TotalExperience:N0} Mining experience.[/]");
+
+        if (result.LevelUp is { } levelUp)
+        {
+            AnsiConsole.MarkupLine(
+                $"[bold yellow]Congratulations! Your Mining level is now {levelUp.NewLevel}![/]");
+        }
+
+        return (int)ExitCode.Success;
     }
 
     private static int ListRocks(IReadOnlyList<IMiningRock> rocks, Player player)
@@ -88,7 +111,7 @@ public class MineCommand : Command<MineCommandSettings>, ICommand
         foreach (var rock in rocks)
         {
             var levelColor = miningLevel >= rock.RequiredLevel ? "green" : "red";
-            var oreName = GetOreName(rock.OreItemId);
+            var oreName = GetItemName(rock.OreItemId);
 
             table.AddRow(
                 rock.Name,
@@ -106,80 +129,6 @@ public class MineCommand : Command<MineCommandSettings>, ICommand
         return (int)ExitCode.Success;
     }
 
-    private int MineRockMultiple(Player player, IMiningRock rock, int count)
-    {
-        var miningSkill = player.GetSkill(SkillConstants.MiningSkillName);
-        var miningLevel = miningSkill.Level.Value;
-
-        // Check level requirement
-        if (miningLevel < rock.RequiredLevel)
-        {
-            AnsiConsole.MarkupLine($"[red]You need level {rock.RequiredLevel} Mining to mine this rock.[/]");
-            return (int)ExitCode.Failure;
-        }
-
-        // Check for appropriate pickaxe
-        if (!HasAppropriatePickaxe(player, rock.RequiredPickaxe, miningLevel, out var pickaxeName))
-        {
-            AnsiConsole.MarkupLine(
-                $"[red]You need at least a {rock.RequiredPickaxe} pickaxe to mine this rock.[/]");
-            return (int)ExitCode.Failure;
-        }
-
-        // Get the ore item
-        var oreItem = ItemRegistry.GetById(rock.OreItemId);
-        if (oreItem is null)
-        {
-            AnsiConsole.MarkupLine("[red]Something went wrong while mining.[/]");
-            return (int)ExitCode.Failure;
-        }
-
-        var oresObtained = 0;
-        var totalXp = 0;
-
-        for (var i = 0; i < count; i++)
-        {
-            // Check inventory space
-            if (player.Inventory.IsFull)
-            {
-                if (oresObtained == 0)
-                {
-                    AnsiConsole.MarkupLine("[red]Your inventory is full.[/]");
-                    return (int)ExitCode.Failure;
-                }
-
-                AnsiConsole.MarkupLine("[yellow]Your inventory is full.[/]");
-                break;
-            }
-
-            // Add to inventory
-            if (!player.Inventory.TryAdd(oreItem))
-            {
-                break;
-            }
-
-            // Grant experience
-            Player.AddExperience(miningSkill, rock.Experience);
-            oresObtained++;
-            totalXp += rock.Experience;
-        }
-
-        if (oresObtained == 1)
-        {
-            AnsiConsole.MarkupLine($"[green]You swing your {pickaxeName} at the rock and get some {oreItem.Name}.[/]");
-        }
-        else
-        {
-            AnsiConsole.MarkupLine(
-                $"[green]You swing your {pickaxeName} at the rock and get {oresObtained}x {oreItem.Name}.[/]");
-        }
-
-        AnsiConsole.MarkupLine($"[dim]You gain {totalXp:N0} Mining experience.[/]");
-
-        _gameState.Save();
-        return (int)ExitCode.Success;
-    }
-
     private static IMiningRock? FindRock(IReadOnlyList<IMiningRock> rocks, string rockType)
     {
         return rocks.FirstOrDefault(r =>
@@ -187,52 +136,9 @@ public class MineCommand : Command<MineCommandSettings>, ICommand
             r.Name.Contains(rockType, StringComparison.OrdinalIgnoreCase));
     }
 
-    private static bool HasAppropriatePickaxe(Player player, PickaxeTier requiredTier, int miningLevel,
-        out string pickaxeName)
-    {
-        pickaxeName = string.Empty;
-
-        // Check from best to worst pickaxe
-        foreach (var (id, tier, requiredLevel) in Pickaxes.Reverse())
-        {
-            // Skip if player doesn't have the level for this pickaxe
-            if (miningLevel < requiredLevel)
-            {
-                continue;
-            }
-
-            // Check inventory for this pickaxe
-            var inInventory = player.Inventory.GetItems()
-                .FirstOrDefault(slot => slot.Item.Id == id);
-
-            if (inInventory != default)
-            {
-                // Check if this pickaxe is good enough for the rock
-                if ((int)tier >= (int)requiredTier)
-                {
-                    pickaxeName = inInventory.Item.Name.Value;
-                    return true;
-                }
-            }
-
-            // Check equipped weapon slot for pickaxe
-            var weapon = player.Equipment.GetEquipped(EquipmentSlot.Weapon);
-            if (weapon?.Id == id)
-            {
-                if ((int)tier >= (int)requiredTier)
-                {
-                    pickaxeName = weapon.Name.Value;
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
-    private static string GetOreName(ItemId id)
+    private static string GetItemName(ItemId id)
     {
         var item = ItemRegistry.GetById(id);
-        return item?.Name.Value ?? "Unknown ore";
+        return item?.Name.Value ?? "Unknown";
     }
 }

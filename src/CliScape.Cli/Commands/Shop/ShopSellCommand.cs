@@ -8,16 +8,14 @@ namespace CliScape.Cli.Commands.Shop;
 /// <summary>
 ///     Sell an item from inventory to a shop.
 /// </summary>
-public class ShopSellCommand : Command<ShopSellCommandSettings>, ICommand
+public class ShopSellCommand(GameState gameState) : Command<ShopSellCommandSettings>, ICommand
 {
-    private readonly GameState _gameState = GameState.Instance;
-
     public static string CommandName => "sell";
 
     public override int Execute(CommandContext context, ShopSellCommandSettings settings,
         CancellationToken cancellationToken)
     {
-        var player = _gameState.GetPlayer();
+        var player = gameState.GetPlayer();
         var location = player.CurrentLocation;
         var inventory = player.Inventory;
 

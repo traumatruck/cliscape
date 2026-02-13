@@ -7,16 +7,14 @@ namespace CliScape.Cli.Commands.Inventory;
 /// <summary>
 ///     Sorts inventory items by swapping or inserting them at specific positions.
 /// </summary>
-public class InventorySortCommand : Command<InventorySortCommandSettings>, ICommand
+public class InventorySortCommand(GameState gameState) : Command<InventorySortCommandSettings>, ICommand
 {
-    private readonly GameState _gameState = GameState.Instance;
-
     public static string CommandName => "sort";
 
     public override int Execute(CommandContext context, InventorySortCommandSettings settings,
         CancellationToken cancellationToken)
     {
-        var player = _gameState.GetPlayer();
+        var player = gameState.GetPlayer();
         var inventory = player.Inventory;
 
         // Validate slot numbers (convert from 1-based to 0-based)

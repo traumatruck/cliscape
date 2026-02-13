@@ -8,16 +8,14 @@ namespace CliScape.Cli.Commands.Shop;
 /// <summary>
 ///     View a shop's inventory.
 /// </summary>
-public class ShopViewCommand : Command<ShopViewCommandSettings>, ICommand
+public class ShopViewCommand(GameState gameState) : Command<ShopViewCommandSettings>, ICommand
 {
-    private readonly GameState _gameState = GameState.Instance;
-
     public static string CommandName => "view";
 
     public override int Execute(CommandContext context, ShopViewCommandSettings settings,
         CancellationToken cancellationToken)
     {
-        var player = _gameState.GetPlayer();
+        var player = gameState.GetPlayer();
         var location = player.CurrentLocation;
 
         var shop = location.Shops.FirstOrDefault(s =>

@@ -7,16 +7,14 @@ namespace CliScape.Cli.Commands.Shop;
 /// <summary>
 ///     Check how much an item is worth to sell to shops at the current location.
 /// </summary>
-public class ShopValueCommand : Command<ShopValueCommandSettings>, ICommand
+public class ShopValueCommand(GameState gameState) : Command<ShopValueCommandSettings>, ICommand
 {
-    private readonly GameState _gameState = GameState.Instance;
-
     public static string CommandName => "value";
 
     public override int Execute(CommandContext context, ShopValueCommandSettings settings,
         CancellationToken cancellationToken)
     {
-        var player = _gameState.GetPlayer();
+        var player = gameState.GetPlayer();
         var location = player.CurrentLocation;
         var inventory = player.Inventory;
 

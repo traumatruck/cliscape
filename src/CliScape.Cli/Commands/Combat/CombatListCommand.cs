@@ -8,15 +8,13 @@ namespace CliScape.Cli.Commands.Combat;
 /// <summary>
 ///     Lists all combatable NPCs at the player's current location.
 /// </summary>
-public class CombatListCommand : Command, ICommand
+public class CombatListCommand(GameState gameState) : Command, ICommand
 {
-    private readonly GameState _gameState = GameState.Instance;
-
     public static string CommandName => "list";
 
     public override int Execute(CommandContext context, CancellationToken cancellationToken)
     {
-        var player = _gameState.GetPlayer();
+        var player = gameState.GetPlayer();
         var location = player.CurrentLocation;
         var npcs = location.AvailableNpcs;
 

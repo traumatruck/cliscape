@@ -4,15 +4,13 @@ using Spectre.Console.Cli;
 
 namespace CliScape.Cli.Commands.Status;
 
-public class StatusOverviewCommand : Command, ICommand
+public class StatusOverviewCommand(GameState gameState) : Command, ICommand
 {
-    private readonly GameState _gameState = GameState.Instance;
-
     public static string CommandName => "overview";
 
     public override int Execute(CommandContext context, CancellationToken cancellationToken)
     {
-        var player = _gameState.GetPlayer();
+        var player = gameState.GetPlayer();
 
         var table = new Table()
             .AddColumn($"{player.Name}")

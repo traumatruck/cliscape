@@ -12,10 +12,8 @@ namespace CliScape.Cli.Commands.Item;
 ///     Interact with an item in inventory using a specific action (eat, bury, use, examine, etc.).
 /// </summary>
 [Description("Interact with an item in your inventory")]
-public class ItemCommand : Command<ItemCommandSettings>, ICommand
+public class ItemCommand(GameState gameState) : Command<ItemCommandSettings>, ICommand
 {
-    private readonly GameState _gameState = GameState.Instance;
-
     public static string CommandName => "item";
 
     public override int Execute(CommandContext context, ItemCommandSettings settings,
@@ -34,7 +32,7 @@ public class ItemCommand : Command<ItemCommandSettings>, ICommand
             return (int)ExitCode.Failure;
         }
 
-        var player = _gameState.GetPlayer();
+        var player = gameState.GetPlayer();
         var inventory = player.Inventory;
 
         // Find the item by name or index
@@ -96,7 +94,7 @@ public class ItemCommand : Command<ItemCommandSettings>, ICommand
             if (FiremakingHelper.TryLightLogs(player, logs, out var message))
             {
                 AnsiConsole.MarkupLine($"[green]{message}[/]");
-                _gameState.Save();
+                gameState.Save();
                 return (int)ExitCode.Success;
             }
 

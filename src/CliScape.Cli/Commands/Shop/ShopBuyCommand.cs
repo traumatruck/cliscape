@@ -9,16 +9,14 @@ namespace CliScape.Cli.Commands.Shop;
 /// <summary>
 ///     Buy an item from a shop.
 /// </summary>
-public class ShopBuyCommand : Command<ShopBuyCommandSettings>, ICommand
+public class ShopBuyCommand(GameState gameState) : Command<ShopBuyCommandSettings>, ICommand
 {
-    private readonly GameState _gameState = GameState.Instance;
-
     public static string CommandName => "buy";
 
     public override int Execute(CommandContext context, ShopBuyCommandSettings settings,
         CancellationToken cancellationToken)
     {
-        var player = _gameState.GetPlayer();
+        var player = gameState.GetPlayer();
         var location = player.CurrentLocation;
 
         // Find the shop that has this item

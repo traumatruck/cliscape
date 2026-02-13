@@ -12,15 +12,17 @@ namespace CliScape.Cli.Commands.Diary;
 /// <summary>
 ///     Command to claim rewards for a completed diary tier.
 /// </summary>
-public sealed class DiaryClaimCommand : Command<DiaryClaimCommandSettings>
+public sealed class DiaryClaimCommand(
+    GameState gameState,
+    DiaryRewardService diaryRewardService,
+    DiaryRegistry diaryRegistry) : Command<DiaryClaimCommandSettings>
 {
     public const string CommandName = "claim";
 
     public override int Execute(CommandContext context, DiaryClaimCommandSettings settings,
         CancellationToken cancellationToken)
     {
-        var player = GameState.Instance.GetPlayer();
-        var rewardService = DiaryRewardService.Instance;
+        var player = gameState.GetPlayer();
 
         var location = new LocationName(settings.Location);
 
@@ -33,7 +35,7 @@ public sealed class DiaryClaimCommand : Command<DiaryClaimCommandSettings>
         }
 
         // Check if diary exists
-        var diary = DiaryRegistry.Instance.GetDiary(location);
+        var diary = diaryRegistry.GetDiary(location);
         if (diary == null)
         {
             AnsiConsole.MarkupLine($"[red]No diary found for location '{settings.Location}'.[/]");
@@ -41,7 +43,7 @@ public sealed class DiaryClaimCommand : Command<DiaryClaimCommandSettings>
         }
 
         // Check if can claim
-        if (!rewardService.CanClaimRewards(player, location, tier, out var failureReason))
+        if (!diaryRewardService.CanClaimRewards(player, location, tier, out var failureReason))
         {
             AnsiConsole.MarkupLine($"[red]{failureReason}[/]");
             return (int)ExitCode.Failure;
@@ -50,10 +52,10 @@ public sealed class DiaryClaimCommand : Command<DiaryClaimCommandSettings>
         // Handle XP lamp skill selection
         SkillName? lampSkill = null;
 
-        if (rewardService.RequiresSkillSelection(location, tier))
+        if (diaryRewardService.RequiresSkillSelection(location, tier))
         {
             // Get valid skills for the lamp
-            var validSkills = rewardService.GetValidLampSkills(location, tier).ToList();
+            var validSkills = diaryRewardService.GetValidLampSkills(location, tier).ToList();
 
             if (!string.IsNullOrEmpty(settings.Skill))
             {
@@ -90,7 +92,7 @@ public sealed class DiaryClaimCommand : Command<DiaryClaimCommandSettings>
         }
 
         // Claim rewards
-        if (!rewardService.ClaimRewards(player, location, tier, lampSkill, out var errorMessage))
+        if (!diaryRewardService.ClaimRewards(player, location, tier, lampSkill, out var errorMessage))
         {
             AnsiConsole.MarkupLine($"[red]{errorMessage}[/]");
             return (int)ExitCode.Failure;
@@ -100,7 +102,7 @@ public sealed class DiaryClaimCommand : Command<DiaryClaimCommandSettings>
         AnsiConsole.MarkupLine($"[green]Successfully claimed rewards for {location.Value} {tier} tier![/]");
         AnsiConsole.WriteLine();
 
-        var rewards = rewardService.GetRewards(location, tier);
+        var rewards = diaryRewardService.GetRewards(location, tier);
         AnsiConsole.MarkupLine("[bold]Rewards received:[/]");
 
         foreach (var reward in rewards)
@@ -121,7 +123,7 @@ public sealed class DiaryClaimCommand : Command<DiaryClaimCommandSettings>
             }
         }
 
-        GameState.Instance.Save();
+        gameState.Save();
 
         return (int)ExitCode.Success;
     }

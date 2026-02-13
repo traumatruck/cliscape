@@ -15,16 +15,14 @@ namespace CliScape.Cli.Commands.Skills;
 ///     Cook raw food at a cooking range or fire.
 /// </summary>
 [Description("Cook raw food at a cooking range or fire")]
-public class CookCommand : Command<CookCommandSettings>, ICommand
+public class CookCommand(GameState gameState) : Command<CookCommandSettings>, ICommand
 {
-    private readonly GameState _gameState = GameState.Instance;
-
     public static string CommandName => "cook";
 
     public override int Execute(CommandContext context, CookCommandSettings settings,
         CancellationToken cancellationToken)
     {
-        var player = _gameState.GetPlayer();
+        var player = gameState.GetPlayer();
         var location = player.CurrentLocation;
 
         // Check if there's a cooking range here
@@ -199,7 +197,7 @@ public class CookCommand : Command<CookCommandSettings>, ICommand
             return (int)ExitCode.Failure;
         }
 
-        _gameState.Save();
+        gameState.Save();
         return (int)ExitCode.Success;
     }
 

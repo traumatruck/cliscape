@@ -8,15 +8,13 @@ namespace CliScape.Cli.Commands.Inventory;
 /// <summary>
 ///     Lists all items in the player's inventory.
 /// </summary>
-public class InventoryListCommand : Command, ICommand
+public class InventoryListCommand(GameState gameState) : Command, ICommand
 {
-    private readonly GameState _gameState = GameState.Instance;
-
     public static string CommandName => "list";
 
     public override int Execute(CommandContext context, CancellationToken cancellationToken)
     {
-        var player = _gameState.GetPlayer();
+        var player = gameState.GetPlayer();
         var inventory = player.Inventory;
 
         var table = new Table()

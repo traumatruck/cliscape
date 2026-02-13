@@ -11,16 +11,18 @@ namespace CliScape.Cli.Commands.Diary;
 /// <summary>
 ///     Command to view achievements for a specific diary location.
 /// </summary>
-public sealed class DiaryViewCommand : Command<DiaryViewCommandSettings>
+public sealed class DiaryViewCommand(
+    GameState gameState,
+    DiaryService diaryService,
+    DiaryRewardService diaryRewardService,
+    DiaryRegistry diaryRegistry) : Command<DiaryViewCommandSettings>
 {
     public const string CommandName = "view";
 
     public override int Execute(CommandContext context, DiaryViewCommandSettings settings,
         CancellationToken cancellationToken)
     {
-        var player = GameState.Instance.GetPlayer();
-        var diaryService = DiaryService.Instance;
-        var rewardService = DiaryRewardService.Instance;
+        var player = gameState.GetPlayer();
 
         // Check for any newly completed achievements
         diaryService.CheckAllAchievements(player);
@@ -28,7 +30,7 @@ public sealed class DiaryViewCommand : Command<DiaryViewCommandSettings>
         var location = string.IsNullOrWhiteSpace(settings.Location)
             ? player.CurrentLocation.Name
             : new LocationName(settings.Location);
-        var diary = DiaryRegistry.Instance.GetDiary(location);
+        var diary = diaryRegistry.GetDiary(location);
 
         if (diary == null)
         {
@@ -68,7 +70,7 @@ public sealed class DiaryViewCommand : Command<DiaryViewCommandSettings>
             // Show rewards if tier is complete
             if (isTierComplete)
             {
-                var rewards = rewardService.GetRewards(location, tier);
+                var rewards = diaryRewardService.GetRewards(location, tier);
                 if (rewards.Length > 0)
                 {
                     var rewardKey = $"{location.Value}_{tier}";
@@ -93,7 +95,7 @@ public sealed class DiaryViewCommand : Command<DiaryViewCommandSettings>
             AnsiConsole.WriteLine();
         }
 
-        GameState.Instance.Save();
+        gameState.Save();
 
         return (int)ExitCode.Success;
     }

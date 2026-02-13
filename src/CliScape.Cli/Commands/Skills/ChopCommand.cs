@@ -1,11 +1,11 @@
 using System.ComponentModel;
 using CliScape.Content.Items;
-using CliScape.Core;
 using CliScape.Core.Items;
 using CliScape.Core.Players;
 using CliScape.Core.Players.Skills;
 using CliScape.Core.World.Resources;
 using CliScape.Game;
+using CliScape.Game.Skills;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
@@ -15,26 +15,15 @@ namespace CliScape.Cli.Commands.Skills;
 ///     Chop trees in the current location for logs.
 /// </summary>
 [Description("Chop trees in your current location")]
-public class ChopCommand : Command<ChopCommandSettings>, ICommand
+public class ChopCommand(GameState gameState, WoodcuttingService woodcuttingService) : Command<ChopCommandSettings>,
+    ICommand
 {
-    /// <summary>
-    ///     Well-known hatchet item IDs in order of effectiveness.
-    /// </summary>
-    private static readonly ItemId[] HatchetIds =
-    [
-        new(105) // Bronze hatchet
-        // TODO: Add iron, steel, mithril, adamant, rune, dragon hatchets
-    ];
-
-    private readonly GameState _gameState = GameState.Instance;
-    private readonly IRandomProvider _random = RandomProvider.Instance;
-
     public static string CommandName => "chop";
 
     public override int Execute(CommandContext context, ChopCommandSettings settings,
         CancellationToken cancellationToken)
     {
-        var player = _gameState.GetPlayer();
+        var player = gameState.GetPlayer();
         var location = player.CurrentLocation;
 
         // If no tree specified, list available trees
@@ -52,7 +41,47 @@ public class ChopCommand : Command<ChopCommandSettings>, ICommand
             return (int)ExitCode.Failure;
         }
 
-        return ChopTree(player, tree);
+        // Validate via service
+        var (canChop, errorMessage) = woodcuttingService.CanChop(player, tree.RequiredLevel);
+        if (!canChop)
+        {
+            AnsiConsole.MarkupLine($"[red]{errorMessage}[/]");
+            return (int)ExitCode.Failure;
+        }
+
+        // Determine random number of logs from this tree
+        var count = Random.Shared.Next(1, tree.MaxActions + 1);
+
+        // Execute via service
+        var result = woodcuttingService.Chop(player, tree.LogItemId, tree.Experience, count, ItemRegistry.GetById);
+
+        if (!result.Success)
+        {
+            AnsiConsole.MarkupLine($"[red]{result.Message}[/]");
+            return (int)ExitCode.Failure;
+        }
+
+        // Display result
+        if (result.LogsObtained == 1)
+        {
+            AnsiConsole.MarkupLine(
+                $"[green]You chop down the {tree.Name.ToLower()} and get some {result.LogName}.[/]");
+        }
+        else
+        {
+            AnsiConsole.MarkupLine(
+                $"[green]You chop down the {tree.Name.ToLower()} and get {result.LogsObtained}x {result.LogName}.[/]");
+        }
+
+        AnsiConsole.MarkupLine($"[dim]You gain {result.TotalExperience:N0} Woodcutting experience.[/]");
+
+        if (result.LevelUp is { } levelUp)
+        {
+            AnsiConsole.MarkupLine(
+                $"[bold yellow]Congratulations! Your Woodcutting level is now {levelUp.NewLevel}![/]");
+        }
+
+        return (int)ExitCode.Success;
     }
 
     private static int ListTrees(IReadOnlyList<ITree> trees, Player player)
@@ -74,7 +103,7 @@ public class ChopCommand : Command<ChopCommandSettings>, ICommand
         foreach (var tree in trees)
         {
             var levelColor = woodcuttingLevel >= tree.RequiredLevel ? "green" : "red";
-            var logName = GetLogName(tree.LogItemId);
+            var logName = GetItemName(tree.LogItemId);
 
             table.AddRow(
                 tree.Name,
@@ -90,125 +119,16 @@ public class ChopCommand : Command<ChopCommandSettings>, ICommand
         return (int)ExitCode.Success;
     }
 
-    private int ChopTree(Player player, ITree tree)
-    {
-        var woodcuttingSkill = player.GetSkill(SkillConstants.WoodcuttingSkillName);
-        var woodcuttingLevel = woodcuttingSkill.Level.Value;
-
-        // Check level requirement
-        if (woodcuttingLevel < tree.RequiredLevel)
-        {
-            AnsiConsole.MarkupLine($"[red]You need level {tree.RequiredLevel} Woodcutting to chop this tree.[/]");
-            return (int)ExitCode.Failure;
-        }
-
-        // Check for hatchet
-        if (!HasHatchet(player, out _))
-        {
-            AnsiConsole.MarkupLine("[red]You need a hatchet to chop trees.[/]");
-            return (int)ExitCode.Failure;
-        }
-
-        // Get the log item
-        var logItem = ItemRegistry.GetById(tree.LogItemId);
-        if (logItem is null)
-        {
-            AnsiConsole.MarkupLine("[red]Something went wrong while chopping.[/]");
-            return (int)ExitCode.Failure;
-        }
-
-        // Determine random number of logs from this tree
-        var potentialLogs = _random.Next(1, tree.MaxActions + 1);
-        
-        // Limit by available inventory space
-        var availableSlots = player.Inventory.FreeSlots;
-        if (availableSlots == 0)
-        {
-            AnsiConsole.MarkupLine("[red]Your inventory is full.[/]");
-            return (int)ExitCode.Failure;
-        }
-        
-        var logsObtained = Math.Min(potentialLogs, availableSlots);
-        var totalXp = 0;
-
-        // Add all logs to inventory and calculate total XP
-        for (var i = 0; i < logsObtained; i++)
-        {
-            if (!player.Inventory.TryAdd(logItem))
-            {
-                // Should not happen since we checked space, but handle it anyway
-                break;
-            }
-            
-            totalXp += tree.Experience;
-        }
-        
-        // Grant all experience at once
-        if (totalXp > 0)
-        {
-            Player.AddExperience(woodcuttingSkill, totalXp);
-        }
-
-        if (logsObtained == 1)
-        {
-            AnsiConsole.MarkupLine($"[green]You chop down the {tree.Name.ToLower()} and get some {logItem.Name}.[/]");
-        }
-        else
-        {
-            AnsiConsole.MarkupLine(
-                $"[green]You chop down the {tree.Name.ToLower()} and get {logsObtained}x {logItem.Name}.[/]");
-        }
-
-        AnsiConsole.MarkupLine($"[dim]You gain {totalXp:N0} Woodcutting experience.[/]");
-
-        _gameState.Save();
-        return (int)ExitCode.Success;
-    }
-
     private static ITree? FindTree(IReadOnlyList<ITree> trees, string treeType)
     {
-        // Match by tree type name or tree name
         return trees.FirstOrDefault(t =>
             t.TreeType.ToString().Equals(treeType, StringComparison.OrdinalIgnoreCase) ||
             t.Name.Contains(treeType, StringComparison.OrdinalIgnoreCase));
     }
 
-    private static bool HasHatchet(Player player, out string? hatchetName)
-    {
-        hatchetName = null;
-
-        // Check inventory for any hatchet
-        foreach (var hatchetId in HatchetIds)
-        {
-            var inInventory = player.Inventory.GetItems()
-                .FirstOrDefault(slot => slot.Item.Id == hatchetId);
-
-            if (inInventory != default)
-            {
-                hatchetName = inInventory.Item.Name.Value;
-                return true;
-            }
-        }
-
-        // Check equipped weapon slot for hatchet
-        foreach (var hatchetId in HatchetIds)
-        {
-            var equipped = player.Equipment.GetAllEquipped()
-                .FirstOrDefault(item => item.Id == hatchetId);
-
-            if (equipped is not null)
-            {
-                hatchetName = equipped.Name.Value;
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private static string GetLogName(ItemId logId)
+    private static string GetItemName(ItemId logId)
     {
         var item = ItemRegistry.GetById(logId);
-        return item?.Name.Value ?? "unknown logs";
+        return item?.Name.Value ?? "unknown";
     }
 }

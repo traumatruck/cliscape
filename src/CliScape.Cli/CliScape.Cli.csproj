@@ -8,12 +8,13 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Spectre.Console.Cli" Version="0.53.1"/>
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.3" />
+        <PackageReference Include="Spectre.Console.Cli" Version="0.53.1" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\CliScape.Game\CliScape.Game.csproj"/>
-        <ProjectReference Include="..\CliScape.Infrastructure\CliScape.Infrastructure.csproj"/>
+        <ProjectReference Include="..\CliScape.Game\CliScape.Game.csproj" />
+        <ProjectReference Include="..\CliScape.Infrastructure\CliScape.Infrastructure.csproj" />
     </ItemGroup>
 
 </Project>

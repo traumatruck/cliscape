@@ -11,14 +11,13 @@ namespace CliScape.Cli.Commands.Combat;
 /// <summary>
 ///     Pick up loot from defeated enemies.
 /// </summary>
-public class CombatLootCommand : Command<CombatLootCommandSettings>, ICommand
+public class CombatLootCommand(GameState gameState) : Command<CombatLootCommandSettings>, ICommand
 {
     public static string CommandName => "loot";
 
     public override int Execute(CommandContext context, CombatLootCommandSettings settings,
         CancellationToken cancellationToken)
     {
-        var gameState = GameState.Instance;
         var pendingLoot = gameState.PendingLoot;
         var player = gameState.GetPlayer();
 

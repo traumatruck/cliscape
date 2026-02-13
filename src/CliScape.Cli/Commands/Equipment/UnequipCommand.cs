@@ -8,16 +8,14 @@ namespace CliScape.Cli.Commands.Equipment;
 /// <summary>
 ///     Unequip an item and return it to inventory.
 /// </summary>
-public class UnequipCommand : Command<UnequipCommandSettings>, ICommand
+public class UnequipCommand(GameState gameState) : Command<UnequipCommandSettings>, ICommand
 {
-    private readonly GameState _gameState = GameState.Instance;
-
     public static string CommandName => "unequip";
 
     public override int Execute(CommandContext context, UnequipCommandSettings settings,
         CancellationToken cancellationToken)
     {
-        var player = _gameState.GetPlayer();
+        var player = gameState.GetPlayer();
         var inventory = player.Inventory;
         var equipment = player.Equipment;
 

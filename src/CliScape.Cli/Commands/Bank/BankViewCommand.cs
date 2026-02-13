@@ -7,16 +7,14 @@ namespace CliScape.Cli.Commands.Bank;
 /// <summary>
 ///     Displays the contents of the player's bank.
 /// </summary>
-public class BankViewCommand : Command<BankViewCommandSettings>, ICommand
+public class BankViewCommand(GameState gameState) : Command<BankViewCommandSettings>, ICommand
 {
-    private readonly GameState _gameState = GameState.Instance;
-
     public static string CommandName => "view";
 
     public override int Execute(CommandContext context, BankViewCommandSettings settings,
         CancellationToken cancellationToken)
     {
-        var player = _gameState.GetPlayer();
+        var player = gameState.GetPlayer();
         var location = player.CurrentLocation;
 
         // Check if bank exists at current location

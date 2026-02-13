@@ -6,17 +6,15 @@ using Spectre.Console.Cli;
 namespace CliScape.Cli.Commands.Walk;
 
 [Description("Travel to a new location")]
-public class WalkCommand : Command<WalkCommandSettings>, ICommand
+public class WalkCommand(GameState gameState) : Command<WalkCommandSettings>, ICommand
 {
-    private readonly GameState _gameState = GameState.Instance;
-
     public static string CommandName => "walk";
 
     public override int Execute(CommandContext context, WalkCommandSettings settings,
         CancellationToken cancellationToken)
     {
-        var player = _gameState.GetPlayer();
-        var destination = _gameState.GetLocation(settings.LocationName);
+        var player = gameState.GetPlayer();
+        var destination = gameState.GetLocation(settings.LocationName);
 
         if (destination == null)
         {

@@ -8,15 +8,13 @@ namespace CliScape.Cli.Commands.Equipment;
 /// <summary>
 ///     View currently equipped items and total equipment stats.
 /// </summary>
-public class EquipmentViewCommand : Command, ICommand
+public class EquipmentViewCommand(GameState gameState) : Command, ICommand
 {
-    private readonly GameState _gameState = GameState.Instance;
-
     public static string CommandName => "view";
 
     public override int Execute(CommandContext context, CancellationToken cancellationToken)
     {
-        var player = _gameState.GetPlayer();
+        var player = gameState.GetPlayer();
         var equipment = player.Equipment;
 
         // Equipment table

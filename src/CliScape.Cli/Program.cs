@@ -1,4 +1,5 @@
-﻿using CliScape.Cli.Commands;
+﻿using CliScape.Cli;
+using CliScape.Cli.Commands;
 using CliScape.Cli.Commands.Bank;
 using CliScape.Cli.Commands.Combat;
 using CliScape.Cli.Commands.Diary;
@@ -11,10 +12,21 @@ using CliScape.Cli.Commands.Skills;
 using CliScape.Cli.Commands.Slayer;
 using CliScape.Cli.Commands.Status;
 using CliScape.Cli.Commands.Walk;
+using CliScape.Content.Achievements;
+using CliScape.Core;
+using CliScape.Core.Combat;
+using CliScape.Core.Events;
+using CliScape.Core.Skills;
 using CliScape.Game;
+using CliScape.Game.Achievements;
 using CliScape.Game.ClueScrolls;
+using CliScape.Game.Combat;
+using CliScape.Game.Items;
+using CliScape.Game.Skills;
+using CliScape.Game.Slayer;
 using CliScape.Infrastructure.Configuration;
 using CliScape.Infrastructure.Persistence;
+using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console.Cli;
 
 // Configure application settings
@@ -27,7 +39,43 @@ GameState.Instance.Configure(store, settings.Persistence.SaveFilePath);
 // Initialize the clue scroll system
 ClueScrollWiring.Initialize();
 
-var app = new CommandApp();
+// Register services in DI container
+var services = new ServiceCollection();
+
+// Core singletons
+services.AddSingleton(GameState.Instance);
+services.AddSingleton<IPlayerManager>(GameState.Instance);
+services.AddSingleton<ILocationRegistry>(GameState.Instance);
+services.AddSingleton<ICombatSessionManager>(GameState.Instance);
+services.AddSingleton<IRandomProvider>(RandomProvider.Instance);
+services.AddSingleton<IDomainEventDispatcher>(DomainEventDispatcher.Instance);
+services.AddSingleton<ICombatCalculator>(CombatCalculator.Instance);
+services.AddSingleton<IToolChecker>(ToolChecker.Instance);
+
+// Game services
+services.AddSingleton(CombatEngine.Instance);
+services.AddSingleton<ICombatEngine>(CombatEngine.Instance);
+services.AddSingleton(CombatSessionManager.Instance);
+services.AddSingleton(LocationRegistry.Instance);
+services.AddSingleton(FishingService.Instance);
+services.AddSingleton(WoodcuttingService.Instance);
+services.AddSingleton(MiningService.Instance);
+services.AddSingleton(SmeltingService.Instance);
+services.AddSingleton(CookingService.Instance);
+services.AddSingleton(FiremakingService.Instance);
+services.AddSingleton(EquipmentService.Instance);
+services.AddSingleton(LootService.Instance);
+services.AddSingleton(SlayerService.Instance);
+services.AddSingleton(DiaryService.Instance);
+services.AddSingleton(DiaryRewardService.Instance);
+services.AddSingleton(DiaryRegistry.Instance);
+
+if (ClueScrollService.Instance is not null)
+    services.AddSingleton(ClueScrollService.Instance);
+
+var registrar = new TypeRegistrar(services);
+
+var app = new CommandApp(registrar);
 
 app.Configure(configuration =>
 {

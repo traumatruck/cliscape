@@ -10,14 +10,14 @@ namespace CliScape.Cli.Commands.Slayer;
 /// <summary>
 ///     View and manage slayer tasks.
 /// </summary>
-public class SlayerCommand : Command<SlayerCommandSettings>, ICommand
+public class SlayerCommand(GameState gameState, SlayerService slayerService) : Command<SlayerCommandSettings>, ICommand
 {
     public static string CommandName => "slayer";
 
     public override int Execute(CommandContext context, SlayerCommandSettings settings,
         CancellationToken cancellationToken)
     {
-        var player = GameState.Instance.GetPlayer();
+        var player = gameState.GetPlayer();
 
         // Handle cancel option
         if (settings.Cancel)
@@ -77,7 +77,7 @@ public class SlayerCommand : Command<SlayerCommandSettings>, ICommand
         return (int)ExitCode.Success;
     }
 
-    private static int HandleGetTask(Player player, string masterName)
+    private int HandleGetTask(Player player, string masterName)
     {
         var master = SlayerMasters.GetByName(masterName);
 
@@ -93,7 +93,7 @@ public class SlayerCommand : Command<SlayerCommandSettings>, ICommand
             return (int)ExitCode.BadRequest;
         }
 
-        var result = SlayerService.Instance.AssignTask(player, master);
+        var result = slayerService.AssignTask(player, master);
 
         return result switch
         {
@@ -139,7 +139,7 @@ public class SlayerCommand : Command<SlayerCommandSettings>, ICommand
         return (int)ExitCode.BadRequest;
     }
 
-    private static int HandleCancel(Player player)
+    private int HandleCancel(Player player)
     {
         if (player.SlayerTask == null || player.SlayerTask.IsComplete)
         {
@@ -148,7 +148,7 @@ public class SlayerCommand : Command<SlayerCommandSettings>, ICommand
         }
 
         var task = player.SlayerTask;
-        SlayerService.Instance.CancelTask(player);
+        slayerService.CancelTask(player);
         AnsiConsole.MarkupLine($"[yellow]Your {task.Category} task has been cancelled.[/]");
         return (int)ExitCode.Success;
     }
