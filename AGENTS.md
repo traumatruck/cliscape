@@ -4,6 +4,17 @@ CliScape is an OSRS-inspired CLI game built with .NET 10. This document provides
 
 **Keep this file current.** When making changes that affect project structure, conventions, or patterns documented here, update this file as part of the same change.
 
+## README.md Maintenance
+
+`README.md` is a player-facing overview of the project. Update it alongside code changes when those changes affect user-visible information (new commands, new skills, new game mechanics, changed build steps, etc.). Follow these rules:
+
+- **Do not add new h2 (`##`) sections** unless the user explicitly requests one. Add content under existing sections or use h3 (`###`) subsections within Game Mechanics.
+- **Keep entries concise** — one-line descriptions in tables, short bullet points for mechanics. Match the tone and brevity of existing content.
+- **Commands table** — add/remove/rename rows when top-level commands change.
+- **Game Mechanics subsections** — update skill lists, combat styles, skilling commands, clue scroll tiers, diary locations, or item/equipment details when the underlying data changes.
+- **Project Structure table** — update if projects are added, removed, or renamed.
+- Do not rewrite sections unrelated to your change. Only touch what your work affects.
+
 ## Project Structure
 
 ```
