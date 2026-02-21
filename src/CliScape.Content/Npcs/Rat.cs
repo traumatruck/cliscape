@@ -1,5 +1,6 @@
 using CliScape.Content.Items;
 using CliScape.Core.Npcs;
+using CliScape.Core.Slayer;
 
 namespace CliScape.Content.Npcs;
 
@@ -59,7 +60,7 @@ public class Rat : CombatableNpc
         // Slayer
         SlayerLevel = 0,
         SlayerXp = 1,
-        SlayerCategory = "Rats",
+        SlayerCategory = new SlayerCategory("Rats"),
 
         // Drops
         DropTable = new DropTable(

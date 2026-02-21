@@ -25,15 +25,16 @@ public class DropTable
     /// <summary>
     ///     Rolls for drops and returns the items that drop.
     /// </summary>
-    public IReadOnlyList<DroppedItem> RollDrops()
+    /// <param name="random">The random provider to use for drop and quantity rolls.</param>
+    public IReadOnlyList<DroppedItem> RollDrops(IRandomProvider random)
     {
         var droppedItems = new List<DroppedItem>();
 
         foreach (var drop in _drops)
         {
-            if (ShouldDrop(drop))
+            if (ShouldDrop(drop, random))
             {
-                var quantity = RollQuantity(drop);
+                var quantity = RollQuantity(drop, random);
                 droppedItems.Add(new DroppedItem(drop.ItemId, quantity));
             }
         }
@@ -41,7 +42,7 @@ public class DropTable
         return droppedItems;
     }
 
-    private static bool ShouldDrop(NpcDrop drop)
+    private static bool ShouldDrop(NpcDrop drop, IRandomProvider random)
     {
         var dropChance = drop.Rarity switch
         {
@@ -55,16 +56,16 @@ public class DropTable
         };
 
         // Roll 1 to dropChance, if we roll 1 we get the drop
-        return Random.Shared.Next(1, dropChance + 1) == 1;
+        return random.Next(1, dropChance + 1) == 1;
     }
 
-    private static int RollQuantity(NpcDrop drop)
+    private static int RollQuantity(NpcDrop drop, IRandomProvider random)
     {
         if (drop.MinQuantity == drop.MaxQuantity)
         {
             return drop.MinQuantity;
         }
 
-        return Random.Shared.Next(drop.MinQuantity, drop.MaxQuantity + 1);
+        return random.Next(drop.MinQuantity, drop.MaxQuantity + 1);
     }
 }

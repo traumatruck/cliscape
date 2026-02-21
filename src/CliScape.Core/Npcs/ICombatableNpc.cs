@@ -1,3 +1,5 @@
+using CliScape.Core.Slayer;
+
 namespace CliScape.Core.Npcs;
 
 public interface ICombatableNpc : INpc
@@ -48,7 +50,7 @@ public interface ICombatableNpc : INpc
     // Slayer Properties
     int SlayerLevel { get; } // Required slayer level to damage
     int SlayerXp { get; } // XP awarded on kill
-    string? SlayerCategory { get; } // e.g., "Goblins", "Demons", etc.
+    SlayerCategory? SlayerCategory { get; } // e.g., "Goblins", "Demons", etc.
 
     // Drop Table
     DropTable DropTable { get; }

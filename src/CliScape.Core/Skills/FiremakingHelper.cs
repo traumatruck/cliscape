@@ -85,7 +85,7 @@ public static class FiremakingHelper
 
         // Grant experience
         var experience = LogExperience.GetValueOrDefault(logs.Id, 40);
-        Player.AddExperience(firemakingSkill, experience);
+        player.AddExperience(firemakingSkill, experience);
 
         message = $"The fire catches and the logs begin to burn. You gain {experience} Firemaking experience.";
         return true;

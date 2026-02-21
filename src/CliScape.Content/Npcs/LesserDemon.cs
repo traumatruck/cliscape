@@ -1,5 +1,6 @@
 using CliScape.Content.Items;
 using CliScape.Core.Npcs;
+using CliScape.Core.Slayer;
 
 namespace CliScape.Content.Npcs;
 
@@ -58,7 +59,7 @@ public class LesserDemon : CombatableNpc
         // Slayer
         SlayerLevel = 0,
         SlayerXp = 79,
-        SlayerCategory = "Demons",
+        SlayerCategory = new SlayerCategory("Demons"),
 
         // Drops
         DropTable = new DropTable(

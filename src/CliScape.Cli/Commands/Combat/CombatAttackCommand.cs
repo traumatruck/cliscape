@@ -1,4 +1,4 @@
-using CliScape.Content.Items;
+using CliScape.Core.Items;
 using CliScape.Core.Combat;
 using CliScape.Core.Events;
 using CliScape.Core.Npcs;
@@ -13,7 +13,7 @@ namespace CliScape.Cli.Commands.Combat;
 /// <summary>
 ///     Initiates combat with an NPC.
 /// </summary>
-public class CombatAttackCommand(GameState gameState, ICombatEngine combatEngine)
+public class CombatAttackCommand(GameState gameState, ICombatEngine combatEngine, IItemRegistry itemRegistry)
     : Command<CombatAttackCommandSettings>, ICommand
 {
     private string _lastNpcAction = "";
@@ -205,7 +205,7 @@ public class CombatAttackCommand(GameState gameState, ICombatEngine combatEngine
 
                     foreach (var drop in outcome.Drops)
                     {
-                        var item = ItemRegistry.GetById(drop.ItemId);
+                        var item = itemRegistry.GetById(drop.ItemId);
                         if (item == null)
                         {
                             continue;

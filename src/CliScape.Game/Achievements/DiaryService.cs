@@ -1,4 +1,3 @@
-using CliScape.Content.Achievements;
 using CliScape.Core.Achievements;
 using CliScape.Core.Events;
 using CliScape.Core.Players;
@@ -11,12 +10,16 @@ namespace CliScape.Game.Achievements;
 /// </summary>
 public sealed class DiaryService
 {
-    private static readonly Lazy<DiaryService> _instance = new(() => new DiaryService(DomainEventDispatcher.Instance));
-    private readonly DomainEventDispatcher _eventDispatcher;
+    private static readonly Lazy<DiaryService> _instance = new(() =>
+        new DiaryService(DomainEventDispatcher.Instance, Content.Achievements.DiaryRegistry.Instance));
 
-    public DiaryService(DomainEventDispatcher eventDispatcher)
+    private readonly DomainEventDispatcher _eventDispatcher;
+    private readonly IDiaryRegistry _diaryRegistry;
+
+    public DiaryService(DomainEventDispatcher eventDispatcher, IDiaryRegistry diaryRegistry)
     {
         _eventDispatcher = eventDispatcher;
+        _diaryRegistry = diaryRegistry;
     }
 
     public static DiaryService Instance => _instance.Value;
@@ -27,7 +30,7 @@ public sealed class DiaryService
     /// <returns>True if the achievement was newly completed, false if already completed or check failed.</returns>
     public bool CheckAndCompleteAchievement(Player player, LocationName location, AchievementId achievementId)
     {
-        var diary = DiaryRegistry.Instance.GetDiary(location);
+        var diary = _diaryRegistry.GetDiary(location);
         if (diary == null)
         {
             return false;
@@ -82,7 +85,7 @@ public sealed class DiaryService
     {
         var completedCount = 0;
 
-        foreach (var diary in DiaryRegistry.Instance.GetAllDiaries())
+        foreach (var diary in _diaryRegistry.GetAllDiaries())
         {
             foreach (var achievement in diary.Achievements)
             {
@@ -101,7 +104,7 @@ public sealed class DiaryService
     /// </summary>
     public double GetTierCompletionPercentage(Player player, LocationName location, DiaryTier tier)
     {
-        var diary = DiaryRegistry.Instance.GetDiary(location);
+        var diary = _diaryRegistry.GetDiary(location);
         if (diary == null)
         {
             return 0;
@@ -124,7 +127,7 @@ public sealed class DiaryService
     /// </summary>
     public double GetOverallCompletionPercentage(Player player, LocationName location)
     {
-        var diary = DiaryRegistry.Instance.GetDiary(location);
+        var diary = _diaryRegistry.GetDiary(location);
         if (diary == null)
         {
             return 0;

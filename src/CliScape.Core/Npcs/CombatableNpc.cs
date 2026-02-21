@@ -1,3 +1,5 @@
+using CliScape.Core.Slayer;
+
 namespace CliScape.Core.Npcs;
 
 /// <summary>
@@ -53,7 +55,7 @@ public abstract class CombatableNpc : ICombatableNpc
     // Slayer Properties
     public required int SlayerLevel { get; init; }
     public required int SlayerXp { get; init; }
-    public string? SlayerCategory { get; init; }
+    public SlayerCategory? SlayerCategory { get; init; }
 
     // Drop Table
     public DropTable DropTable { get; init; } = DropTable.Empty;

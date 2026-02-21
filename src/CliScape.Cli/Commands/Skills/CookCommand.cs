@@ -1,5 +1,4 @@
 using System.ComponentModel;
-using CliScape.Content.Items;
 using CliScape.Core.Items;
 using CliScape.Core.Players;
 using CliScape.Core.Players.Skills;
@@ -15,7 +14,7 @@ namespace CliScape.Cli.Commands.Skills;
 ///     Cook raw food at a cooking range or fire.
 /// </summary>
 [Description("Cook raw food at a cooking range or fire")]
-public class CookCommand(GameState gameState) : Command<CookCommandSettings>, ICommand
+public class CookCommand(GameState gameState, IItemRegistry itemRegistry) : Command<CookCommandSettings>, ICommand
 {
     public static string CommandName => "cook";
 
@@ -110,9 +109,9 @@ public class CookCommand(GameState gameState) : Command<CookCommandSettings>, IC
         }
 
         // Get item references
-        var rawItem = ItemRegistry.GetById(recipe.RawItemId);
-        var cookedItem = ItemRegistry.GetById(recipe.CookedItemId);
-        var burntItem = ItemRegistry.GetById(recipe.BurntItemId);
+        var rawItem = itemRegistry.GetById(recipe.RawItemId);
+        var cookedItem = itemRegistry.GetById(recipe.CookedItemId);
+        var burntItem = itemRegistry.GetById(recipe.BurntItemId);
 
         if (rawItem is null || cookedItem is null || burntItem is null)
         {
@@ -158,7 +157,7 @@ public class CookCommand(GameState gameState) : Command<CookCommandSettings>, IC
                 player.Inventory.TryAdd(cookedItem);
 
                 // Grant experience
-                Player.AddExperience(cookingSkill, recipe.Experience);
+                player.AddExperience(cookingSkill, recipe.Experience);
                 itemsCooked++;
                 totalXp += recipe.Experience;
             }

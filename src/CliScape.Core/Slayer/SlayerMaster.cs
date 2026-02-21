@@ -8,7 +8,7 @@ public record SlayerMaster
     /// <summary>
     ///     The name of the slayer master.
     /// </summary>
-    public required string Name { get; init; }
+    public required SlayerMasterName Name { get; init; }
 
     /// <summary>
     ///     The combat level required to receive tasks from this master.

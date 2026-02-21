@@ -1,5 +1,3 @@
-using CliScape.Content.Items;
-using CliScape.Content.Locations.Towns;
 using CliScape.Core.Achievements;
 using CliScape.Core.ClueScrolls;
 using CliScape.Core.Combat;
@@ -7,6 +5,7 @@ using CliScape.Core.Items;
 using CliScape.Core.Npcs;
 using CliScape.Core.Players;
 using CliScape.Core.Players.Skills;
+using CliScape.Core.Slayer;
 using CliScape.Core.World;
 using CliScape.Game.Persistence;
 
@@ -21,13 +20,12 @@ public class GameState : IPlayerManager, ILocationRegistry, ICombatSessionManage
     public static readonly GameState Instance = new();
     private readonly CombatSessionManager _combatSessionManager;
 
-    private readonly LocationRegistry _locationRegistry;
+    private IItemRegistry? _itemRegistry;
     private string? _saveFilePath;
     private IGameStateStore? _store;
 
     private GameState()
     {
-        _locationRegistry = LocationRegistry.Instance;
         _combatSessionManager = CombatSessionManager.Instance;
     }
 
@@ -64,19 +62,19 @@ public class GameState : IPlayerManager, ILocationRegistry, ICombatSessionManage
     /// <inheritdoc />
     public ILocation? GetLocation(string name)
     {
-        return _locationRegistry.GetLocation(name);
+        return LocationRegistry.Instance.GetLocation(name);
     }
 
     /// <inheritdoc />
     public ILocation? GetLocation(LocationName name)
     {
-        return _locationRegistry.GetLocation(name);
+        return LocationRegistry.Instance.GetLocation(name);
     }
 
     /// <inheritdoc />
     public IEnumerable<ILocation> GetAllLocations()
     {
-        return _locationRegistry.GetAllLocations();
+        return LocationRegistry.Instance.GetAllLocations();
     }
 
     /// <summary>
@@ -109,7 +107,7 @@ public class GameState : IPlayerManager, ILocationRegistry, ICombatSessionManage
         {
             foreach (var slotSnapshot in snapshot.Value.InventorySlots)
             {
-                var item = ItemRegistry.GetById(new ItemId(slotSnapshot.ItemId));
+                var item = GetItemRegistry().GetById(new ItemId(slotSnapshot.ItemId));
                 if (item is not null)
                 {
                     inventory.TrySetSlot(slotSnapshot.SlotIndex, item, slotSnapshot.Quantity);
@@ -123,7 +121,7 @@ public class GameState : IPlayerManager, ILocationRegistry, ICombatSessionManage
         {
             foreach (var equippedSnapshot in snapshot.Value.EquippedItems)
             {
-                var item = ItemRegistry.GetById(new ItemId(equippedSnapshot.ItemId));
+                var item = GetItemRegistry().GetById(new ItemId(equippedSnapshot.ItemId));
                 if (item is IEquippable equippable)
                 {
                     equipment.Equip(equippable);
@@ -137,7 +135,7 @@ public class GameState : IPlayerManager, ILocationRegistry, ICombatSessionManage
         {
             foreach (var bankSlotSnapshot in snapshot.Value.BankSlots)
             {
-                var item = ItemRegistry.GetById(new ItemId(bankSlotSnapshot.ItemId));
+                var item = GetItemRegistry().GetById(new ItemId(bankSlotSnapshot.ItemId));
                 if (item is not null)
                 {
                     bank.TrySetSlot(bankSlotSnapshot.SlotIndex, item, bankSlotSnapshot.Quantity);
@@ -152,10 +150,10 @@ public class GameState : IPlayerManager, ILocationRegistry, ICombatSessionManage
             var taskSnapshot = snapshot.Value.SlayerTask.Value;
             slayerTask = new SlayerTask
             {
-                Category = taskSnapshot.Category,
+                Category = new SlayerCategory(taskSnapshot.Category),
                 RemainingKills = taskSnapshot.RemainingKills,
                 TotalKills = taskSnapshot.TotalKills,
-                SlayerMaster = taskSnapshot.SlayerMaster
+                SlayerMaster = new SlayerMasterName(taskSnapshot.SlayerMaster)
             };
         }
 
@@ -176,10 +174,11 @@ public class GameState : IPlayerManager, ILocationRegistry, ICombatSessionManage
         }
 
         // Restore claimed diary rewards
-        var claimedDiaryRewards = new HashSet<string>();
+        var claimedDiaryRewards = new HashSet<DiaryRewardId>();
         if (snapshot.Value.ClaimedDiaryRewards is not null)
         {
-            claimedDiaryRewards = new HashSet<string>(snapshot.Value.ClaimedDiaryRewards);
+            claimedDiaryRewards = new HashSet<DiaryRewardId>(
+                snapshot.Value.ClaimedDiaryRewards.Select(r => new DiaryRewardId(r)));
         }
 
         // Restore active clue scroll
@@ -259,10 +258,10 @@ public class GameState : IPlayerManager, ILocationRegistry, ICombatSessionManage
         if (player.SlayerTask != null)
         {
             slayerTaskSnapshot = new SlayerTaskSnapshot(
-                player.SlayerTask.Category,
+                player.SlayerTask.Category.Value,
                 player.SlayerTask.RemainingKills,
                 player.SlayerTask.TotalKills,
-                player.SlayerTask.SlayerMaster);
+                player.SlayerTask.SlayerMaster.Value);
         }
 
         // Create diary progress snapshots
@@ -273,7 +272,7 @@ public class GameState : IPlayerManager, ILocationRegistry, ICombatSessionManage
             .ToArray();
 
         // Create claimed diary rewards snapshot
-        var claimedRewardsSnapshot = player.ClaimedDiaryRewards.ToArray();
+        var claimedRewardsSnapshot = player.ClaimedDiaryRewards.Select(r => r.Value).ToArray();
 
         // Create active clue scroll snapshot
         ClueScrollSnapshot? activeClueSnapshot = null;
@@ -317,14 +316,27 @@ public class GameState : IPlayerManager, ILocationRegistry, ICombatSessionManage
     }
 
     /// <summary>
+    ///     The default player spawn location name.
+    /// </summary>
+    public static readonly LocationName DefaultLocation = new("Lumbridge");
+
+    /// <summary>
     ///     Configures the game state with the required dependencies.
     /// </summary>
     /// <param name="store">The game state store implementation.</param>
     /// <param name="saveFilePath">The path to the save file.</param>
-    public void Configure(IGameStateStore store, string saveFilePath)
+    /// <param name="itemRegistry">The item registry for resolving items.</param>
+    public void Configure(IGameStateStore store, string saveFilePath, IItemRegistry? itemRegistry = null)
     {
         _store = store;
         _saveFilePath = saveFilePath;
+        _itemRegistry = itemRegistry;
+    }
+
+    private IItemRegistry GetItemRegistry()
+    {
+        return _itemRegistry ??
+               throw new InvalidOperationException("GameState has not been configured with an IItemRegistry.");
     }
 
     /// <summary>
@@ -338,24 +350,25 @@ public class GameState : IPlayerManager, ILocationRegistry, ICombatSessionManage
 
     private ILocation GetCurrentLocation()
     {
-        return GetLocation(Lumbridge.Name.Value) ?? throw new InvalidOperationException("Location not found.");
+        return GetLocation(DefaultLocation.Value) ?? throw new InvalidOperationException("Location not found.");
     }
 
     private Player CreateDefaultPlayer()
     {
         var inventory = new Inventory();
+        var items = GetItemRegistry();
 
-        // Add starter items like OSRS
-        inventory.TryAdd(ItemRegistry.GetById(ItemIds.Coins)!, 500);
-        inventory.TryAdd(ItemRegistry.GetById(ItemIds.BronzeSword)!);
-        inventory.TryAdd(ItemRegistry.GetById(ItemIds.WoodenShield)!);
-        inventory.TryAdd(ItemRegistry.GetById(ItemIds.Shortbow)!);
-        inventory.TryAdd(ItemRegistry.GetById(ItemIds.BronzeArrow)!, 50);
-        inventory.TryAdd(ItemRegistry.GetById(ItemIds.BronzeHatchet)!);
-        inventory.TryAdd(ItemRegistry.GetById(ItemIds.BronzePickaxe)!);
-        inventory.TryAdd(ItemRegistry.GetById(ItemIds.Tinderbox)!);
-        inventory.TryAdd(ItemRegistry.GetById(ItemIds.SmallFishingNet)!);
-        inventory.TryAdd(ItemRegistry.GetById(ItemIds.Hammer)!);
+        // Add starter items like OSRS (IDs from Content.Items.ItemIds)
+        inventory.TryAdd(items.GetById(new ItemId(1))!, 500);     // Coins
+        inventory.TryAdd(items.GetById(new ItemId(101))!);        // Bronze Sword
+        inventory.TryAdd(items.GetById(new ItemId(600))!);        // Wooden Shield
+        inventory.TryAdd(items.GetById(new ItemId(601))!);        // Shortbow
+        inventory.TryAdd(items.GetById(new ItemId(800))!, 50);    // Bronze Arrow
+        inventory.TryAdd(items.GetById(new ItemId(105))!);        // Bronze Hatchet
+        inventory.TryAdd(items.GetById(new ItemId(701))!);        // Bronze Pickaxe
+        inventory.TryAdd(items.GetById(new ItemId(700))!);        // Tinderbox
+        inventory.TryAdd(items.GetById(new ItemId(702))!);        // Small Fishing Net
+        inventory.TryAdd(items.GetById(new ItemId(703))!);        // Hammer
 
         var player = new Player
         {

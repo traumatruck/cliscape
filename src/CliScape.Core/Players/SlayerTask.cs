@@ -1,3 +1,5 @@
+using CliScape.Core.Slayer;
+
 namespace CliScape.Core.Players;
 
 /// <summary>
@@ -8,7 +10,7 @@ public record SlayerTask
     /// <summary>
     ///     The slayer category of NPCs to kill (e.g., "Goblins", "Cows").
     /// </summary>
-    public required string Category { get; init; }
+    public required SlayerCategory Category { get; init; }
 
     /// <summary>
     ///     The number of NPCs remaining to kill.
@@ -23,7 +25,7 @@ public record SlayerTask
     /// <summary>
     ///     The name of the slayer master who assigned this task.
     /// </summary>
-    public required string SlayerMaster { get; init; }
+    public required SlayerMasterName SlayerMaster { get; init; }
 
     /// <summary>
     ///     Whether the task is complete.

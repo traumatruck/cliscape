@@ -1,5 +1,5 @@
 using System.ComponentModel;
-using CliScape.Content.Items;
+using CliScape.Core.Items;
 using CliScape.Core.Players;
 using CliScape.Core.Players.Skills;
 using CliScape.Core.Skills;
@@ -14,7 +14,7 @@ namespace CliScape.Cli.Commands.Skills;
 ///     Steal from stalls or pickpocket NPCs.
 /// </summary>
 [Description("Steal from stalls or pickpocket NPCs")]
-public class ThieveCommand(GameState gameState) : Command<ThieveCommandSettings>, ICommand
+public class ThieveCommand(GameState gameState, IItemRegistry itemRegistry) : Command<ThieveCommandSettings>, ICommand
 {
     public static string CommandName => "thieve";
 
@@ -135,7 +135,7 @@ public class ThieveCommand(GameState gameState) : Command<ThieveCommandSettings>
             {
                 // Success! Get loot
                 var (lootItemId, quantity) = ThievingHelper.SelectLoot(target);
-                var lootItem = ItemRegistry.GetById(lootItemId);
+                var lootItem = itemRegistry.GetById(lootItemId);
 
                 if (lootItem is not null)
                 {
@@ -157,7 +157,7 @@ public class ThieveCommand(GameState gameState) : Command<ThieveCommandSettings>
                 }
 
                 // Grant experience
-                Player.AddExperience(thievingSkill, target.Experience);
+                player.AddExperience(thievingSkill, target.Experience);
                 successCount++;
                 totalXp += target.Experience;
             }

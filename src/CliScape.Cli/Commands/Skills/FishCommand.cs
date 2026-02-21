@@ -1,5 +1,4 @@
 using System.ComponentModel;
-using CliScape.Content.Items;
 using CliScape.Core.Items;
 using CliScape.Core.Players;
 using CliScape.Core.Players.Skills;
@@ -15,7 +14,7 @@ namespace CliScape.Cli.Commands.Skills;
 ///     Fish at fishing spots in the current location.
 /// </summary>
 [Description("Fish at fishing spots in your current location")]
-public class FishCommand(GameState gameState, FishingService fishingService) : Command<FishCommandSettings>, ICommand
+public class FishCommand(GameState gameState, FishingService fishingService, IItemRegistry itemRegistry) : Command<FishCommandSettings>, ICommand
 {
     public static string CommandName => "fish";
 
@@ -58,7 +57,7 @@ public class FishCommand(GameState gameState, FishingService fishingService) : C
         }
 
         // Execute via service
-        var result = fishingService.Fish(player, spot, maxCount, ItemRegistry.GetById);
+        var result = fishingService.Fish(player, spot, maxCount, itemRegistry.GetById);
 
         if (!result.Success)
         {
@@ -82,7 +81,7 @@ public class FishCommand(GameState gameState, FishingService fishingService) : C
         return (int)ExitCode.Success;
     }
 
-    private static int ListFishingSpots(IReadOnlyList<IFishingSpot> spots, Player player)
+    private int ListFishingSpots(IReadOnlyList<IFishingSpot> spots, Player player)
     {
         if (spots.Count == 0)
         {
@@ -130,9 +129,9 @@ public class FishCommand(GameState gameState, FishingService fishingService) : C
             s.Name.Contains(spotType, StringComparison.OrdinalIgnoreCase));
     }
 
-    private static string GetItemName(ItemId itemId)
+    private string GetItemName(ItemId itemId)
     {
-        var item = ItemRegistry.GetById(itemId);
+        var item = itemRegistry.GetById(itemId);
         return item?.Name.Value ?? "unknown";
     }
 }

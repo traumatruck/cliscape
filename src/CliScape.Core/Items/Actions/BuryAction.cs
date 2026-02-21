@@ -35,7 +35,7 @@ public class BuryAction : IItemAction
     public string Execute(IItem item, Player player)
     {
         var prayerSkill = player.GetSkill(SkillConstants.PrayerSkillName);
-        Player.AddExperience(prayerSkill, PrayerExperience);
+        player.AddExperience(prayerSkill, PrayerExperience);
         return $"You bury the {item.Name}. You gain {PrayerExperience} prayer experience.";
     }
 }

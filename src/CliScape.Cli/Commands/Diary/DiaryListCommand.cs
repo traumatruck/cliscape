@@ -1,4 +1,3 @@
-using CliScape.Content.Achievements;
 using CliScape.Core.Achievements;
 using CliScape.Core.Players;
 using CliScape.Core.World;
@@ -16,7 +15,7 @@ public sealed class DiaryListCommand(
     GameState gameState,
     DiaryService diaryService,
     DiaryRewardService diaryRewardService,
-    DiaryRegistry diaryRegistry) : Command
+    IDiaryRegistry diaryRegistry) : Command
 {
     public const string CommandName = "list";
 

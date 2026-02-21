@@ -1,4 +1,5 @@
 using CliScape.Content.Items;
+using CliScape.Core.Items;
 using CliScape.Core.World;
 using CliScape.Game;
 using Spectre.Console;
@@ -9,7 +10,7 @@ namespace CliScape.Cli.Commands.Shop;
 /// <summary>
 ///     Buy an item from a shop.
 /// </summary>
-public class ShopBuyCommand(GameState gameState) : Command<ShopBuyCommandSettings>, ICommand
+public class ShopBuyCommand(GameState gameState, IItemRegistry itemRegistry) : Command<ShopBuyCommandSettings>, ICommand
 {
     public static string CommandName => "buy";
 
@@ -44,7 +45,7 @@ public class ShopBuyCommand(GameState gameState) : Command<ShopBuyCommandSetting
         var quantity = settings.Quantity;
         var pricePerItem = targetShop.GetBuyPrice(item);
         var totalPrice = pricePerItem * quantity;
-        var playerGold = player.Inventory.GetQuantity(Materials.Coins);
+        var playerGold = player.Inventory.GetQuantity(itemRegistry.GetById(ItemIds.Coins)!);
 
         // Validate
         if (targetStock.CurrentStock < quantity)
@@ -66,7 +67,7 @@ public class ShopBuyCommand(GameState gameState) : Command<ShopBuyCommandSetting
         }
 
         // Process purchase
-        if (targetShop.TryBuy(item, Materials.Coins, quantity, player.Inventory))
+        if (targetShop.TryBuy(item, itemRegistry.GetById(ItemIds.Coins)!, quantity, player.Inventory))
         {
             if (quantity == 1)
             {
@@ -77,7 +78,7 @@ public class ShopBuyCommand(GameState gameState) : Command<ShopBuyCommandSetting
                 AnsiConsole.MarkupLine($"You buy [yellow]{quantity} {item.Name}[/] for [yellow]{totalPrice:N0} gp[/].");
             }
 
-            var remainingGold = player.Inventory.GetQuantity(Materials.Coins);
+            var remainingGold = player.Inventory.GetQuantity(itemRegistry.GetById(ItemIds.Coins)!);
             AnsiConsole.MarkupLine($"[dim]Remaining gold: {remainingGold:N0} gp[/]");
             return (int)ExitCode.Success;
         }

@@ -1,5 +1,4 @@
 using System.Reflection;
-using CliScape.Content.Locations.Towns;
 using CliScape.Core.World;
 
 namespace CliScape.Game;
@@ -11,14 +10,18 @@ public sealed class LocationRegistry : ILocationRegistry
 {
     /// <summary>
     ///     Singleton instance for simple access patterns.
+    ///     Initialized with the Content assembly by <see cref="Initialize" />.
     /// </summary>
-    public static readonly LocationRegistry Instance = new();
+    public static LocationRegistry Instance { get; private set; } = null!;
 
     private readonly LocationLibrary _library = new();
 
-    private LocationRegistry()
+    /// <summary>
+    ///     Initializes the singleton with the specified content assembly.
+    /// </summary>
+    public static void Initialize(Assembly contentAssembly)
     {
-        _library.LoadFrom(typeof(Lumbridge).Assembly);
+        Instance = new LocationRegistry(contentAssembly);
     }
 
     /// <summary>

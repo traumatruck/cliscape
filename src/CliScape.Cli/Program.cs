@@ -13,10 +13,15 @@ using CliScape.Cli.Commands.Slayer;
 using CliScape.Cli.Commands.Status;
 using CliScape.Cli.Commands.Walk;
 using CliScape.Content.Achievements;
+using CliScape.Content.Items;
+using CliScape.Content.Slayer;
 using CliScape.Core;
+using CliScape.Core.Achievements;
 using CliScape.Core.Combat;
 using CliScape.Core.Events;
+using CliScape.Core.Items;
 using CliScape.Core.Skills;
+using CliScape.Core.Slayer;
 using CliScape.Game;
 using CliScape.Game.Achievements;
 using CliScape.Game.ClueScrolls;
@@ -33,9 +38,12 @@ using Spectre.Console.Cli;
 // Configure application settings
 var settings = AppSettings.CreateDefault();
 
+// Initialize location registry with content assembly
+LocationRegistry.Initialize(typeof(ItemRegistry).Assembly);
+
 // Configure game state with infrastructure dependencies
 var store = new BinaryGameStateStore(settings.Persistence);
-GameState.Instance.Configure(store, settings.Persistence.SaveFilePath);
+GameState.Instance.Configure(store, settings.Persistence.SaveFilePath, ItemRegistry.Instance);
 
 // Initialize the clue scroll system
 ClueScrollWiring.Initialize();
@@ -69,7 +77,10 @@ services.AddSingleton(LootService.Instance);
 services.AddSingleton(SlayerService.Instance);
 services.AddSingleton(DiaryService.Instance);
 services.AddSingleton(DiaryRewardService.Instance);
-services.AddSingleton(DiaryRegistry.Instance);
+services.AddSingleton<IDiaryRegistry>(DiaryRegistry.Instance);
+services.AddSingleton<IDiaryRewardRegistry>(DiaryRewardRegistry.Instance);
+services.AddSingleton<IItemRegistry>(ItemRegistry.Instance);
+services.AddSingleton<ISlayerMasterProvider>(SlayerMasters.Instance);
 
 if (ClueScrollService.Instance is not null)
     services.AddSingleton(ClueScrollService.Instance);

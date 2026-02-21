@@ -107,7 +107,7 @@ public sealed class SmeltingService : ISmeltingService
             player.Inventory.TryAdd(barItem);
 
             // Grant experience
-            Player.AddExperience(smithingSkill, recipe.Experience);
+            player.AddExperience(smithingSkill, recipe.Experience);
             barsSmelted++;
             totalXp += recipe.Experience;
         }

@@ -8,7 +8,7 @@ namespace CliScape.Content.Achievements;
 ///     Singleton registry for all achievement diaries in the game.
 ///     Uses reflection to discover and register diary definitions.
 /// </summary>
-public sealed class DiaryRegistry
+public sealed class DiaryRegistry : IDiaryRegistry
 {
     private static readonly Lazy<DiaryRegistry> _instance = new(() => new DiaryRegistry());
     private readonly Dictionary<LocationName, Diary> _diariesByLocation;

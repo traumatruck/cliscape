@@ -22,13 +22,11 @@ public sealed class EquipmentService : IEquipmentService
     /// <inheritdoc />
     public ServiceResult CanEquip(Player player, IEquippable item)
     {
-        var skills = player.Skills;
-
-        var attack = GetSkillLevel(skills, SkillConstants.AttackSkillName);
-        var strength = GetSkillLevel(skills, SkillConstants.StrengthSkillName);
-        var defence = GetSkillLevel(skills, SkillConstants.DefenceSkillName);
-        var ranged = GetSkillLevel(skills, SkillConstants.RangedSkillName);
-        var magic = GetSkillLevel(skills, SkillConstants.MagicSkillName);
+        var attack = player.GetSkill(SkillConstants.AttackSkillName).Level.Value;
+        var strength = player.GetSkill(SkillConstants.StrengthSkillName).Level.Value;
+        var defence = player.GetSkill(SkillConstants.DefenceSkillName).Level.Value;
+        var ranged = player.GetSkill(SkillConstants.RangedSkillName).Level.Value;
+        var magic = player.GetSkill(SkillConstants.MagicSkillName).Level.Value;
 
         if (item.RequiredAttackLevel > attack)
         {
@@ -109,8 +107,5 @@ public sealed class EquipmentService : IEquipmentService
         return new EquipResult(true, $"You unequip the {equipped.Name}.", null, equipped);
     }
 
-    private static int GetSkillLevel(IPlayerSkill[] skills, SkillName skillName)
-    {
-        return skills.FirstOrDefault(s => s.Name == skillName)?.Level.Value ?? 1;
-    }
+
 }

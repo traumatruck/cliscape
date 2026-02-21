@@ -1,4 +1,5 @@
 using CliScape.Core.Npcs;
+using CliScape.Core.Slayer;
 
 namespace CliScape.Content.Npcs;
 
@@ -58,7 +59,7 @@ public class Spider : CombatableNpc
         // Slayer
         SlayerLevel = 0,
         SlayerXp = 1,
-        SlayerCategory = "Spiders",
+        SlayerCategory = new SlayerCategory("Spiders"),
 
         // Drops
         DropTable = DropTable.Empty

@@ -88,7 +88,7 @@ public sealed class WoodcuttingService : IWoodcuttingService
                 break;
             }
 
-            Player.AddExperience(woodcuttingSkill, experience);
+            player.AddExperience(woodcuttingSkill, experience);
             logsObtained++;
             totalXp += experience;
         }

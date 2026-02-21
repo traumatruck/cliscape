@@ -1,5 +1,4 @@
 using System.Reflection;
-using CliScape.Content.Items.Equippables;
 using CliScape.Core.Items;
 
 namespace CliScape.Content.Items;
@@ -7,8 +6,10 @@ namespace CliScape.Content.Items;
 /// <summary>
 ///     Central registry for looking up items by ID or name.
 /// </summary>
-public static class ItemRegistry
+public sealed class ItemRegistry : IItemRegistry
 {
+    public static readonly ItemRegistry Instance = new();
+
     private static readonly Dictionary<ItemId, IItem> ItemsById = new();
     private static readonly Dictionary<string, IItem> ItemsByName = new(StringComparer.OrdinalIgnoreCase);
     private static bool _initialized;
@@ -23,33 +24,11 @@ public static class ItemRegistry
             return;
         }
 
-        // Auto-discover all items using reflection
-        var itemTypes = new[]
+        // Auto-discover all types in this assembly that expose public static IItem fields
+        var assembly = typeof(ItemRegistry).Assembly;
+        foreach (var type in assembly.GetTypes())
         {
-            typeof(BronzeEquipment),
-            typeof(IronEquipment),
-            typeof(SteelEquipment),
-            typeof(MithrilEquipment),
-            typeof(LeatherEquipment),
-            typeof(MiscEquipment),
-            typeof(Food),
-            typeof(CookedFood),
-            typeof(BurntFood),
-            typeof(Materials),
-            typeof(Tools),
-            typeof(Ammunition),
-            typeof(Logs),
-            typeof(RawFish),
-            typeof(Ores),
-            typeof(Bars),
-            typeof(Pickaxes),
-            typeof(ClueScrollItems)
-        };
-
-        foreach (var type in itemTypes)
-        {
-            var fields = type.GetFields(BindingFlags.Public | BindingFlags.Static);
-            foreach (var field in fields)
+            foreach (var field in type.GetFields(BindingFlags.Public | BindingFlags.Static))
             {
                 if (field.GetValue(null) is IItem item)
                 {
@@ -88,4 +67,9 @@ public static class ItemRegistry
         Initialize();
         return ItemsById.Values;
     }
+
+    // Explicit interface implementations delegate to the static methods.
+    IItem? IItemRegistry.GetById(ItemId id) => GetById(id);
+    IItem? IItemRegistry.GetByName(string name) => GetByName(name);
+    IEnumerable<IItem> IItemRegistry.GetAll() => GetAll();
 }

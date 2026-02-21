@@ -78,7 +78,7 @@ public sealed class CombatEngine : ICombatEngine
             slayerProgress = ProcessSlayerTask(player, npc, rewards);
 
             // Roll drops
-            drops = npc.DropTable.RollDrops();
+            drops = npc.DropTable.RollDrops(_random);
 
             _eventDispatcher.Raise(new CombatEndedEvent(npc.Name, outcome));
         }
@@ -173,14 +173,9 @@ public sealed class CombatEngine : ICombatEngine
             return;
         }
 
-        var skill = player.Skills.FirstOrDefault(s => s.Name == skillName);
-        if (skill == null)
-        {
-            return;
-        }
-
+        var skill = player.GetSkill(skillName);
         var levelBefore = skill.Level.Value;
-        Player.AddExperience(skill, amount);
+        player.AddExperience(skill, amount);
         rewards.AddExperience(skillName.Name, amount);
 
         var levelAfter = skill.Level.Value;
@@ -203,7 +198,7 @@ public sealed class CombatEngine : ICombatEngine
             return null;
         }
 
-        if (!string.Equals(task.Category, npc.SlayerCategory, StringComparison.OrdinalIgnoreCase))
+        if (task.Category != npc.SlayerCategory)
         {
             return null;
         }
@@ -212,20 +207,17 @@ public sealed class CombatEngine : ICombatEngine
         var slayerXpGained = 0;
         if (npc.SlayerXp > 0)
         {
-            var slayerSkill = player.Skills.FirstOrDefault(s => s.Name.Name == "Slayer");
-            if (slayerSkill != null)
-            {
-                var levelBefore = slayerSkill.Level.Value;
-                Player.AddExperience(slayerSkill, npc.SlayerXp);
-                rewards.AddExperience("Slayer", npc.SlayerXp);
-                slayerXpGained = npc.SlayerXp;
+            var slayerSkill = player.GetSkill(SkillConstants.SlayerSkillName);
+            var levelBefore = slayerSkill.Level.Value;
+            player.AddExperience(slayerSkill, npc.SlayerXp);
+            rewards.AddExperience("Slayer", npc.SlayerXp);
+            slayerXpGained = npc.SlayerXp;
 
-                var levelAfter = slayerSkill.Level.Value;
-                if (levelAfter > levelBefore)
-                {
-                    rewards.AddLevelUp("Slayer", levelAfter);
-                    _eventDispatcher.Raise(new LevelUpEvent(SkillConstants.SlayerSkillName, levelAfter));
-                }
+            var levelAfter = slayerSkill.Level.Value;
+            if (levelAfter > levelBefore)
+            {
+                rewards.AddLevelUp("Slayer", levelAfter);
+                _eventDispatcher.Raise(new LevelUpEvent(SkillConstants.SlayerSkillName, levelAfter));
             }
         }
 

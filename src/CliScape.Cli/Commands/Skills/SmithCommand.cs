@@ -1,5 +1,4 @@
 using System.ComponentModel;
-using CliScape.Content.Items;
 using CliScape.Core.Items;
 using CliScape.Core.Players;
 using CliScape.Core.Players.Skills;
@@ -14,7 +13,7 @@ namespace CliScape.Cli.Commands.Skills;
 ///     Smith bars into equipment at an anvil.
 /// </summary>
 [Description("Smith bars into equipment at an anvil")]
-public class SmithCommand(GameState gameState) : Command<SmithCommandSettings>, ICommand
+public class SmithCommand(GameState gameState, IItemRegistry itemRegistry) : Command<SmithCommandSettings>, ICommand
 {
     public static string CommandName => "smith";
 
@@ -117,7 +116,7 @@ public class SmithCommand(GameState gameState) : Command<SmithCommandSettings>, 
         return (int)ExitCode.Success;
     }
 
-    private static int ListSmithingRecipes(Player player, ItemId barId)
+    private int ListSmithingRecipes(Player player, ItemId barId)
     {
         var recipes = SmithingHelper.GetRecipesForBar(barId);
         if (recipes.Length == 0)
@@ -126,7 +125,7 @@ public class SmithCommand(GameState gameState) : Command<SmithCommandSettings>, 
             return (int)ExitCode.Success;
         }
 
-        var barItem = ItemRegistry.GetById(barId);
+        var barItem = itemRegistry.GetById(barId);
         var barName = barItem?.Name.Value ?? "Unknown bar";
         var smithingLevel = player.GetSkillLevel(SkillConstants.SmithingSkillName).Value;
 
@@ -141,7 +140,7 @@ public class SmithCommand(GameState gameState) : Command<SmithCommandSettings>, 
         foreach (var recipe in recipes)
         {
             var levelColor = smithingLevel >= recipe.RequiredLevel ? "green" : "red";
-            var itemName = ItemRegistry.GetById(recipe.ResultItemId)?.Name.Value ?? "Unknown";
+            var itemName = itemRegistry.GetById(recipe.ResultItemId)?.Name.Value ?? "Unknown";
 
             table.AddRow(
                 itemName,
@@ -172,8 +171,8 @@ public class SmithCommand(GameState gameState) : Command<SmithCommandSettings>, 
         }
 
         // Get item references
-        var resultItem = ItemRegistry.GetById(recipe.ResultItemId);
-        var barItem = ItemRegistry.GetById(barId);
+        var resultItem = itemRegistry.GetById(recipe.ResultItemId);
+        var barItem = itemRegistry.GetById(barId);
 
         if (resultItem is null || barItem is null)
         {
@@ -221,7 +220,7 @@ public class SmithCommand(GameState gameState) : Command<SmithCommandSettings>, 
             player.Inventory.TryAdd(resultItem);
 
             // Grant experience
-            Player.AddExperience(smithingSkill, recipe.Experience);
+            player.AddExperience(smithingSkill, recipe.Experience);
             itemsSmithed++;
             totalXp += recipe.Experience;
         }

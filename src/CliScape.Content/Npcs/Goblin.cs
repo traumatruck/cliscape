@@ -1,5 +1,6 @@
 using CliScape.Content.Items;
 using CliScape.Core.Npcs;
+using CliScape.Core.Slayer;
 
 namespace CliScape.Content.Npcs;
 
@@ -56,7 +57,7 @@ public class Goblin : CombatableNpc
         // Slayer
         SlayerLevel = 0,
         SlayerXp = 5,
-        SlayerCategory = "Goblins",
+        SlayerCategory = new SlayerCategory("Goblins"),
 
         // Drops
         DropTable = new DropTable(

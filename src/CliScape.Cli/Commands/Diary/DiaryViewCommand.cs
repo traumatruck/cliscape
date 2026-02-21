@@ -1,4 +1,3 @@
-using CliScape.Content.Achievements;
 using CliScape.Core.Achievements;
 using CliScape.Core.World;
 using CliScape.Game;
@@ -15,7 +14,7 @@ public sealed class DiaryViewCommand(
     GameState gameState,
     DiaryService diaryService,
     DiaryRewardService diaryRewardService,
-    DiaryRegistry diaryRegistry) : Command<DiaryViewCommandSettings>
+    IDiaryRegistry diaryRegistry) : Command<DiaryViewCommandSettings>
 {
     public const string CommandName = "view";
 
@@ -73,7 +72,7 @@ public sealed class DiaryViewCommand(
                 var rewards = diaryRewardService.GetRewards(location, tier);
                 if (rewards.Length > 0)
                 {
-                    var rewardKey = $"{location.Value}_{tier}";
+                    var rewardKey = new DiaryRewardId($"{location.Value}_{tier}");
                     var alreadyClaimed = player.ClaimedDiaryRewards.Contains(rewardKey);
 
                     if (alreadyClaimed)

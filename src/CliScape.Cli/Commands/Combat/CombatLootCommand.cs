@@ -1,4 +1,3 @@
-using CliScape.Content.Items;
 using CliScape.Core.Combat;
 using CliScape.Core.Items;
 using CliScape.Core.Players;
@@ -11,7 +10,7 @@ namespace CliScape.Cli.Commands.Combat;
 /// <summary>
 ///     Pick up loot from defeated enemies.
 /// </summary>
-public class CombatLootCommand(GameState gameState) : Command<CombatLootCommandSettings>, ICommand
+public class CombatLootCommand(GameState gameState, IItemRegistry itemRegistry) : Command<CombatLootCommandSettings>, ICommand
 {
     public static string CommandName => "loot";
 
@@ -44,13 +43,13 @@ public class CombatLootCommand(GameState gameState) : Command<CombatLootCommandS
         return LootSpecificItem(pendingLoot, player, settings.ItemName, settings.Amount);
     }
 
-    private static int ShowAvailableLoot(PendingLoot pendingLoot)
+    private int ShowAvailableLoot(PendingLoot pendingLoot)
     {
         AnsiConsole.MarkupLine("[bold]Available loot:[/]");
 
         foreach (var lootItem in pendingLoot.Items)
         {
-            var item = ItemRegistry.GetById(lootItem.ItemId);
+            var item = itemRegistry.GetById(lootItem.ItemId);
             if (item == null)
             {
                 continue;
@@ -66,7 +65,7 @@ public class CombatLootCommand(GameState gameState) : Command<CombatLootCommandS
         return (int)ExitCode.Success;
     }
 
-    private static int LootAll(PendingLoot pendingLoot, Player player)
+    private int LootAll(PendingLoot pendingLoot, Player player)
     {
         var itemsLooted = 0;
         var itemsSkipped = 0;
@@ -76,7 +75,7 @@ public class CombatLootCommand(GameState gameState) : Command<CombatLootCommandS
 
         foreach (var lootItem in itemsToLoot)
         {
-            var item = ItemRegistry.GetById(lootItem.ItemId);
+            var item = itemRegistry.GetById(lootItem.ItemId);
             if (item == null)
             {
                 continue;
@@ -111,7 +110,7 @@ public class CombatLootCommand(GameState gameState) : Command<CombatLootCommandS
         return (int)ExitCode.Success;
     }
 
-    private static int LootSpecificItem(PendingLoot pendingLoot, Player player,
+    private int LootSpecificItem(PendingLoot pendingLoot, Player player,
         string itemName, int? requestedAmount)
     {
         // Find matching item in pending loot
@@ -120,7 +119,7 @@ public class CombatLootCommand(GameState gameState) : Command<CombatLootCommandS
 
         foreach (var lootItem in pendingLoot.Items)
         {
-            var item = ItemRegistry.GetById(lootItem.ItemId);
+            var item = itemRegistry.GetById(lootItem.ItemId);
             if (item != null && item.Name.Value.Contains(itemName, StringComparison.OrdinalIgnoreCase))
             {
                 matchingLoot = lootItem;

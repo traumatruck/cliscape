@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using CliScape.Core.Items;
 using CliScape.Core.Players;
+using CliScape.Core.Players.Skills;
 using CliScape.Core.Skills;
 using CliScape.Game;
 using Spectre.Console;
@@ -266,13 +267,11 @@ public class ItemCommand(GameState gameState) : Command<ItemCommandSettings>, IC
 
     private static bool MeetsRequirements(Player player, IEquippable equippable, out string message)
     {
-        var skills = player.Skills;
-
-        var attack = skills.FirstOrDefault(s => s.Name.Name == "Attack")?.Level.Value ?? 1;
-        var strength = skills.FirstOrDefault(s => s.Name.Name == "Strength")?.Level.Value ?? 1;
-        var defence = skills.FirstOrDefault(s => s.Name.Name == "Defence")?.Level.Value ?? 1;
-        var ranged = skills.FirstOrDefault(s => s.Name.Name == "Ranged")?.Level.Value ?? 1;
-        var magic = skills.FirstOrDefault(s => s.Name.Name == "Magic")?.Level.Value ?? 1;
+        var attack = player.GetSkill(SkillConstants.AttackSkillName).Level.Value;
+        var strength = player.GetSkill(SkillConstants.StrengthSkillName).Level.Value;
+        var defence = player.GetSkill(SkillConstants.DefenceSkillName).Level.Value;
+        var ranged = player.GetSkill(SkillConstants.RangedSkillName).Level.Value;
+        var magic = player.GetSkill(SkillConstants.MagicSkillName).Level.Value;
 
         if (equippable.RequiredAttackLevel > attack)
         {

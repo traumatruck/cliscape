@@ -1,5 +1,6 @@
 using CliScape.Core.Npcs;
 using CliScape.Core.Players;
+using CliScape.Core.Players.Skills;
 
 namespace CliScape.Core.Combat;
 
@@ -34,8 +35,7 @@ public sealed class CombatCalculator : ICombatCalculator
     /// <inheritdoc />
     public int CalculatePlayerMaxHit(Player player, int strengthBonus)
     {
-        var strengthSkill = player.Skills.FirstOrDefault(s => s.Name.Name == "Strength");
-        var strengthLevel = strengthSkill?.Level.Value ?? 1;
+        var strengthLevel = player.GetSkill(SkillConstants.StrengthSkillName).Level.Value;
 
         // Simplified OSRS formula: floor(0.5 + effectiveStrength * (strengthBonus + 64) / 640)
         var effectiveStrength = strengthLevel; // No prayer or potion bonuses for now
@@ -59,8 +59,7 @@ public sealed class CombatCalculator : ICombatCalculator
     /// <inheritdoc />
     public int CalculatePlayerAttackRoll(Player player, int attackBonus)
     {
-        var attackSkill = player.Skills.FirstOrDefault(s => s.Name.Name == "Attack");
-        var attackLevel = attackSkill?.Level.Value ?? 1;
+        var attackLevel = player.GetSkill(SkillConstants.AttackSkillName).Level.Value;
 
         // OSRS formula: (effectiveAttack + 9) * (attackBonus + 64)
         var effectiveAttack = attackLevel + 9;
@@ -114,8 +113,7 @@ public sealed class CombatCalculator : ICombatCalculator
     /// <inheritdoc />
     public int CalculatePlayerDefenceRoll(Player player, int defenceBonus)
     {
-        var defenceSkill = player.Skills.FirstOrDefault(s => s.Name.Name == "Defence");
-        var defenceLevel = defenceSkill?.Level.Value ?? 1;
+        var defenceLevel = player.GetSkill(SkillConstants.DefenceSkillName).Level.Value;
 
         // OSRS formula: (effectiveDefence + 9) * (defenceBonus + 64)
         var effectiveDefence = defenceLevel + 9;

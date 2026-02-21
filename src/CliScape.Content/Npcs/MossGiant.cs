@@ -1,5 +1,6 @@
 using CliScape.Content.Items;
 using CliScape.Core.Npcs;
+using CliScape.Core.Slayer;
 
 namespace CliScape.Content.Npcs;
 
@@ -57,7 +58,7 @@ public class MossGiant : CombatableNpc
         // Slayer
         SlayerLevel = 0,
         SlayerXp = 60,
-        SlayerCategory = "Giants",
+        SlayerCategory = new SlayerCategory("Giants"),
 
         // Drops
         DropTable = new DropTable(

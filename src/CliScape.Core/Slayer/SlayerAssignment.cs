@@ -8,7 +8,7 @@ public record SlayerAssignment
     /// <summary>
     ///     The category of NPCs for this assignment.
     /// </summary>
-    public required string Category { get; init; }
+    public required SlayerCategory Category { get; init; }
 
     /// <summary>
     ///     The minimum number of kills that can be assigned.

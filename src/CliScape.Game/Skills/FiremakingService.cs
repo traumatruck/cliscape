@@ -95,7 +95,7 @@ public sealed class FiremakingService : IFiremakingService
 
         // Grant experience
         var experience = LogExperience.GetValueOrDefault(logs.Id, 40);
-        Player.AddExperience(firemakingSkill, experience);
+        player.AddExperience(firemakingSkill, experience);
 
         // Check for level up
         LevelUpInfo? levelUp = null;

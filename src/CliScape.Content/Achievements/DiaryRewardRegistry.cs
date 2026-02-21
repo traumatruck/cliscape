@@ -8,7 +8,7 @@ namespace CliScape.Content.Achievements;
 ///     Singleton registry for diary tier rewards.
 ///     Uses reflection to discover and register reward definitions.
 /// </summary>
-public sealed class DiaryRewardRegistry
+public sealed class DiaryRewardRegistry : IDiaryRewardRegistry
 {
     private static readonly Lazy<DiaryRewardRegistry> _instance = new(() => new DiaryRewardRegistry());
     private readonly Dictionary<(LocationName, DiaryTier), DiaryReward[]> _rewardsByLocationAndTier;

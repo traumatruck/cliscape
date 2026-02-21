@@ -1,6 +1,5 @@
-using CliScape.Content.Achievements;
-using CliScape.Content.Items;
 using CliScape.Core.Achievements;
+using CliScape.Core.Items;
 using CliScape.Core.Players;
 using CliScape.Core.Players.Skills;
 using CliScape.Core.World;
@@ -12,7 +11,23 @@ namespace CliScape.Game.Achievements;
 /// </summary>
 public sealed class DiaryRewardService
 {
-    private static readonly Lazy<DiaryRewardService> _instance = new(() => new DiaryRewardService());
+    private static readonly Lazy<DiaryRewardService> _instance = new(() =>
+        new DiaryRewardService(
+            Content.Achievements.DiaryRegistry.Instance,
+            Content.Achievements.DiaryRewardRegistry.Instance,
+            Content.Items.ItemRegistry.Instance));
+
+    private readonly IDiaryRegistry _diaryRegistry;
+    private readonly IDiaryRewardRegistry _diaryRewardRegistry;
+    private readonly IItemRegistry _itemRegistry;
+
+    public DiaryRewardService(IDiaryRegistry diaryRegistry, IDiaryRewardRegistry diaryRewardRegistry,
+        IItemRegistry itemRegistry)
+    {
+        _diaryRegistry = diaryRegistry;
+        _diaryRewardRegistry = diaryRewardRegistry;
+        _itemRegistry = itemRegistry;
+    }
 
     public static DiaryRewardService Instance => _instance.Value;
 
@@ -21,7 +36,7 @@ public sealed class DiaryRewardService
     /// </summary>
     public bool CanClaimRewards(Player player, LocationName location, DiaryTier tier, out string? failureReason)
     {
-        var diary = DiaryRegistry.Instance.GetDiary(location);
+        var diary = _diaryRegistry.GetDiary(location);
         if (diary == null)
         {
             failureReason = "Diary not found for this location.";
@@ -63,7 +78,7 @@ public sealed class DiaryRewardService
             return false;
         }
 
-        var rewards = DiaryRewardRegistry.Instance.GetRewards(location, tier);
+        var rewards = _diaryRewardRegistry.GetRewards(location, tier);
         if (rewards.Length == 0)
         {
             errorMessage = "No rewards defined for this tier.";
@@ -76,7 +91,7 @@ public sealed class DiaryRewardService
             switch (reward)
             {
                 case ItemReward itemReward:
-                    var item = ItemRegistry.GetById(itemReward.ItemId);
+                    var item = _itemRegistry.GetById(itemReward.ItemId);
                     if (item == null)
                     {
                         errorMessage = $"Item {itemReward.ItemId} not found.";
@@ -105,7 +120,7 @@ public sealed class DiaryRewardService
                     }
 
                     var skill = player.GetSkill(lampSkill);
-                    Player.AddExperience(skill, lampReward.ExperienceAmount.Value);
+                    player.AddExperience(skill, lampReward.ExperienceAmount.Value);
                     break;
             }
         }
@@ -123,7 +138,7 @@ public sealed class DiaryRewardService
     /// </summary>
     public DiaryReward[] GetRewards(LocationName location, DiaryTier tier)
     {
-        return DiaryRewardRegistry.Instance.GetRewards(location, tier);
+        return _diaryRewardRegistry.GetRewards(location, tier);
     }
 
     /// <summary>
@@ -196,8 +211,8 @@ public sealed class DiaryRewardService
         return allowedSkills;
     }
 
-    private static string GetRewardKey(LocationName location, DiaryTier tier)
+    private static DiaryRewardId GetRewardKey(LocationName location, DiaryTier tier)
     {
-        return $"{location.Value}_{tier}";
+        return new DiaryRewardId($"{location.Value}_{tier}");
     }
 }

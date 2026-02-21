@@ -1,5 +1,5 @@
-using CliScape.Content.Slayer;
 using CliScape.Core.Players;
+using CliScape.Core.Slayer;
 using CliScape.Game;
 using CliScape.Game.Slayer;
 using Spectre.Console;
@@ -10,7 +10,7 @@ namespace CliScape.Cli.Commands.Slayer;
 /// <summary>
 ///     View and manage slayer tasks.
 /// </summary>
-public class SlayerCommand(GameState gameState, SlayerService slayerService) : Command<SlayerCommandSettings>, ICommand
+public class SlayerCommand(GameState gameState, SlayerService slayerService, ISlayerMasterProvider slayerMasterProvider) : Command<SlayerCommandSettings>, ICommand
 {
     public static string CommandName => "slayer";
 
@@ -35,7 +35,7 @@ public class SlayerCommand(GameState gameState, SlayerService slayerService) : C
         return ShowTaskStatus(player);
     }
 
-    private static int ShowTaskStatus(Player player)
+    private int ShowTaskStatus(Player player)
     {
         var task = player.SlayerTask;
 
@@ -45,7 +45,7 @@ public class SlayerCommand(GameState gameState, SlayerService slayerService) : C
             AnsiConsole.MarkupLine("[dim]Use --master <name> to get a task from a slayer master.[/]");
             AnsiConsole.WriteLine();
             AnsiConsole.MarkupLine("[bold]Available Slayer Masters:[/]");
-            foreach (var master in SlayerMasters.All)
+            foreach (var master in slayerMasterProvider.All)
             {
                 var requirements = new List<string>();
                 if (master.RequiredCombatLevel > 3)
@@ -79,13 +79,13 @@ public class SlayerCommand(GameState gameState, SlayerService slayerService) : C
 
     private int HandleGetTask(Player player, string masterName)
     {
-        var master = SlayerMasters.GetByName(masterName);
+        var master = slayerMasterProvider.GetByName(masterName);
 
         if (master == null)
         {
             AnsiConsole.MarkupLine($"[red]Unknown slayer master: {masterName}[/]");
             AnsiConsole.MarkupLine("[dim]Available masters:[/]");
-            foreach (var m in SlayerMasters.All)
+            foreach (var m in slayerMasterProvider.All)
             {
                 AnsiConsole.MarkupLine($"  [cyan]{m.Name}[/]");
             }
@@ -106,7 +106,7 @@ public class SlayerCommand(GameState gameState, SlayerService slayerService) : C
         };
     }
 
-    private static int HandleTaskAssigned(SlayerTask task, string masterName)
+    private static int HandleTaskAssigned(SlayerTask task, SlayerMasterName masterName)
     {
         AnsiConsole.MarkupLine($"[green]{masterName} assigns you a task:[/]");
         AnsiConsole.MarkupLine($"[bold yellow]\"Kill {task.TotalKills} {task.Category}.\"[/]");

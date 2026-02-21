@@ -1,4 +1,5 @@
 using CliScape.Content.Items;
+using CliScape.Core.Items;
 using CliScape.Game;
 using Spectre.Console;
 using Spectre.Console.Cli;
@@ -8,7 +9,7 @@ namespace CliScape.Cli.Commands.Shop;
 /// <summary>
 ///     Sell an item from inventory to a shop.
 /// </summary>
-public class ShopSellCommand(GameState gameState) : Command<ShopSellCommandSettings>, ICommand
+public class ShopSellCommand(GameState gameState, IItemRegistry itemRegistry) : Command<ShopSellCommandSettings>, ICommand
 {
     public static string CommandName => "sell";
 
@@ -70,7 +71,7 @@ public class ShopSellCommand(GameState gameState) : Command<ShopSellCommandSetti
         var totalPrice = pricePerItem * quantity;
 
         // Process sale
-        if (targetShop.TrySell(item, Materials.Coins, quantity, inventory))
+        if (targetShop.TrySell(item, itemRegistry.GetById(ItemIds.Coins)!, quantity, inventory))
         {
             if (quantity == 1)
             {
@@ -83,7 +84,7 @@ public class ShopSellCommand(GameState gameState) : Command<ShopSellCommandSetti
                     $"You sell [yellow]{quantity} {item.Name}[/] to {targetShop.Name} for [yellow]{totalPrice:N0} gp[/].");
             }
 
-            var totalGold = player.Inventory.GetQuantity(Materials.Coins);
+            var totalGold = player.Inventory.GetQuantity(itemRegistry.GetById(ItemIds.Coins)!);
             AnsiConsole.MarkupLine($"[dim]Total gold: {totalGold:N0} gp[/]");
             return (int)ExitCode.Success;
         }

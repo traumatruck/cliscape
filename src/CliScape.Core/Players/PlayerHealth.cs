@@ -2,7 +2,7 @@ using CliScape.Core.Players.Skills;
 
 namespace CliScape.Core.Players;
 
-public sealed record PlayerHealth
+public sealed class PlayerHealth
 {
     public int CurrentHealth { get; set; } = SkillConstants.StartingHitpoints;
 

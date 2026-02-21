@@ -92,7 +92,7 @@ public sealed class CookingService : ICookingService
             else
             {
                 player.Inventory.TryAdd(cookedItem);
-                Player.AddExperience(cookingSkill, recipe.Experience);
+                player.AddExperience(cookingSkill, recipe.Experience);
                 itemsCooked++;
                 totalXp += recipe.Experience;
             }

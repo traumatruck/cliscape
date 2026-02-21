@@ -1,5 +1,4 @@
 using System.ComponentModel;
-using CliScape.Content.Items;
 using CliScape.Core.Items;
 using CliScape.Core.Players;
 using CliScape.Core.Players.Skills;
@@ -15,7 +14,7 @@ namespace CliScape.Cli.Commands.Skills;
 ///     Mine rocks in the current location for ore.
 /// </summary>
 [Description("Mine rocks in your current location")]
-public class MineCommand(GameState gameState, MiningService miningService) : Command<MineCommandSettings>, ICommand
+public class MineCommand(GameState gameState, MiningService miningService, IItemRegistry itemRegistry) : Command<MineCommandSettings>, ICommand
 {
     public static string CommandName => "mine";
 
@@ -58,7 +57,7 @@ public class MineCommand(GameState gameState, MiningService miningService) : Com
         }
 
         // Execute via service
-        var result = miningService.Mine(player, rock, maxCount, ItemRegistry.GetById);
+        var result = miningService.Mine(player, rock, maxCount, itemRegistry.GetById);
 
         if (!result.Success)
         {
@@ -89,7 +88,7 @@ public class MineCommand(GameState gameState, MiningService miningService) : Com
         return (int)ExitCode.Success;
     }
 
-    private static int ListRocks(IReadOnlyList<IMiningRock> rocks, Player player)
+    private int ListRocks(IReadOnlyList<IMiningRock> rocks, Player player)
     {
         if (rocks.Count == 0)
         {
@@ -136,9 +135,9 @@ public class MineCommand(GameState gameState, MiningService miningService) : Com
             r.Name.Contains(rockType, StringComparison.OrdinalIgnoreCase));
     }
 
-    private static string GetItemName(ItemId id)
+    private string GetItemName(ItemId id)
     {
-        var item = ItemRegistry.GetById(id);
+        var item = itemRegistry.GetById(id);
         return item?.Name.Value ?? "Unknown";
     }
 }

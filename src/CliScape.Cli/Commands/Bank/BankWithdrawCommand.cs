@@ -1,5 +1,5 @@
 using System.ComponentModel;
-using CliScape.Content.Items;
+using CliScape.Core.Items;
 using CliScape.Game;
 using Spectre.Console;
 using Spectre.Console.Cli;
@@ -10,7 +10,7 @@ namespace CliScape.Cli.Commands.Bank;
 ///     Withdraws items from the bank into inventory.
 /// </summary>
 [Description("Withdraw an item from your bank")]
-public class BankWithdrawCommand(GameState gameState) : Command<BankWithdrawCommandSettings>, ICommand
+public class BankWithdrawCommand(GameState gameState, IItemRegistry itemRegistry) : Command<BankWithdrawCommandSettings>, ICommand
 {
     public static string CommandName => "withdraw";
 
@@ -31,7 +31,7 @@ public class BankWithdrawCommand(GameState gameState) : Command<BankWithdrawComm
         var bank = player.Bank;
 
         // Find the item by name
-        var item = ItemRegistry.GetByName(settings.ItemName);
+        var item = itemRegistry.GetByName(settings.ItemName);
         if (item is null)
         {
             AnsiConsole.MarkupLine($"[red]Unknown item: '{settings.ItemName}'.[/]");

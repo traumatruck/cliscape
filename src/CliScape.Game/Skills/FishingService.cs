@@ -100,7 +100,7 @@ public sealed class FishingService : IFishingService
             }
 
             // Grant experience
-            Player.AddExperience(fishingSkill, caughtFish.Experience);
+            player.AddExperience(fishingSkill, caughtFish.Experience);
             totalXp += caughtFish.Experience;
 
             // Track catch count by fish name

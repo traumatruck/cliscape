@@ -1,4 +1,3 @@
-using CliScape.Content.Achievements;
 using CliScape.Core.Achievements;
 using CliScape.Core.Players.Skills;
 using CliScape.Core.World;
@@ -15,7 +14,7 @@ namespace CliScape.Cli.Commands.Diary;
 public sealed class DiaryClaimCommand(
     GameState gameState,
     DiaryRewardService diaryRewardService,
-    DiaryRegistry diaryRegistry) : Command<DiaryClaimCommandSettings>
+    IDiaryRegistry diaryRegistry) : Command<DiaryClaimCommandSettings>
 {
     public const string CommandName = "claim";
 

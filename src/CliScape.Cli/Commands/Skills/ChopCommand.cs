@@ -1,5 +1,5 @@
 using System.ComponentModel;
-using CliScape.Content.Items;
+using CliScape.Core;
 using CliScape.Core.Items;
 using CliScape.Core.Players;
 using CliScape.Core.Players.Skills;
@@ -15,8 +15,8 @@ namespace CliScape.Cli.Commands.Skills;
 ///     Chop trees in the current location for logs.
 /// </summary>
 [Description("Chop trees in your current location")]
-public class ChopCommand(GameState gameState, WoodcuttingService woodcuttingService) : Command<ChopCommandSettings>,
-    ICommand
+public class ChopCommand(GameState gameState, WoodcuttingService woodcuttingService, IRandomProvider random, IItemRegistry itemRegistry)
+    : Command<ChopCommandSettings>, ICommand
 {
     public static string CommandName => "chop";
 
@@ -50,10 +50,10 @@ public class ChopCommand(GameState gameState, WoodcuttingService woodcuttingServ
         }
 
         // Determine random number of logs from this tree
-        var count = Random.Shared.Next(1, tree.MaxActions + 1);
+        var count = random.Next(1, tree.MaxActions + 1);
 
         // Execute via service
-        var result = woodcuttingService.Chop(player, tree.LogItemId, tree.Experience, count, ItemRegistry.GetById);
+        var result = woodcuttingService.Chop(player, tree.LogItemId, tree.Experience, count, itemRegistry.GetById);
 
         if (!result.Success)
         {
@@ -84,7 +84,7 @@ public class ChopCommand(GameState gameState, WoodcuttingService woodcuttingServ
         return (int)ExitCode.Success;
     }
 
-    private static int ListTrees(IReadOnlyList<ITree> trees, Player player)
+    private int ListTrees(IReadOnlyList<ITree> trees, Player player)
     {
         if (trees.Count == 0)
         {
@@ -126,9 +126,9 @@ public class ChopCommand(GameState gameState, WoodcuttingService woodcuttingServ
             t.Name.Contains(treeType, StringComparison.OrdinalIgnoreCase));
     }
 
-    private static string GetItemName(ItemId logId)
+    private string GetItemName(ItemId logId)
     {
-        var item = ItemRegistry.GetById(logId);
+        var item = itemRegistry.GetById(logId);
         return item?.Name.Value ?? "unknown";
     }
 }

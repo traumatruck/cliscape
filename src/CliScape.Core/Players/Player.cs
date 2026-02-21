@@ -37,7 +37,7 @@ public sealed class Player
     /// <summary>
     ///     Tracks which diary tier rewards have been claimed (format: "location_tier").
     /// </summary>
-    public HashSet<string> ClaimedDiaryRewards { get; init; } = new();
+    public HashSet<DiaryRewardId> ClaimedDiaryRewards { get; init; } = new();
 
     /// <summary>
     ///     The player's active clue scroll, if any. Only one clue can be active at a time.
@@ -50,13 +50,39 @@ public sealed class Player
 
     public int CurrentPrayerPoints { get; private set; }
 
-    public int MaximumPrayerPoints => this.GetSkillLevel(SkillConstants.PrayerSkillName).Value;
+    public int MaximumPrayerPoints => GetSkillLevel(SkillConstants.PrayerSkillName).Value;
 
     public int CombatLevel => SkillCollection.CombatLevel;
 
     public int TotalLevel => SkillCollection.TotalLevel;
 
     public IPlayerSkill[] Skills => SkillCollection.All;
+
+    /// <summary>
+    ///     Gets a skill by its <see cref="SkillName" />. Throws if not found.
+    /// </summary>
+    public IPlayerSkill GetSkill(SkillName skillName)
+    {
+        return SkillCollection.GetByName(skillName)
+               ?? throw new InvalidOperationException($"Skill {skillName} not found");
+    }
+
+    /// <summary>
+    ///     Gets a skill by its string name. Throws if not found.
+    /// </summary>
+    public IPlayerSkill GetSkill(string name)
+    {
+        return SkillCollection.GetByName(name)
+               ?? throw new InvalidOperationException($"Skill {name} not found");
+    }
+
+    /// <summary>
+    ///     Gets the level of a skill by its <see cref="SkillName" />.
+    /// </summary>
+    public PlayerSkillLevel GetSkillLevel(SkillName skillName)
+    {
+        return GetSkill(skillName).Level;
+    }
 
     public void Move(ILocation location)
     {
@@ -69,11 +95,11 @@ public sealed class Player
     }
 
     /// <summary>
-    ///     Adds experience to this skill.
+    ///     Adds experience to a skill.
     /// </summary>
     /// <param name="playerSkill">The player skill to be modified.</param>
     /// <param name="experienceGained">The amount of experience to add.</param>
-    public static void AddExperience(IPlayerSkill playerSkill, int experienceGained)
+    public void AddExperience(IPlayerSkill playerSkill, int experienceGained)
     {
         playerSkill.Level = playerSkill.Level.AddExperience(experienceGained);
     }

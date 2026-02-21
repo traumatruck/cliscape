@@ -92,7 +92,7 @@ public sealed class MiningService : IMiningService
                 break;
             }
 
-            Player.AddExperience(miningSkill, rock.Experience);
+            player.AddExperience(miningSkill, rock.Experience);
             oresObtained++;
             totalXp += rock.Experience;
         }

@@ -1,5 +1,6 @@
 using CliScape.Core;
 using CliScape.Core.Players;
+using CliScape.Core.Players.Skills;
 using CliScape.Core.Slayer;
 
 namespace CliScape.Game.Slayer;
@@ -33,8 +34,7 @@ public sealed class SlayerService : ISlayerService
         }
 
         // Check slayer level requirement
-        var slayerSkill = player.Skills.FirstOrDefault(s => s.Name.Name == "Slayer");
-        var slayerLevel = slayerSkill?.Level.Value ?? 1;
+        var slayerLevel = player.GetSkill(SkillConstants.SlayerSkillName).Level.Value;
         if (slayerLevel < master.RequiredSlayerLevel)
         {
             return new SlayerTaskResult.InsufficientSlayerLevel(master.RequiredSlayerLevel);

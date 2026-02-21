@@ -1,5 +1,4 @@
 using System.ComponentModel;
-using CliScape.Content.Items;
 using CliScape.Core.Items;
 using CliScape.Core.Players;
 using CliScape.Core.Players.Skills;
@@ -14,7 +13,7 @@ namespace CliScape.Cli.Commands.Skills;
 ///     Smelt ores into bars at a furnace.
 /// </summary>
 [Description("Smelt ores into bars at a furnace")]
-public class SmeltCommand(GameState gameState) : Command<SmeltCommandSettings>, ICommand
+public class SmeltCommand(GameState gameState, IItemRegistry itemRegistry) : Command<SmeltCommandSettings>, ICommand
 {
     public static string CommandName => "smelt";
 
@@ -50,7 +49,7 @@ public class SmeltCommand(GameState gameState) : Command<SmeltCommandSettings>, 
         return SmeltBars(player, recipe.Value, requestedCount);
     }
 
-    private static int ListSmeltingRecipes(Player player)
+    private int ListSmeltingRecipes(Player player)
     {
         var smithingLevel = player.GetSkillLevel(SkillConstants.SmithingSkillName).Value;
 
@@ -65,7 +64,7 @@ public class SmeltCommand(GameState gameState) : Command<SmeltCommandSettings>, 
         foreach (var recipe in SmithingHelper.SmeltingRecipes)
         {
             var levelColor = smithingLevel >= recipe.RequiredLevel ? "green" : "red";
-            var barName = ItemRegistry.GetById(recipe.ResultBarId)?.Name.Value ?? "Unknown";
+            var barName = itemRegistry.GetById(recipe.ResultBarId)?.Name.Value ?? "Unknown";
 
             var materials = SmithingHelper.GetOreName(recipe.PrimaryOreId);
             if (recipe.SecondaryOreId is not null)
@@ -101,9 +100,9 @@ public class SmeltCommand(GameState gameState) : Command<SmeltCommandSettings>, 
         }
 
         // Get item references
-        var barItem = ItemRegistry.GetById(recipe.ResultBarId);
-        var primaryOre = ItemRegistry.GetById(recipe.PrimaryOreId);
-        var secondaryOre = recipe.SecondaryOreId is not null ? ItemRegistry.GetById(recipe.SecondaryOreId.Value) : null;
+        var barItem = itemRegistry.GetById(recipe.ResultBarId);
+        var primaryOre = itemRegistry.GetById(recipe.PrimaryOreId);
+        var secondaryOre = recipe.SecondaryOreId is not null ? itemRegistry.GetById(recipe.SecondaryOreId.Value) : null;
 
         if (barItem is null || primaryOre is null)
         {
@@ -171,7 +170,7 @@ public class SmeltCommand(GameState gameState) : Command<SmeltCommandSettings>, 
             player.Inventory.TryAdd(barItem);
 
             // Grant experience
-            Player.AddExperience(smithingSkill, recipe.Experience);
+            player.AddExperience(smithingSkill, recipe.Experience);
             barsSmelted++;
             totalXp += recipe.Experience;
         }

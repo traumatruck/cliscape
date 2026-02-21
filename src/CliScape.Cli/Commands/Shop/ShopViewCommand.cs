@@ -1,4 +1,5 @@
 using CliScape.Content.Items;
+using CliScape.Core.Items;
 using CliScape.Game;
 using Spectre.Console;
 using Spectre.Console.Cli;
@@ -8,7 +9,7 @@ namespace CliScape.Cli.Commands.Shop;
 /// <summary>
 ///     View a shop's inventory.
 /// </summary>
-public class ShopViewCommand(GameState gameState) : Command<ShopViewCommandSettings>, ICommand
+public class ShopViewCommand(GameState gameState, IItemRegistry itemRegistry) : Command<ShopViewCommandSettings>, ICommand
 {
     public static string CommandName => "view";
 
@@ -34,7 +35,7 @@ public class ShopViewCommand(GameState gameState) : Command<ShopViewCommandSetti
             AnsiConsole.MarkupLine("[green]This shop will buy any tradeable item.[/]");
         }
 
-        var playerGold = player.Inventory.GetQuantity(Materials.Coins);
+        var playerGold = player.Inventory.GetQuantity(itemRegistry.GetById(ItemIds.Coins)!);
         AnsiConsole.MarkupLine($"[yellow]Your gold: {playerGold:N0} gp[/]");
         AnsiConsole.WriteLine();
 
