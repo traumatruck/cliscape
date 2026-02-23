@@ -1,10 +1,10 @@
-using CliScape.Content.Tests.Helpers;
+using CliScape.Tests.Shared;
 using CliScape.Core.Players;
 using CliScape.Core.Players.Skills;
 
 namespace CliScape.Content.Tests;
 
-public class PlayerTests
+public class TestPlayer
 {
     [Fact]
     public void TakeDamage_LessThanHealth_ReducesCorrectly()

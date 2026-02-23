@@ -1,4 +1,4 @@
-using CliScape.Content.Tests.Helpers;
+using CliScape.Tests.Shared;
 using CliScape.Core.Items;
 using CliScape.Core.Players.Skills;
 using CliScape.Core.Skills;
@@ -8,14 +8,14 @@ using NSubstitute;
 
 namespace CliScape.Content.Tests;
 
-public class FishingServiceTests
+public class TestFishingService
 {
     private readonly StubEventDispatcher _events = new();
     private readonly StubRandomProvider _random = new();
     private readonly IToolChecker _toolChecker = Substitute.For<IToolChecker>();
     private readonly FishingService _service;
 
-    public FishingServiceTests()
+    public TestFishingService()
     {
         _service = new FishingService(_random, _toolChecker, _events);
     }

@@ -1,6 +1,6 @@
 using CliScape.Core.Events;
 
-namespace CliScape.Content.Tests.Helpers;
+namespace CliScape.Tests.Shared;
 
 /// <summary>
 ///     Stub event dispatcher that records all raised events for assertion.

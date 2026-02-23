@@ -25,9 +25,10 @@ src/
 ├── CliScape.Content    → Game content: locations, NPCs, items
 └── CliScape.Infrastructure → Configuration, binary persistence implementation
 tests/
-└── CliScape.Content.Tests → xUnit tests for content/core behavior
-tools/
-└── CliScape.MapVisualizer → Map visualization utility
+├── CliScape.Content.Tests  → Integration tests: persistence, combat engine, drops, events
+├── CliScape.Core.Tests     → Unit tests for core domain: combat calc, inventory, equipment, skills
+├── CliScape.Game.Tests     → Unit tests for game services: mining, cooking, smelting, slayer, etc.
+└── CliScape.Tests.Shared   → Shared test helpers, stubs, and factories
 ```
 
 ### Project Dependencies
@@ -40,6 +41,7 @@ Cli → Game → Content → Core
 - **Spectre.Console** — CLI framework and terminal UI
 - **OneOf** — Discriminated unions for result types
 - **xUnit + coverlet.collector** — Testing and coverage
+- **NSubstitute** — Mocking framework for test doubles
 
 ### Architecture Patterns
 - **Singleton + DI Ready**: Services expose `Instance` singletons but accept dependencies via constructor for testing
@@ -49,10 +51,13 @@ Cli → Game → Content → Core
 ## Build & Run
 
 ```bash
-dotnet build CliScape.slnx          # Build full solution
-dotnet run --project src/CliScape.Cli   # Run CLI directly
-./cliscape.sh                       # Convenience wrapper from repo root
-dotnet test tests/CliScape.Content.Tests  # Run tests
+dotnet build CliScape.slnx                # Build full solution
+dotnet run --project src/CliScape.Cli     # Run CLI directly
+./cliscape.sh                             # Convenience wrapper from repo root
+dotnet test CliScape.slnx                 # Run all tests
+dotnet test tests/CliScape.Core.Tests     # Run core domain tests only
+dotnet test tests/CliScape.Game.Tests     # Run game service tests only
+dotnet test tests/CliScape.Content.Tests  # Run content/integration tests only
 ```
 
 ## Coding Conventions
@@ -381,9 +386,43 @@ Always use the appropriate wrapper rather than raw strings.
 
 ## Testing
 
-- **Framework**: xUnit in `tests/CliScape.Content.Tests`
-- **Naming**: Test classes use `*Tests` suffix
+### Test Projects
+
+| Project | Tests | References |
+|---------|-------|------------|
+| `CliScape.Core.Tests` | Core domain logic: combat calculator, combat sessions, inventory, equipment, shops, skill helpers (cooking, thieving), pending loot | Core, Tests.Shared |
+| `CliScape.Game.Tests` | Game services: mining, cooking, smelting, firemaking, woodcutting, equipment, loot, slayer, clue scrolls | Core, Game, Tests.Shared |
+| `CliScape.Content.Tests` | Integration/content tests: persistence round-trips, combat engine, domain events, drop tables, fishing, player state | Core, Content, Game, Infrastructure, Tests.Shared |
+
+### Shared Test Helpers (`CliScape.Tests.Shared`)
+
+Non-test library referenced by all test projects:
+
+- **`TestFactory`** — Factory methods for test objects:
+  - `CreatePlayer()` — Player with default stats
+  - `CreatePlayerWithSkill(skill, level)` — Player with a specific skill level
+  - `CreateStubItem(id, ...)` — NSubstitute-based `IItem` stub
+  - `CreateStubEquippable(id, name, slot, ...)` — NSubstitute-based `IEquippable` stub
+  - `StubLocation` — Minimal `ILocation` implementation
+- **`StubEventDispatcher`** — Records all raised events for assertion; provides `AssertRaised<T>()` and `AssertNotRaised<T>()` helpers
+- **`StubRandomProvider`** — Deterministic `IRandomProvider`; queue specific return values with `Returns()` / `EnqueueRange()` or set a `WithDefault()` fallback
+
+### Conventions
+
+- **Framework**: xUnit with `[Fact]` and `[Theory]`/`[InlineData]` attributes
+- **Naming**: Test classes use `Test*` prefix (e.g., `TestCombatCalculator`, `TestMiningService`)
+- **Mocking**: NSubstitute for interface stubs; shared stubs for common test doubles
 - **Coverage**: `coverlet.collector` available for coverage reports
+- **Pattern**: Tests instantiate services with `StubRandomProvider` and `StubEventDispatcher` for deterministic, isolated behavior
+
+### Running Tests
+
+```bash
+dotnet test CliScape.slnx                 # All tests
+dotnet test tests/CliScape.Core.Tests     # Core domain tests
+dotnet test tests/CliScape.Game.Tests     # Game service tests
+dotnet test tests/CliScape.Content.Tests  # Content/integration tests
+```
 
 ## Git Conventions
 

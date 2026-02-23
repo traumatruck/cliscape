@@ -3,7 +3,7 @@ using CliScape.Core.Players.Skills;
 
 namespace CliScape.Content.Tests;
 
-public class DomainEventDispatcherTests
+public class TestDomainEventDispatcher
 {
     [Fact]
     public void Raise_WithRegisteredActionHandler_InvokesHandler()

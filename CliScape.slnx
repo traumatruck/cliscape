@@ -8,6 +8,9 @@
     </Folder>
     <Folder Name="/tests/">
         <Project Path="tests/CliScape.Content.Tests/CliScape.Content.Tests.csproj"/>
+        <Project Path="tests/CliScape.Core.Tests/CliScape.Core.Tests.csproj"/>
+        <Project Path="tests/CliScape.Game.Tests/CliScape.Game.Tests.csproj"/>
+        <Project Path="tests/CliScape.Tests.Shared/CliScape.Tests.Shared.csproj"/>
     </Folder>
 
 </Solution>

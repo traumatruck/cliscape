@@ -1,10 +1,10 @@
-using CliScape.Content.Tests.Helpers;
+using CliScape.Tests.Shared;
 using CliScape.Core.Items;
 using CliScape.Core.Npcs;
 
 namespace CliScape.Content.Tests;
 
-public class DropTableTests
+public class TestDropTable
 {
     [Fact]
     public void RollDrops_Empty_ReturnsNoDrops()

@@ -1,6 +1,6 @@
 using CliScape.Core;
 
-namespace CliScape.Content.Tests.Helpers;
+namespace CliScape.Tests.Shared;
 
 /// <summary>
 ///     Deterministic random provider for testing.

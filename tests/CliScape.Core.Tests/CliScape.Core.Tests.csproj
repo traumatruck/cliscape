@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>net10.0</TargetFramework>
@@ -20,10 +20,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\src\CliScape.Content\CliScape.Content.csproj" />
         <ProjectReference Include="..\..\src\CliScape.Core\CliScape.Core.csproj" />
-        <ProjectReference Include="..\..\src\CliScape.Game\CliScape.Game.csproj" />
-        <ProjectReference Include="..\..\src\CliScape.Infrastructure\CliScape.Infrastructure.csproj" />
         <ProjectReference Include="..\CliScape.Tests.Shared\CliScape.Tests.Shared.csproj" />
     </ItemGroup>
 

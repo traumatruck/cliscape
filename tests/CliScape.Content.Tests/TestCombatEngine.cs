@@ -1,4 +1,4 @@
-using CliScape.Content.Tests.Helpers;
+using CliScape.Tests.Shared;
 using CliScape.Core;
 using CliScape.Core.Combat;
 using CliScape.Core.Events;
@@ -12,14 +12,14 @@ using NSubstitute;
 
 namespace CliScape.Content.Tests;
 
-public class CombatEngineTests
+public class TestCombatEngine
 {
     private readonly ICombatCalculator _calculator = Substitute.For<ICombatCalculator>();
     private readonly StubEventDispatcher _events = new();
     private readonly StubRandomProvider _random = new();
     private readonly CombatEngine _engine;
 
-    public CombatEngineTests()
+    public TestCombatEngine()
     {
         _engine = new CombatEngine(_calculator, _random, _events);
     }

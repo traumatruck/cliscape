@@ -4,12 +4,12 @@ using CliScape.Infrastructure.Persistence;
 
 namespace CliScape.Content.Tests;
 
-public class PersistenceRoundTripTests : IDisposable
+public class TestBinaryGameStateStore : IDisposable
 {
     private readonly string _tempDir;
     private readonly BinaryGameStateStore _store;
 
-    public PersistenceRoundTripTests()
+    public TestBinaryGameStateStore()
     {
         _tempDir = Path.Combine(Path.GetTempPath(), $"cliscape-test-{Guid.NewGuid():N}");
         Directory.CreateDirectory(_tempDir);
